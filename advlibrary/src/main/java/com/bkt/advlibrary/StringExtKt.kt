@@ -1,6 +1,5 @@
-package library.extensions
+package com.bkt.advlibrary
 
-import com.bkt.advlibrary.CommonFunctions
 import java.util.*
 
 fun String.getWords(): ArrayList<String> {
