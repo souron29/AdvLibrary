@@ -37,9 +37,10 @@ abstract class AdvActivity(
 
     fun loadFragment(fragment: AdvFragment, container_id: Int, removeCurrent: Boolean = false) {
         Handler(Looper.getMainLooper()).post {
-            supportFragmentManager.beginTransaction()
-                .replace(container_id, fragment as Fragment, fragment.fragmentName)
-                .commit()
+            if (!supportFragmentManager.isDestroyed)
+                supportFragmentManager.beginTransaction()
+                    .replace(container_id, fragment as Fragment, fragment.fragmentName)
+                    .commit()
         }
     }
 
