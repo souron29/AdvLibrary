@@ -29,7 +29,7 @@ fun Date.trim(): Date {
     return calendar.time
 }
 
-fun Date.format(
+/*fun Date.format(
     format: DateFormat = DateFormat.DATE,
     applyTrim: Boolean = false,
     timeZone: TimeZone = timeZoneIST
@@ -39,6 +39,20 @@ fun Date.format(
             trim()
         } else this
     val df = SimpleDateFormat(format.format, Locale.US)
+    df.timeZone = timeZone
+    return df.format(date)
+}*/
+fun Date?.format(
+    format: String = DateFormats.DATE,
+    applyTrim: Boolean = false,
+    timeZone: TimeZone = timeZoneIST
+): String {
+    if (this == null) return ""
+    val date =
+        if (applyTrim) {
+            trim()
+        } else this
+    val df = SimpleDateFormat(format, Locale.US)
     df.timeZone = timeZone
     return df.format(date)
 }
@@ -82,7 +96,7 @@ fun Date.getWeekEnd(): Date {
     return calendar.time
 }
 
-fun Date.getDaysTo(toDate: Date, useTime: Boolean): Double {
+fun Date.getDaysTo(toDate: Date, useTime: Boolean = false): Double {
     val endTime: Long
     val startTime: Long
     if (useTime) {

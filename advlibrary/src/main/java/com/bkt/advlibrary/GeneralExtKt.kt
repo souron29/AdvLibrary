@@ -2,16 +2,19 @@ package library.extensions
 
 import android.icu.text.NumberFormat
 import android.util.Log
+import android.util.SparseArray
 import android.view.View
+import android.widget.EditText
+import android.widget.TextView
+import androidx.collection.ArraySet
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import library.AdvActivity
 import java.text.DecimalFormat
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
-import kotlin.math.pow
-import kotlin.math.roundToLong
+import kotlin.collections.LinkedHashMap
 
 object GeneralExtKt {
 
@@ -55,20 +58,8 @@ object GeneralExtKt {
         return text.replace(".00", "")
     }
 
-    fun View.hide(makeInvisible: Boolean = false) {
-        visibility = if (makeInvisible) {
-            View.INVISIBLE
-        } else {
-            View.GONE
-        }
-    }
-
-    fun View.show() {
-        this.visibility = View.VISIBLE
-    }
-
-    fun View.isVisible(): Boolean {
-        return this.visibility == View.VISIBLE
+    fun Any?.isNotNull(): Boolean {
+        return this != null
     }
 
     fun <VH : RecyclerView.ViewHolder> RecyclerView.setLinearAdapter(
@@ -80,7 +71,17 @@ object GeneralExtKt {
         this.layoutManager = LinearLayoutManager(activity, direction, false)
     }
 
-    fun log(log_message: Any?, tag: String = "ZTAG") {
+    fun <VH : RecyclerView.ViewHolder> RecyclerView.setGridAdapter(
+        activity: AdvActivity,
+        adapter: RecyclerView.Adapter<VH>,
+        span: Int = 2,
+        direction: Int = RecyclerView.VERTICAL
+    ) {
+        this.adapter = adapter
+        this.layoutManager = GridLayoutManager(activity, span, direction, false)
+    }
+
+    fun logger(log_message: Any?, tag: String = "ZTAG") {
         Log.i(tag, log_message?.toString() ?: "null")
     }
 
@@ -132,7 +133,101 @@ object GeneralExtKt {
         return map
     }
 
-    fun <T> nvl(obj: T?, nonNull: T): T {
-        return obj ?: nonNull
+    fun <Item> List<Item>.toSparseArray(key: (Item) -> Int): SparseArray<Item> {
+        val map = SparseArray<Item>()
+        forEach { map[key.invoke(it)] = it }
+        return map
     }
+
+    fun <Item> List<List<Item>>.toSimpleList(): ArrayList<Item> {
+        val list = ArrayList<Item>()
+        forEach { subList ->
+            subList.forEach {
+                list.add(it)
+            }
+        }
+        return list
+    }
+
+    fun <Item, Key> List<Item>.toHashList(keyGenerator: (Item) -> Key): LinkedHashMap<Key, ArrayList<Item>> {
+        val map = LinkedHashMap<Key, ArrayList<Item>>()
+        forEach { item ->
+            val key = keyGenerator.invoke(item)
+            val list = map[key] ?: ArrayList()
+            list.add(item)
+            map[key] = list
+        }
+        return map
+    }
+
+    fun <Item, Key> List<Item>.toSummationMap(generator: (Item) -> Pair<Key, Double>): HashMap<Key, Double> {
+        val map = HashMap<Key, Double>()
+        forEach { item ->
+            val pair = generator.invoke(item)
+            var summation = map[pair.first] ?: 0.0
+            summation += pair.second
+            map[pair.first] = summation
+        }
+        return map
+    }
+
+    fun <Item, Key> List<Item>.distinctValue(distinctBy: (Item) -> Key): List<Key> {
+        val list = ArraySet<Key>()
+        forEach { item ->
+            list.add(distinctBy.invoke(item))
+        }
+        return list.toList()
+    }
+
+    fun <Item, NewItem> List<Item>.convert(converter: (Item) -> NewItem): List<NewItem> {
+        val list = ArrayList<NewItem>()
+        forEach { item ->
+            list.add(converter.invoke(item))
+        }
+        return list
+    }
+
+    fun <K, V, T> Map<K, V>.toNewList(converter: (K, V) -> T): ArrayList<T> {
+        val list = ArrayList<T>()
+        forEach { (key, value) ->
+            list.add(converter.invoke(key, value))
+        }
+        return list
+    }
+
+    fun <E, V> E?.evaluate(ifNull: () -> V? = { null }, ifNotNull: (E) -> V): V? {
+        return if (this != null)
+            ifNotNull.invoke(this)
+        else
+            ifNull.invoke()
+
+    }
+
+    fun <E> E?.ifNull(block: () -> Unit): E? {
+        if (this == null)
+            block.invoke()
+        return this
+    }
+
+    fun <E> E?.ifNotNull(block: (E) -> Unit): E? {
+        if (this != null)
+            block.invoke(this)
+        return this
+    }
+
+    fun <T> T.chains(vararg args: T.() -> Unit) {
+        for (arg in args)
+            arg.invoke(this)
+    }
+
+    fun <T> T.chain(arg: T.() -> Unit): T {
+        arg.invoke(this)
+        return this
+    }
+
+    fun String?.ifNotEmpty(block: () -> Unit) {
+        if (this?.isNotEmpty() == true)
+            block.invoke()
+    }
+
 }

@@ -10,6 +10,8 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 
+import androidx.appcompat.content.res.AppCompatResources;
+
 import java.io.IOException;
 
 public class Images {
@@ -55,23 +57,19 @@ public class Images {
     }
 
     public static Bitmap getBitmapMarker(Context context, int drawable) {
-        Drawable vectorDrawable = getDrawable(context, drawable);
+        Drawable vectorDrawable = AppCompatResources.getDrawable(context, drawable);
         vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
         Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
         vectorDrawable.draw(new Canvas(bitmap));
         return bitmap;
     }
 
-    public static Drawable getDrawable(Context context, int id) {
-        return context.getDrawable(id);
-    }
-
     public static Drawable getDrawable(Context context, int drawable_id, int color_id) {
-        return setColorTint(getDrawable(context, drawable_id), CommonFunctions.Colors.getColor(context, color_id));
+        return setColorTint(AppCompatResources.getDrawable(context, drawable_id), context.getColor(color_id));
     }
 
     public static Drawable setColorTint(Context context, int drawable_id, int color_id) {
-        return setColorTint(getDrawable(context, drawable_id), CommonFunctions.Colors.getColor(context, color_id));
+        return setColorTint(AppCompatResources.getDrawable(context, drawable_id), context.getColor(color_id));
     }
 
     public static Drawable setColorTint(Drawable drawable, int color) {

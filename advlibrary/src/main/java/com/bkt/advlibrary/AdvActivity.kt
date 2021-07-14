@@ -1,22 +1,24 @@
-package library
+package library.extensions
 
-import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.LifecycleOwner
 import android.os.Bundle
-import android.view.inputmethod.InputMethodManager
 import android.os.Handler
 import android.os.Looper
+import android.view.inputmethod.InputMethodManager
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.LifecycleOwner
+import library.AdvFragment
 
 abstract class AdvActivity(
     @LayoutRes private val layoutId: Int,
     @IdRes private val containerId: Int = -1
 ) : AppCompatActivity(),
     LifecycleOwner {
+
     abstract fun afterCreate()
+
     var onPermissionsResult: (
         requestCode: Int,
         permissions: Array<out String>,
@@ -30,12 +32,13 @@ abstract class AdvActivity(
         super.onCreate(savedInstanceState)
         setContentView(layoutId)
         afterCreate()
+
     }
 
-    fun loadFragment(fragment: AdvFragment?, container_id2: Int, removeCurrent: Boolean = false) {
+    fun loadFragment(fragment: AdvFragment, container_id: Int, removeCurrent: Boolean = false) {
         Handler(Looper.getMainLooper()).post {
             supportFragmentManager.beginTransaction()
-                .replace(container_id2, fragment as Fragment, fragment.fragmentName)
+                .replace(container_id, fragment as Fragment, fragment.fragmentName)
                 .commit()
         }
     }
@@ -53,12 +56,11 @@ abstract class AdvActivity(
     }
 
     override fun onBackPressed() {
-        val fm = supportFragmentManager
-        val lastFrag = getLastFrag(fm, containerId) as AdvFragment?
+        val lastFrag = getLastFrag(containerId) as AdvFragment?
         if (lastFrag != null && lastFrag.isAdded && !lastFrag.backPressHandled()) {
             if (lastFrag.stackCount != 0 && !lastFrag.backPressHandled()) {
                 lastFrag.childFragmentManager.popBackStackImmediate()
-            } else if (lastFrag.isHome || fm.backStackEntryCount == 1) {
+            } else if (lastFrag.isHome || supportFragmentManager.backStackEntryCount == 1) {
                 finish()
             } else {
                 super.onBackPressed()
@@ -66,10 +68,8 @@ abstract class AdvActivity(
         }
     }
 
-    fun getLastFrag(fm: FragmentManager, id: Int): Fragment? {
-        return if (fm.backStackEntryCount > 0) {
-            fm.findFragmentById(id)
-        } else null
+    private fun getLastFrag(id: Int): Fragment? {
+        return supportFragmentManager.findFragmentById(id)
     }
 
     fun getFragAt(activity: AdvActivity, position: Int): Fragment? {

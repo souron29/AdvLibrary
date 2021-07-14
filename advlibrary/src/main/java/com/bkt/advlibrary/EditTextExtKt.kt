@@ -4,7 +4,9 @@ import android.app.DatePickerDialog
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
+import android.widget.TextView
 import com.bkt.advlibrary.DateFormats
+import library.extensions.GeneralExtKt.toText
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -45,6 +47,7 @@ fun EditText.setDatePicker(
     val calendar = Calendar.getInstance()
     calendar.time = startDate
     this.isFocusable = false
+    this.setText(startDate.format(dateFormat))
     this.setOnClickListener {
         val date = this.getDate()
         if (date != null) {
@@ -53,11 +56,11 @@ fun EditText.setDatePicker(
         val datePickerDialog = DatePickerDialog(
             it.context,
             { _, year, month, dayOfMonth ->
-                val newCalendar = Calendar.getInstance()
                 calendar[Calendar.YEAR] = year
                 calendar[Calendar.MONTH] = month
                 calendar[Calendar.DAY_OF_MONTH] = dayOfMonth
                 onSelect.invoke(calendar.time)
+                this.setText(calendar.time.format(dateFormat))
             },
             calendar.get(Calendar.YEAR),
             calendar.get(Calendar.MONTH),
@@ -76,6 +79,10 @@ fun EditText.getTrimText(): String {
     return text?.trim().toString() ?: ""
 }
 
+fun EditText.getInt(valueIfNull: Int = 0): Int {
+    return getTrimText().toIntOrNull() ?: valueIfNull
+}
+
 fun EditText.setTextChangeListener(onTextChange: (String) -> Unit) {
     this.addTextChangedListener(object : TextWatcher {
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -87,7 +94,31 @@ fun EditText.setTextChangeListener(onTextChange: (String) -> Unit) {
         }
 
         override fun afterTextChanged(s: Editable?) {
-            onTextChange.invoke(s?.toString()?:"")
+            onTextChange.invoke(s?.toString() ?: "")
         }
     })
+}
+
+fun EditText.assign(value: Any?) {
+    if (value is String?)
+        this.setText(value)
+    if (value is Int?)
+        this.setText(value?.toString())
+    if (value is Double?)
+        this.setText(value?.toText())
+    if (value is Date? && value != null)
+        this.setDate(value)
+}
+
+fun TextView.assignIf(condition: Boolean, valueIf: Any?, valueElse: Any? = null) {
+    if (condition)
+        when (this) {
+            is EditText -> this.assign(valueIf)
+            else -> text = valueIf?.toString()
+        }
+    else
+        when (this) {
+            is EditText -> this.assign(valueElse)
+            else -> text = valueElse?.toString()
+        }
 }

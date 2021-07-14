@@ -1,9 +1,7 @@
 package com.bkt.advlibrary
 
-import java.util.*
-
-fun String.getWords(): ArrayList<String> {
-    return CommonFunctions.StringUtils.getWords(this)
+fun String.getWords(): List<String> {
+    return split(" ",".")
 }
 
 fun String.isNumber(): Boolean {
@@ -13,4 +11,8 @@ fun String.isNumber(): Boolean {
     } catch (e: NumberFormatException) {
         false
     }
+}
+
+fun String.search(text: String): Boolean {
+    return this.contains(text, ignoreCase = true)
 }

@@ -1,11 +1,6 @@
 package library
 
 import android.app.Activity
-import kotlin.jvm.internal.Intrinsics
-
-import kotlin.TypeCastException
-
-import android.view.inputmethod.InputMethodManager
 
 import android.view.View
 
@@ -14,8 +9,6 @@ import androidx.core.view.ViewCompat
 import android.os.Looper
 
 import kotlin.Unit
-
-import android.content.Context
 
 import android.os.Bundle
 import android.os.Handler
@@ -28,15 +21,15 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 
-import java.util.HashMap
-
 import androidx.lifecycle.LifecycleOwner
+import library.extensions.ActivityExtKt.toast
+import library.extensions.AdvActivity
 
 
 abstract class AdvFragment(val fragmentName: String, @LayoutRes private val layoutId: Int) :
     Fragment(), LifecycleOwner {
     private lateinit var mActivity: AdvActivity
-    private var childFragmentHolderID = -1
+    private var currentChildFrag: AdvFragment? = null
     var fragmentView: View? = null
         private set
     var isHome = false
@@ -107,14 +100,15 @@ abstract class AdvFragment(val fragmentName: String, @LayoutRes private val layo
         }
 
     fun <T : AdvFragment> loadChildFragmentDelayed(fragment: T, id: Int) {
-        childFragmentHolderID = id
+        this.currentChildFrag = fragment
         Handler(Looper.getMainLooper()).postDelayed(
             { loadChildFragment(fragment, id) }, 300
         )
     }
 
-    fun <T : AdvFragment?> loadChildFragment(fragment: T, id: Int, sharedElement: View?) {
+    fun <T : AdvFragment> loadChildFragment(fragment: T, id: Int, sharedElement: View?) {
         if (isAdded()) {
+            currentChildFrag = fragment
             val beginTransaction: FragmentTransaction = childFragmentManager.beginTransaction()
             val transitionName = ViewCompat.getTransitionName(sharedElement!!)
             beginTransaction.addSharedElement(sharedElement, transitionName!!)
@@ -128,11 +122,12 @@ abstract class AdvFragment(val fragmentName: String, @LayoutRes private val layo
         id: Int,
         name: String = fragment.fragmentName
     ) {
+        currentChildFrag = fragment
         childFragmentManager.beginTransaction().replace(id, fragment as Fragment, name)
             .addToBackStack(name).commit()
     }
 
-    fun loadFragment(fragment: AdvFragment?, id: Int, popLast: Boolean) {
+    fun loadFragment(fragment: AdvFragment, id: Int, popLast: Boolean) {
         advActivity.loadFragment(fragment, id, popLast)
     }
 
@@ -153,23 +148,18 @@ abstract class AdvFragment(val fragmentName: String, @LayoutRes private val layo
             return childFragManager?.backStackEntryCount ?: 0
         }
 
-    val lastChildFrag: AdvFragment?
-        get() {
-            return childFragManager?.findFragmentById(childFragmentHolderID) as AdvFragment?
-        }
-
-    fun backPressHandled(): Boolean {
-        if (childFragmentHolderID <= -1)
-            return false
-
-        val frag = childFragmentManager.findFragmentById(
-            childFragmentHolderID
-        ) as AdvFragment? ?: return false
-        if (frag.backPressHandled()) {
+    open fun backPressHandled(): Boolean {
+        val handled = currentChildFrag?.backPressHandled() ?: false
+        if (!handled) {
+            if (currentChildFrag != null) {
+                currentChildFrag?.popBackStackImmediate()
+                currentChildFrag = null
+                return true
+            }
+        } else {
             return true
         }
-        frag.popBackStackImmediate()
-        return true
+        return false
     }
 
     fun popBackStackImmediate(): Boolean {
@@ -189,5 +179,9 @@ abstract class AdvFragment(val fragmentName: String, @LayoutRes private val layo
         if (isAdded) {
             childFragmentManager.popBackStack()
         }
+    }
+
+    fun toast(text: String, longToast: Boolean = false) {
+        advActivity.toast(text, longToast)
     }
 }

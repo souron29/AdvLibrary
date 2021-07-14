@@ -1,22 +1,39 @@
-package library
+package library.extensions
 
 import android.view.View
+import android.widget.EditText
+import android.widget.TextView
+import androidx.annotation.ColorInt
 
-/*fun View.disableIf(condition: Boolean) {
-    if (condition)
-        isEnabled = false
+
+fun View.hide(makeInvisible: Boolean = false) {
+    visibility = if (makeInvisible) {
+        View.INVISIBLE
+    } else {
+        View.GONE
+    }
 }
 
-fun View.hideIf(
-    condition: Boolean,
-    @IntRange(
-        from = View.INVISIBLE.toLong(),
-        to = View.GONE.toLong()
-    ) visibilityModifier: Int = View.GONE
-) {
-    if (condition)
-        visibility = visibilityModifier
-}*/
+fun View.show(value: Any? = null) {
+    this.visibility = View.VISIBLE
+    if (this is EditText && value != null)
+        this.assign(value)
+    else if (this is TextView)
+        this.text = value?.toString()
+}
+
+fun View.isVisible(): Boolean {
+    return this.visibility == View.VISIBLE
+}
+
+fun View.visibleWhen(vararg visible: Boolean) {
+    var showView = true
+    visible.forEach { if (!it) showView = false }
+    if (showView)
+        show()
+    else hide()
+}
+
 
 fun disableViews(vararg views: View) {
     for (view in views)
@@ -26,4 +43,32 @@ fun disableViews(vararg views: View) {
 fun hideViews(vararg views: View) {
     for (view in views)
         view.visibility = View.GONE
+}
+
+fun setFocus(focus: Boolean, vararg views: View) {
+    for (view in views)
+        view.isFocusable = focus
+}
+
+fun setTextColors(@ColorInt color: Int, vararg tvs: TextView) {
+    for (tv in tvs)
+        tv.setTextColor(color)
+}
+
+fun View.enabledWhen(vararg visible: Boolean) {
+    var enableView = true
+    visible.forEach { if (!it) enableView = false }
+    isEnabled = enableView
+}
+
+fun enabledWhen(visible: Boolean, vararg views: View) {
+    views.forEach { it.enabledWhen(visible) }
+}
+
+fun View.enable() {
+    isEnabled = true
+}
+
+fun View.disable() {
+    isEnabled = false
 }

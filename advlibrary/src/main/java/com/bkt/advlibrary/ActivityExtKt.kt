@@ -14,8 +14,6 @@ import androidx.annotation.RequiresPermission
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import com.bkt.advlibrary.Images
-import library.AdvActivity
-import java.security.Permission
 
 object ActivityExtKt {
 
@@ -54,10 +52,20 @@ object ActivityExtKt {
         }
         return getString(stringId)
     }
-
     @RequiresPermission(Manifest.permission.VIBRATE)
     fun AdvActivity.vibrateOnce(time: Long) {
         val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-        vibrator.vibrate(VibrationEffect.createOneShot(time, -1))
+        if (Build.VERSION.SDK_INT < 26) {
+            vibrator.vibrate(time)
+        } else {
+            vibrator.vibrate(VibrationEffect.createOneShot(time, -1))
+        }
+    }
+
+    fun AdvActivity.restart() {
+        finish()
+        overridePendingTransition(0, 0)
+        startActivity(intent)
+        overridePendingTransition(0, 0)
     }
 }
