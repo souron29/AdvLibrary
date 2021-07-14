@@ -1,10 +1,9 @@
-package library.extensions
+package com.bkt.advlibrary
 
 import android.widget.EditText
-import library.extensions.ActivityExtKt.toast
-import library.extensions.GeneralExtKt.toDouble
-import library.extensions.GeneralExtKt.toText
-import java.lang.Exception
+import com.bkt.advlibrary.ActivityExtKt.toast
+import com.bkt.advlibrary.GeneralExtKt.toDouble
+import com.bkt.advlibrary.GeneralExtKt.toText
 
 fun shouldNotBeEmpty(
     activity: AdvActivity,

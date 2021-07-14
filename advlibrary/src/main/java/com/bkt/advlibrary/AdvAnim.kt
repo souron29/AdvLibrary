@@ -1,4 +1,4 @@
-package library.extensions
+package com.bkt.advlibrary
 
 import android.animation.ValueAnimator
 import android.transition.Fade

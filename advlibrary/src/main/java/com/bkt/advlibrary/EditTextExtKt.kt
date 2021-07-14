@@ -1,4 +1,4 @@
-package library.extensions
+package com.bkt.advlibrary
 
 import android.app.DatePickerDialog
 import android.text.Editable
@@ -6,7 +6,7 @@ import android.text.TextWatcher
 import android.widget.EditText
 import android.widget.TextView
 import com.bkt.advlibrary.DateFormats
-import library.extensions.GeneralExtKt.toText
+import com.bkt.advlibrary.GeneralExtKt.toText
 import java.text.SimpleDateFormat
 import java.util.*
 

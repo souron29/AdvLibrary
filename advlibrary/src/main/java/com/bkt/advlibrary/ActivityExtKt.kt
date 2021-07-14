@@ -1,4 +1,4 @@
-package library.extensions
+package com.bkt.advlibrary
 
 import android.Manifest
 import android.content.Context
@@ -13,7 +13,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresPermission
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
-import com.bkt.advlibrary.Images
+import com.bkt.advlibrary.AdvActivity
 
 object ActivityExtKt {
 

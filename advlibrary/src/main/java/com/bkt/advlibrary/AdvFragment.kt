@@ -22,8 +22,8 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 
 import androidx.lifecycle.LifecycleOwner
-import library.extensions.ActivityExtKt.toast
-import library.extensions.AdvActivity
+import com.bkt.advlibrary.ActivityExtKt.toast
+import com.bkt.advlibrary.AdvActivity
 
 
 abstract class AdvFragment(val fragmentName: String, @LayoutRes private val layoutId: Int) :

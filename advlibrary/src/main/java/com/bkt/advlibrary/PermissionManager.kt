@@ -2,7 +2,7 @@ package library
 
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
-import library.extensions.AdvActivity
+import com.bkt.advlibrary.AdvActivity
 import java.util.*
 import kotlin.collections.ArrayList
 

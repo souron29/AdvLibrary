@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import library.extensions.AdvActivity
+import com.bkt.advlibrary.AdvActivity
 
 class SimpleAdapter<M>(
     val activity: AdvActivity,

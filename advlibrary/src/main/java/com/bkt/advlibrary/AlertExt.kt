@@ -1,4 +1,4 @@
-package library.extensions
+package com.bkt.advlibrary
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
