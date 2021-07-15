@@ -9,7 +9,9 @@ import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
+import com.bkt.advlibrary.GeneralExtKt.logger
 import library.AdvFragment
+import java.lang.Exception
 
 abstract class AdvActivity(
     @LayoutRes private val layoutId: Int,
@@ -37,10 +39,15 @@ abstract class AdvActivity(
 
     fun loadFragment(fragment: AdvFragment, container_id: Int, removeCurrent: Boolean = false) {
         Handler(Looper.getMainLooper()).post {
-            if (!supportFragmentManager.isDestroyed&&!isDestroyed)
-                supportFragmentManager.beginTransaction()
-                    .replace(container_id, fragment as Fragment, fragment.fragmentName)
-                    .commitNowAllowingStateLoss()
+            try {
+                if (!supportFragmentManager.isDestroyed&&!isDestroyed)
+                    supportFragmentManager.beginTransaction()
+                        .replace(container_id, fragment as Fragment, fragment.fragmentName)
+                        .commitNowAllowingStateLoss()
+            }catch (e:Exception){
+                logger("Error ${e.message} for ${fragment.fragmentName}")
+            }
+
         }
     }
 

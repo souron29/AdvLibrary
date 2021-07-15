@@ -39,7 +39,7 @@ object ActivityExtKt {
         return true
     }
 
-    fun Context.getTintedDrawable(@DrawableRes id: Int, @ColorRes color_id: Int): Drawable {
+    fun Context.getTintedDrawable(@DrawableRes id: Int, @ColorRes color_id: Int): Drawable? {
         return Images.setColorTint(
             AppCompatResources.getDrawable(this, id), getColor(color_id)
         )

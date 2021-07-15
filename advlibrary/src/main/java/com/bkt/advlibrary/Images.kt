@@ -1,82 +1,94 @@
-package com.bkt.advlibrary;
+package com.bkt.advlibrary
 
-import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.provider.MediaStore;
+import android.content.Context
+import android.net.Uri
+import android.graphics.Bitmap
+import android.provider.MediaStore
+import java.io.IOException
+import android.graphics.drawable.Drawable
+import android.content.res.Resources.Theme
+import java.lang.Exception
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.Canvas
+import androidx.appcompat.content.res.AppCompatResources
+import android.graphics.PorterDuff
+import android.util.TypedValue
+import androidx.core.content.res.ResourcesCompat
+import com.bkt.advlibrary.Images.resize
 
-import androidx.appcompat.content.res.AppCompatResources;
-
-import java.io.IOException;
-
-public class Images {
-    public static Bitmap getBitmap(Context context, Uri image_uri) {
-        try {
-            return MediaStore.Images.Media.getBitmap(context.getContentResolver(), image_uri);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+object Images {
+    fun getBitmap(context: Context, image_uri: Uri?): Bitmap? {
+        return try {
+            MediaStore.Images.Media.getBitmap(context.contentResolver, image_uri)
+        } catch (e: IOException) {
+            e.printStackTrace()
+            null
         }
     }
 
-    public static Bitmap getBitmap(Context context, int drawable, int tintColor) {
-        try {
-            Drawable d = context.getResources().getDrawable(drawable, (Resources.Theme) null);
-            if (tintColor > 0) {
-                d = setColorTint(d, tintColor);
-            }
-            return drawableToBitmap(d);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+    fun dpToPx(context: Context, dp: Float): Float {
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            dp,
+            context.resources.displayMetrics
+        )
+    }
+
+    fun Drawable?.getBitmap(): Bitmap? {
+        return (this as BitmapDrawable?)?.bitmap
+    }
+
+    fun Drawable?.resize(context: Context, height: Float, width: Float): BitmapDrawable? {
+        this?.apply {
+            return BitmapDrawable(
+                context.resources,
+                Bitmap.createScaledBitmap(
+                    this.getBitmap()!!,
+                    dpToPx(context, width).toInt(),
+                    dpToPx(context, height).toInt(),
+                    true
+                )
+            )
         }
+        return null
     }
 
-    public static Bitmap drawableToBitmap(Drawable drawable) {
-        Bitmap bitmap;
-        if (drawable instanceof BitmapDrawable) {
-            BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
-            if (bitmapDrawable.getBitmap() != null) {
-                return bitmapDrawable.getBitmap();
-            }
-        }
-        if (drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
-            bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-        } else {
-            bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        }
-        Canvas canvas = new Canvas(bitmap);
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
-        return bitmap;
+    fun getBitmapMarker(context: Context?, drawable: Int): Bitmap {
+        val vectorDrawable = AppCompatResources.getDrawable(context!!, drawable)
+        vectorDrawable!!.setBounds(
+            0,
+            0,
+            vectorDrawable.intrinsicWidth,
+            vectorDrawable.intrinsicHeight
+        )
+        val bitmap = Bitmap.createBitmap(
+            vectorDrawable.intrinsicWidth,
+            vectorDrawable.intrinsicHeight,
+            Bitmap.Config.ARGB_8888
+        )
+        vectorDrawable.draw(Canvas(bitmap))
+        return bitmap
     }
 
-    public static Bitmap getBitmapMarker(Context context, int drawable) {
-        Drawable vectorDrawable = AppCompatResources.getDrawable(context, drawable);
-        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
-        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        vectorDrawable.draw(new Canvas(bitmap));
-        return bitmap;
+    fun getDrawable(context: Context, drawable_id: Int, color_id: Int): Drawable? {
+        return setColorTint(
+            AppCompatResources.getDrawable(context, drawable_id),
+            context.getColor(color_id)
+        )
     }
 
-    public static Drawable getDrawable(Context context, int drawable_id, int color_id) {
-        return setColorTint(AppCompatResources.getDrawable(context, drawable_id), context.getColor(color_id));
+    fun setColorTint(context: Context, drawable_id: Int, color_id: Int): Drawable? {
+        return setColorTint(
+            AppCompatResources.getDrawable(context, drawable_id),
+            context.getColor(color_id)
+        )
     }
 
-    public static Drawable setColorTint(Context context, int drawable_id, int color_id) {
-        return setColorTint(AppCompatResources.getDrawable(context, drawable_id), context.getColor(color_id));
-    }
-
-    public static Drawable setColorTint(Drawable drawable, int color) {
+    fun setColorTint(drawable: Drawable?, color: Int): Drawable? {
         if (drawable != null) {
-            drawable.mutate();
-            drawable.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+            drawable.mutate()
+            drawable.setColorFilter(color, PorterDuff.Mode.SRC_ATOP)
         }
-        return drawable;
+        return drawable
     }
 }
