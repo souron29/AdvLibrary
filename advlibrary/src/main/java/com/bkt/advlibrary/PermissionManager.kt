@@ -12,19 +12,13 @@ class PermissionManager private constructor(
 ) {
     private var onResult: (Boolean, ArrayList<String>, Boolean, ArrayList<String>) -> Unit =
         { _, _, _, _ -> }
-
     private val requestCode by lazy { Random().nextInt(99999) }
 
     companion object {
-        fun generate(activity: AdvActivity, vararg permissions: String): PermissionManager {
+        operator fun get(activity: AdvActivity, vararg permissions: String): PermissionManager {
             return PermissionManager(activity, *permissions)
         }
     }
-
-    /*fun onResult(onResult: (Boolean, ArrayList<String>, Boolean, ArrayList<String>) -> Unit): PermissionManager {
-        this.onResult = onResult
-        return this
-    }*/
 
     fun ask(onResult: (Boolean, ArrayList<String>, Boolean, ArrayList<String>) -> Unit = { _, _, _, _ -> }) {
         bgLaunch {
@@ -44,9 +38,9 @@ class PermissionManager private constructor(
                     )
                 }
             } else {
+                setResultProcessor()
                 ActivityCompat.requestPermissions(activity, permissions, requestCode)
             }
-            setResultProcessor()
         }
     }
 
