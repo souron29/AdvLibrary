@@ -1,4 +1,4 @@
-package library
+package com.bkt.advlibrary
 
 import android.content.Context
 import androidx.preference.PreferenceManager

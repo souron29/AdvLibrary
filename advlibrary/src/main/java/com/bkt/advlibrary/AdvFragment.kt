@@ -1,4 +1,4 @@
-package library
+package com.bkt.advlibrary
 
 import android.app.Activity
 
@@ -23,7 +23,6 @@ import androidx.fragment.app.FragmentTransaction
 
 import androidx.lifecycle.LifecycleOwner
 import com.bkt.advlibrary.ActivityExtKt.toast
-import com.bkt.advlibrary.AdvActivity
 
 
 abstract class AdvFragment(val fragmentName: String, @LayoutRes private val layoutId: Int) :

@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import com.bkt.advlibrary.GeneralExtKt.logger
-import library.AdvFragment
 import java.lang.Exception
 
 abstract class AdvActivity(

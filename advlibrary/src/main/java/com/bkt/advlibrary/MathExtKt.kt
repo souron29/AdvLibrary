@@ -31,3 +31,7 @@ fun Double.round(radix: Int): Double {
     val tmp = value.roundToLong()
     return tmp.toDouble() / 10.0.pow(radix)
 }
+
+fun Double?.roundToNearest(value: Int): Double {
+    return ((this ?: 0.0) / value.toDouble()).roundToLong() * value.toDouble()
+}

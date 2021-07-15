@@ -1,9 +1,8 @@
-package library
+package com.bkt.advlibrary
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.util.*
@@ -13,14 +12,14 @@ import kotlin.concurrent.timerTask
 private val bgScope = CoroutineScope(IO)
 private val mainScope = CoroutineScope(Main)
 
-fun bgLaunch(block: () -> Unit): Job {
-    return bgScope.launch {
+fun bgLaunch(block: () -> Unit) {
+    bgScope.launch {
         block.invoke()
     }
 }
 
-fun mainLaunch(block: () -> Unit): Job {
-    return mainScope.launch {
+fun mainLaunch(block: () -> Unit) {
+    mainScope.launch {
         block.invoke()
     }
 }

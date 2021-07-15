@@ -1,4 +1,4 @@
-package library
+package com.bkt.advlibrary
 
 import androidx.lifecycle.ViewModel
 import java.util.*
