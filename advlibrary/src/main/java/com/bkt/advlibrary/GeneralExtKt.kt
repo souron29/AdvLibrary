@@ -195,6 +195,24 @@ object GeneralExtKt {
         return list
     }
 
+    fun <K> Map<K, Double>?.sumOfValues(): Double {
+        var value = 0.0
+        this?.forEach { (_, u) -> value += u }
+        return value
+    }
+
+    fun <K> Map<K, Int>?.sumOfValues(): Int {
+        var value = 0
+        this?.forEach { (_, u) -> value += u }
+        return value
+    }
+
+    fun <K, V> Map<K, V>?.sumOf(block: (K, V) -> Double): Double {
+        var value = 0.0
+        this?.forEach { (k, v) -> value += block.invoke(k, v) }
+        return value
+    }
+
     fun <E, V> E?.evaluate(ifNull: () -> V? = { null }, ifNotNull: (E) -> V): V? {
         return if (this != null)
             ifNotNull.invoke(this)
