@@ -34,6 +34,12 @@ fun View.visibleWhen(vararg visible: Boolean) {
     else hide()
 }
 
+fun Array<View?>?.visibleWhen(vararg visible: Boolean) {
+    var showView = true
+    visible.forEach { if (!it) showView = false }
+    val visibility = if (showView) View.VISIBLE else View.GONE
+    this?.forEach { it?.visibility = visibility }
+}
 
 fun disableViews(vararg views: View) {
     for (view in views)
