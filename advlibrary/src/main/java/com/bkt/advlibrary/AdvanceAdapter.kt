@@ -26,7 +26,6 @@ abstract class AdvanceAdapter<Value>(
     }
 }), Filterable {
     private var dataList = ArrayList<Value>()
-    /*var onCLick = { _: Value, position: Int, isLongClick: Boolean -> }*/
     abstract fun onBind(view: View, row: RowObject<Value>)
 
     fun setList(list: List<Value>) {
@@ -46,12 +45,6 @@ abstract class AdvanceAdapter<Value>(
         val row = RowObject(position, getItem(position))
         holder.row = row
         val view: View = holder.itemView
-        /*view.setOnClickListener { onCLick.invoke(row.currentItem!!, position, false) }
-        view.setOnLongClickListener {
-            onCLick.invoke(row.currentItem!!, position, true)
-            true
-        }*/
-
         onBind(view, row)
     }
 
@@ -82,7 +75,7 @@ abstract class AdvanceAdapter<Value>(
             override fun performFiltering(constraint: CharSequence?): FilterResults {
                 val filteredValues = ArrayList<Value>()
                 val results = FilterResults()
-                if (constraint?.isNotEmpty() == true) {
+                if (constraint != null) {
                     for ((index, item) in dataList.withIndex()) {
                         if (onFilterItem(item, index, constraint))
                             filteredValues.add(item)
