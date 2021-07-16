@@ -5,6 +5,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
 import android.widget.TextView
+import androidx.core.widget.addTextChangedListener
 import com.bkt.advlibrary.DateFormats
 import com.bkt.advlibrary.GeneralExtKt.toText
 import java.text.SimpleDateFormat
@@ -121,4 +122,10 @@ fun TextView.assignIf(condition: Boolean, valueIf: Any?, valueElse: Any? = null)
             is EditText -> this.assign(valueElse)
             else -> text = valueElse?.toString()
         }
+}
+
+fun EditText?.setTextWatcher(block:(CharSequence?)->Unit){
+    this?.addTextChangedListener {
+        block.invoke(it)
+    }
 }
