@@ -24,9 +24,10 @@ abstract class AdvanceAdapter<Value>(
     override fun areContentsTheSame(oldItem: Value, newItem: Value): Boolean {
         return areContentsTheSame.invoke(oldItem, newItem)
     }
-}), Filterable {
+}) {
     private var dataList = ArrayList<Value>()
     abstract fun onBind(view: View, row: RowObject<Value>)
+    var filterCondition = { _: Value, _: String? -> true }
 
     fun setList(list: List<Value>) {
         val actualList = ArrayList(list)
@@ -61,6 +62,13 @@ abstract class AdvanceAdapter<Value>(
 
     }
 
+    fun filter(constraint: String?) {
+        bgBlock {
+            val list = dataList.filter { filterCondition.invoke(it,constraint) }
+            mainLaunch { submitList(list) }
+        }
+    }
+
     data class AdvanceHolder<Value>(val view: View, var row: RowObject<Value>) :
         RecyclerView.ViewHolder(view)
 
@@ -70,7 +78,7 @@ abstract class AdvanceAdapter<Value>(
         val payloads: List<Any> = ArrayList()
     )
 
-    override fun getFilter(): Filter {
+    fun getFilter(): Filter {
         return object : Filter() {
             override fun performFiltering(constraint: CharSequence?): FilterResults {
                 val filteredValues = ArrayList<Value>()

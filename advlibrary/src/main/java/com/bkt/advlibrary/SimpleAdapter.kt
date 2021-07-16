@@ -21,6 +21,9 @@ class SimpleAdapter<M>(
         return contentEquals.invoke(p0, p1)
     }
 }) {
+    private var dataList = ArrayList<M>()
+    var filterCondition = { _: M, _: String? -> true }
+
     override fun onCreateViewHolder(parent: ViewGroup, p1: Int): ViewHolder {
         val v: View = LayoutInflater.from(activity).inflate(layout, parent, false)
         val holder = ViewHolder(v)
@@ -40,6 +43,19 @@ class SimpleAdapter<M>(
         val item = getItem(position)
         item?.let {
             onBind(holder.itemView, item, position)
+        }
+    }
+
+    fun setList(list: List<M>) {
+        val actualList = ArrayList(list)
+        submitList(actualList)
+        dataList = actualList
+    }
+
+    fun filter(constraint: String?) {
+        bgBlock {
+            val list = dataList.filter { filterCondition.invoke(it, constraint) }
+            mainLaunch { submitList(list) }
         }
     }
 
