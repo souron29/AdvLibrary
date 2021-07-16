@@ -104,7 +104,7 @@ abstract class AdvanceAdapter<Value>(
     }
 
     open fun onFilterItem(value: Value, position: Int, filter: CharSequence?): Boolean {
-        return false
+        return true
     }
 
 }
