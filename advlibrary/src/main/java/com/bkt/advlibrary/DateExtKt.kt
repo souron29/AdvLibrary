@@ -2,6 +2,8 @@ package com.bkt.advlibrary
 
 import com.bkt.advlibrary.DateFormats
 import java.text.SimpleDateFormat
+import java.time.ZoneId
+import java.time.temporal.ChronoUnit
 import java.util.*
 
 val timeZoneIST: TimeZone = TimeZone.getTimeZone("Asia/Kolkata")
@@ -107,6 +109,14 @@ fun Date.getDaysTo(toDate: Date, useTime: Boolean = false): Double {
         endTime = toDate.trim().time
     }
     return ((endTime - startTime).toFloat() / 8.64E7f).toDouble()
+}
+
+fun Date.monthsTo(date: Date): Long {
+    return ChronoUnit.MONTHS.between(
+        this.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+            .withDayOfMonth(1),
+        date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().withDayOfMonth(1)
+    )
 }
 
 fun String.toDate(format: String = DateFormat.DATE.format): Date? {
