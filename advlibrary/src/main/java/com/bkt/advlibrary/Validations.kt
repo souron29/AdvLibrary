@@ -71,8 +71,3 @@ fun Boolean.ifTrue(block: () -> Boolean): Boolean {
         return block.invoke()
     return this
 }
-
-fun Boolean.ifTrue(block: () -> Unit): Unit {
-    if (this)
-        block.invoke()
-}
