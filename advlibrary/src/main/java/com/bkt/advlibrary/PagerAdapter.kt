@@ -29,4 +29,8 @@ class PagerAdapter(
             tab.text = block.invoke(position)
         }.attach()
     }
+
+    fun getFragment(pos: Int): AdvFragment {
+        return list[pos]
+    }
 }
