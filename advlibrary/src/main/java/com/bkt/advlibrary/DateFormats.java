@@ -9,6 +9,7 @@ public class DateFormats {
     public static final String DD_MMM = "dd MMM";
     public static final String DD_MMM_TIME = "dd MMM, h:mm aa";
     public static final String DD_MMM_YYYY = "dd MMM, yyyy";
+    public static final String MMM_YYYY = "MMM, yyyy";
     public static final String D_MMM_NEXTLINE = "d\nMMM";
     public static final String EEE = "EEE";
     public static final String EEEE = "EEEE";

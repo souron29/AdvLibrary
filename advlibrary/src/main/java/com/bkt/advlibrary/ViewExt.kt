@@ -14,12 +14,16 @@ fun View.hide(makeInvisible: Boolean = false) {
     }
 }
 
-fun View.show(value: Any? = null) {
+fun View.show(value: Any?) {
     this.visibility = View.VISIBLE
     if (this is EditText && value != null)
         this.assign(value)
     else if (this is TextView)
         this.text = value?.toString()
+}
+
+fun View.show() {
+    this.visibility = View.VISIBLE
 }
 
 fun View.isVisible(): Boolean {

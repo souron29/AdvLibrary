@@ -119,18 +119,16 @@ fun Date.monthsTo(date: Date): Long {
     )
 }
 
-fun String.toDate(format: String = DateFormat.DATE.format): Date? {
+fun String.toDate(format: String = DateFormats.DATE): Date? {
     val df = SimpleDateFormat(format, Locale.US)
     df.timeZone = timeZoneIST
     return df.parse(this)
 }
 
-enum class DateFormat(val format: String) {
-    DATE(DateFormats.DATE),
-    DD_MMM_YYYY(DateFormats.DD_MMM_YYYY),
-    DD_MMM(DateFormats.DD_MMM),
-    DD_MMM_TIME(DateFormats.DD_MMM_TIME),
-    TIME(DateFormats.TIME),
-    MMM("MMM"),
-    MMM_YYYY("MMM/YYYY")
+fun Date.isSameMonthAs(date: Date = today): Boolean {
+    val cal1 = Calendar.getInstance()
+    val cal2 = Calendar.getInstance()
+    cal1.time = this
+    cal2.time = date
+    return cal1[Calendar.YEAR] == cal2[Calendar.YEAR] && cal1[Calendar.MONTH] == cal2[Calendar.MONTH]
 }
