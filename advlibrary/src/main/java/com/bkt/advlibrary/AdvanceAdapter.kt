@@ -15,7 +15,7 @@ abstract class AdvanceAdapter<Value>(
     @LayoutRes private val layoutId: Int,
     private val areItemsTheSame: (Value, Value) -> Boolean = { v1, v2 -> v1 == v2 },
     private val areContentsTheSame: (Value, Value) -> Boolean = { _, _ -> false }
-) : ListAdapter<Value, AdvanceAdapter.AdvanceHolder<Value>>(object :
+) : ListAdapter<Value, AdvanceAdapter.AdvanceHolder>(object :
     DiffUtil.ItemCallback<Value>() {
     override fun areItemsTheSame(oldItem: Value, newItem: Value): Boolean {
         return areItemsTheSame.invoke(oldItem, newItem)
@@ -26,7 +26,8 @@ abstract class AdvanceAdapter<Value>(
     }
 }) {
     private var dataList = ArrayList<Value>()
-    abstract fun onBind(view: View, row: RowObject<Value>)
+    abstract fun onBind(view: View, item: Value, position: Int)
+
     var filterCondition = { _: Value, _: String? -> true }
 
     fun setList(list: List<Value>) {
@@ -35,36 +36,37 @@ abstract class AdvanceAdapter<Value>(
         dataList = actualList
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AdvanceHolder<Value> {
-        val view: View = LayoutInflater.from(activity).inflate(layoutId, parent, false)
-        val holder = AdvanceHolder(view, RowObject<Value>())
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AdvanceHolder {
+        val view = LayoutInflater.from(activity).inflate(layoutId, parent, false)
+        val holder = AdvanceHolder(view)
+        view.tag = holder
         onCreate(view, holder)
         return holder
     }
 
-    override fun onBindViewHolder(holder: AdvanceHolder<Value>, position: Int) {
-        val row = RowObject(position, getItem(position))
-        holder.row = row
-        val view: View = holder.itemView
-        onBind(view, row)
+    override fun onBindViewHolder(holder: AdvanceHolder, position: Int) {
+        val item = getItem(position)
+        item?.apply {
+            onBind(holder.itemView, item, position)
+        }
     }
 
     override fun onBindViewHolder(
-        holder: AdvanceHolder<Value>, position: Int, payloads: MutableList<Any>
+        holder: AdvanceHolder, position: Int, payloads: MutableList<Any>
     ) {
-        val rowObject = RowObject(position, getItem(position), payloads)
-        holder.row = rowObject
-        val view: View = holder.itemView
-        onBind(view, rowObject)
+        val item = getItem(position)
+        item?.apply {
+            onBind(holder.itemView, item, position)
+        }
     }
 
-    open fun onCreate(view: View, holder: AdvanceHolder<Value>) {
+    open fun onCreate(view: View, holder: AdvanceHolder) {
 
     }
 
     fun filter(constraint: String?) {
         bgBlock {
-            val list = dataList.filter { filterCondition.invoke(it,constraint) }
+            val list = dataList.filter { filterCondition.invoke(it, constraint) }
             mainLaunch { submitList(list) }
         }
     }
@@ -78,43 +80,7 @@ abstract class AdvanceAdapter<Value>(
         }
     }
 
-    data class AdvanceHolder<Value>(val view: View, var row: RowObject<Value>) :
+    data class AdvanceHolder(val view: View) :
         RecyclerView.ViewHolder(view)
-
-    data class RowObject<Value>(
-        val currentPosition: Int = -1,
-        val currentItem: Value? = null,
-        val payloads: List<Any> = ArrayList()
-    )
-
-    fun getFilter(): Filter {
-        return object : Filter() {
-            override fun performFiltering(constraint: CharSequence?): FilterResults {
-                val filteredValues = ArrayList<Value>()
-                val results = FilterResults()
-                if (constraint != null) {
-                    for ((index, item) in dataList.withIndex()) {
-                        if (onFilterItem(item, index, constraint))
-                            filteredValues.add(item)
-                    }
-
-                    results.values = filteredValues
-                    results.count = filteredValues.size
-                    return results
-                }
-                results.values = dataList
-                results.count = dataList.size
-                return results
-            }
-
-            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-                submitList(results?.values as ArrayList<Value>)
-            }
-        }
-    }
-
-    open fun onFilterItem(value: Value, position: Int, filter: CharSequence?): Boolean {
-        return true
-    }
 
 }
