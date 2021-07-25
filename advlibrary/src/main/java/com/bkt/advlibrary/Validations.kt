@@ -6,7 +6,7 @@ import com.bkt.advlibrary.GeneralExtKt.toDouble
 import com.bkt.advlibrary.GeneralExtKt.toText
 
 fun shouldNotBeEmpty(
-    activity: AdvActivity,
+    activity: CommonActivity,
     vararg ets: EditText,
     onError: (field: String) -> Unit = { field -> activity.toast("$field cannot be empty") }
 ): Boolean {
@@ -20,7 +20,7 @@ fun shouldNotBeEmpty(
 }
 
 fun shouldNotBeNegative(
-    activity: AdvActivity,
+    activity: CommonActivity,
     vararg ets: EditText,
     onError: (field: String) -> Unit = { field -> activity.toast("$field cannot be zero or negative") }
 ): Boolean {
@@ -34,7 +34,7 @@ fun shouldNotBeNegative(
 }
 
 fun shouldBeMinimumLength(
-    activity: AdvActivity, minLength: Int, vararg ets: EditText,
+    activity: CommonActivity, minLength: Int, vararg ets: EditText,
     onError: (field: String) -> Unit = { field -> activity.toast("$field cannot be less than $minLength characters") }
 ): Boolean {
     for (et in ets) {
@@ -47,7 +47,7 @@ fun shouldBeMinimumLength(
 }
 
 fun <T : Number> shouldBeMinimum(
-    activity: AdvActivity, min: T, vararg ets: EditText,
+    activity: CommonActivity, min: T, vararg ets: EditText,
     onError: (field: String) -> Unit = { field ->
         activity.toast(
             "$field cannot be less than ${
