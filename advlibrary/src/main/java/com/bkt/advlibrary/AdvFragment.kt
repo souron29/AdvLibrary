@@ -13,7 +13,6 @@ abstract class AdvFragment(
     @LayoutRes private val layoutId: Int
 ) :
     CommonFragment(fragmentName) {
-    private var currentChildFrag: AdvFragment? = null
     var fragmentView: View? = null
         private set
 
@@ -25,12 +24,5 @@ abstract class AdvFragment(
         val inflate = inflater.inflate(layoutId, container, false)
         fragmentView = inflate
         return inflate
-    }
-
-    fun <T : AdvFragment> loadChildFragmentDelayed(fragment: T, id: Int) {
-        this.currentChildFrag = fragment
-        Handler(Looper.getMainLooper()).postDelayed(
-            { loadChildFragment(fragment, id) }, 300
-        )
     }
 }
