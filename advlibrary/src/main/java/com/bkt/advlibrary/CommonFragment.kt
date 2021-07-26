@@ -4,16 +4,23 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
+import androidx.viewpager2.widget.ViewPager2
 
 abstract class CommonFragment(open val fragmentName: String) : Fragment(), LifecycleOwner {
     val stackCount: Int
         get() = if (isAdded) childFragmentManager.backStackEntryCount else 0
 
+    private var pagerDetails: PagerDetails? = null
     private var onClose = {}
+
     val advActivity by lazy { activity as CommonActivity }
 
     fun onClosed(onClose: () -> Unit) {
         this.onClose = onClose
+    }
+
+    fun setAsPagerFragment(pager: ViewPager2, adapter: PagerAdapter, defaultItem: Int = 0) {
+        this.pagerDetails = PagerDetails(pager, adapter, defaultItem)
     }
 
     override fun onDestroy() {
@@ -51,11 +58,23 @@ abstract class CommonFragment(open val fragmentName: String) : Fragment(), Lifec
     }
 
     open fun backPressHandled(): Boolean {
-        val fragment = childFragmentManager.fragments.lastOrNull() as CommonFragment?
-        val handled = fragment?.backPressHandled() ?: false
-        if (!handled) {
-            if (fragment != null) {
-                fragment.popBackStackImmediate()
+        pagerDetails?.let { (pager, adapter, default) ->
+            if (pager.currentItem == default) {
+                val frag = adapter.getFragment(default)
+                if (frag.childFragmentManager.fragments.isNotEmpty()) {
+                    frag.childFragmentManager.popBackStack()
+                    return true
+                }
+            } else {
+                pager.setCurrentItem(default, true)
+                return true
+            }
+        }
+        val child = childFragmentManager.fragments.lastOrNull() as CommonFragment?
+        val childHandled = child?.backPressHandled() ?: false
+        if (!childHandled) {
+            if (child != null) {
+                child.popBackStackImmediate()
                 return true
             }
         } else {
@@ -89,3 +108,9 @@ abstract class CommonFragment(open val fragmentName: String) : Fragment(), Lifec
     }
 
 }
+
+internal data class PagerDetails(
+    val pager: ViewPager2,
+    val adapter: PagerAdapter,
+    val defaultItem: Int = 0
+)

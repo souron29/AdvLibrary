@@ -7,10 +7,10 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 
 class PagerAdapter(
-    private val parent: AdvFragment
+    private val parent: CommonFragment
 ) : FragmentStateAdapter(parent) {
 
-    private val list = ArrayList<AdvFragment>()
+    private val list = ArrayList<CommonFragment>()
 
     override fun getItemCount(): Int {
         return list.size
@@ -20,7 +20,7 @@ class PagerAdapter(
         return list[position]
     }
 
-    fun addFragment(fragment: AdvFragment) {
+    fun addFragment(fragment: CommonFragment) {
         list.add(fragment)
     }
 
@@ -30,7 +30,7 @@ class PagerAdapter(
         }.attach()
     }
 
-    fun getFragment(pos: Int): AdvFragment {
+    fun getFragment(pos: Int): CommonFragment {
         return list[pos]
     }
 }
