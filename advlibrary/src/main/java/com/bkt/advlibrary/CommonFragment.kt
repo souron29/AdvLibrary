@@ -72,15 +72,16 @@ abstract class CommonFragment(open val fragmentName: String) : Fragment(), Lifec
                 return true
             }
         }
-        val child = childFragmentManager.fragments.lastOrNull() as CommonFragment?
-        val childHandled = child?.backPressHandled() ?: false
-        if (!childHandled) {
-            if (child != null) {
+
+        if (pagerDetails == null) {
+            val child = childFragmentManager.fragments.lastOrNull() as CommonFragment?
+            val childHandled = child?.backPressHandled() ?: false
+            if (childHandled)
+                return true
+            else if (child != null) {
                 child.popBackStackImmediate()
                 return true
             }
-        } else {
-            return true
         }
         return false
     }

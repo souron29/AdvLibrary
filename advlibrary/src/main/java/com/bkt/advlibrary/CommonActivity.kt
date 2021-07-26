@@ -51,11 +51,8 @@ open class CommonActivity : AppCompatActivity(), LifecycleOwner {
             val count = supportFragmentManager.backStackEntryCount
             when {
                 count > 1 -> supportFragmentManager.popBackStack()
-                count == 1 -> {
-                    finish()
-                }
                 else -> {
-                    super.onBackPressed()
+                    finish()
                 }
             }
         } else if (lastFrag == null)
