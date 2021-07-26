@@ -46,8 +46,12 @@ open class CommonActivity : AppCompatActivity(), LifecycleOwner {
     }
 
     override fun onBackPressed() {
-        val lastFrag = supportFragmentManager.fragments.lastOrNull() as CommonFragment?
-        if (lastFrag != null && lastFrag.isAdded && !lastFrag.backPressHandled()) {
+        val lastFrag = supportFragmentManager.fragments.lastOrNull()
+        if (lastFrag == null)
+            super.onBackPressed()
+        else if (lastFrag !is CommonFragment)
+            supportFragmentManager.popBackStack()
+        else if (lastFrag.isAdded && !lastFrag.backPressHandled()) {
             val count = supportFragmentManager.backStackEntryCount
             when {
                 count > 1 -> supportFragmentManager.popBackStack()
@@ -55,8 +59,7 @@ open class CommonActivity : AppCompatActivity(), LifecycleOwner {
                     finish()
                 }
             }
-        } else if (lastFrag == null)
-            super.onBackPressed()
+        }
     }
 
     private fun getLastFrag(id: Int): Fragment? {
