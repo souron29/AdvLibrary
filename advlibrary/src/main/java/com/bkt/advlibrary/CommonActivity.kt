@@ -19,7 +19,7 @@ open class CommonActivity : AppCompatActivity(), LifecycleOwner {
             false
         }
 
-    fun loadFragment(fragment: CommonFragment, container_id: Int, removeCurrent: Boolean = false) {
+    fun loadFragment(fragment: CommonFragment, container_id: Int) {
         Handler(Looper.getMainLooper()).post {
             try {
                 if (!supportFragmentManager.isDestroyed && !isDestroyed)

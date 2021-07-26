@@ -3,14 +3,21 @@ package com.bkt.advlibrary
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.util.*
+import java.util.concurrent.Executors
 import kotlin.concurrent.timerTask
 
 
 private val bgScope = CoroutineScope(IO)
 private val mainScope = CoroutineScope(Main)
+private val monoScope by lazy {
+    CoroutineScope(
+        Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+    )
+}
 
 fun bgLaunch(block: () -> Unit) {
     bgScope.launch {
@@ -20,6 +27,12 @@ fun bgLaunch(block: () -> Unit) {
 
 fun mainLaunch(block: () -> Unit) {
     mainScope.launch {
+        block.invoke()
+    }
+}
+
+fun monoLaunch(block: () -> Unit) {
+    monoScope.launch {
         block.invoke()
     }
 }
