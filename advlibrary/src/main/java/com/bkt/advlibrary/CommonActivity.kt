@@ -22,11 +22,11 @@ open class CommonActivity : AppCompatActivity(), LifecycleOwner {
     fun loadFragment(fragment: CommonFragment, container_id: Int, removeCurrent: Boolean = false) {
         Handler(Looper.getMainLooper()).post {
             try {
-                if (!supportFragmentManager.isDestroyed&&!isDestroyed)
+                if (!supportFragmentManager.isDestroyed && !isDestroyed)
                     supportFragmentManager.beginTransaction()
                         .replace(container_id, fragment as Fragment, fragment.fragmentName)
                         .commitNowAllowingStateLoss()
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 GeneralExtKt.logger("Error ${e.message} for ${fragment.fragmentName}")
             }
 
@@ -48,14 +48,18 @@ open class CommonActivity : AppCompatActivity(), LifecycleOwner {
     override fun onBackPressed() {
         val lastFrag = supportFragmentManager.fragments.lastOrNull() as CommonFragment?
         if (lastFrag != null && lastFrag.isAdded && !lastFrag.backPressHandled()) {
-            if (lastFrag.stackCount != 0 && !lastFrag.backPressHandled()) {
-                lastFrag.childFragmentManager.popBackStackImmediate()
-            } else if ( supportFragmentManager.backStackEntryCount == 1) {
-                finish()
-            } else {
-                super.onBackPressed()
+            val count = supportFragmentManager.backStackEntryCount
+            when {
+                count > 1 -> supportFragmentManager.popBackStack()
+                count == 1 -> {
+                    finish()
+                }
+                else -> {
+                    super.onBackPressed()
+                }
             }
-        }
+        } else if (lastFrag == null)
+            super.onBackPressed()
     }
 
     private fun getLastFrag(id: Int): Fragment? {
