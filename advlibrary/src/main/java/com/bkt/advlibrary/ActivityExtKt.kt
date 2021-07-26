@@ -13,11 +13,10 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresPermission
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
-import com.bkt.advlibrary.AdvActivity
 
 object ActivityExtKt {
 
-    fun AdvActivity.toast(string: Any, longToast: Boolean = false) {
+    fun CommonActivity.toast(string: Any, longToast: Boolean = false) {
         val time = if (longToast) Toast.LENGTH_LONG else Toast.LENGTH_SHORT
         if (string is Exception) {
             Toast.makeText(this, string.message, time).show()
@@ -53,7 +52,7 @@ object ActivityExtKt {
         return getString(stringId)
     }
     @RequiresPermission(Manifest.permission.VIBRATE)
-    fun AdvActivity.vibrateOnce(time: Long) {
+    fun CommonActivity.vibrateOnce(time: Long) {
         val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         if (Build.VERSION.SDK_INT < 26) {
             vibrator.vibrate(time)
@@ -62,7 +61,7 @@ object ActivityExtKt {
         }
     }
 
-    fun AdvActivity.restart() {
+    fun CommonActivity.restart() {
         finish()
         overridePendingTransition(0, 0)
         startActivity(intent)

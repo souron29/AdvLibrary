@@ -2,7 +2,7 @@ package com.bkt.advlibrary
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
-fun AdvActivity.showConfirmDialog(
+fun CommonActivity.showConfirmDialog(
     title: String,
     body: String = "",
     yesButtonText: String = "Yes",

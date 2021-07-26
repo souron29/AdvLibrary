@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 
 abstract class AdvanceAdapter<Value>(
-    private val activity: AdvActivity?,
+    private val activity: CommonActivity,
     @LayoutRes private val layoutId: Int,
     private val areItemsTheSame: (Value, Value) -> Boolean = { v1, v2 -> v1 == v2 },
     private val areContentsTheSame: (Value, Value) -> Boolean = { _, _ -> false }

@@ -63,7 +63,7 @@ object GeneralExtKt {
     }
 
     fun <VH : RecyclerView.ViewHolder> RecyclerView.setLinearAdapter(
-        activity: AdvActivity,
+        activity: CommonActivity,
         adapter: RecyclerView.Adapter<VH>,
         direction: Int = RecyclerView.VERTICAL
     ) {
@@ -72,7 +72,7 @@ object GeneralExtKt {
     }
 
     fun <VH : RecyclerView.ViewHolder> RecyclerView.setGridAdapter(
-        activity: AdvActivity,
+        activity: CommonActivity,
         adapter: RecyclerView.Adapter<VH>,
         span: Int = 2,
         direction: Int = RecyclerView.VERTICAL

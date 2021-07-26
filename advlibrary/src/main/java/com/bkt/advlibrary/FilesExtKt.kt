@@ -14,7 +14,7 @@ import java.io.File
 
 
 object FilesExtKt {
-    fun File.openInFileManager(activity: AdvActivity) {
+    fun File.openInFileManager(activity: CommonActivity) {
         val path = if (isDirectory) {
             canonicalPath
         } else {
@@ -30,7 +30,7 @@ object FilesExtKt {
         return File(this, name.trim())
     }
 
-    fun File.open(activity: AdvActivity) {
+    fun File.open(activity: CommonActivity) {
         val intent = Intent(Intent.ACTION_VIEW)
         val uri = FileProvider.getUriForFile(
             activity,
@@ -43,7 +43,7 @@ object FilesExtKt {
         activity.startActivity(intent)
     }
 
-    fun Uri?.getMime(activity: AdvActivity): String {
+    fun Uri?.getMime(activity: CommonActivity): String {
         val cR = activity.contentResolver
         //val mime = MimeTypeMap.getSingleton()
         return if (this != null)
@@ -51,7 +51,7 @@ object FilesExtKt {
         else ""
     }
 
-    fun Uri?.getExtension(activity: AdvActivity): String {
+    fun Uri?.getExtension(activity: CommonActivity): String {
         val cR = activity.contentResolver
         val mime = MimeTypeMap.getSingleton()
         return if (this != null)
@@ -59,7 +59,7 @@ object FilesExtKt {
         else ""
     }
 
-    fun Uri?.getFileName(activity: AdvActivity): String {
+    fun Uri?.getFileName(activity: CommonActivity): String {
         this?.apply {
             val returnCursor = activity.contentResolver.query(this, null, null, null, null)!!
             val nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)

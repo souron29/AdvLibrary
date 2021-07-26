@@ -62,7 +62,7 @@ open class CommonActivity : AppCompatActivity(), LifecycleOwner {
         return supportFragmentManager.findFragmentById(id)
     }
 
-    fun getFragAt(activity: AdvActivity, position: Int): Fragment? {
+    fun getFragAt(activity: CommonActivity, position: Int): Fragment? {
         val fm = activity.supportFragmentManager
         val supportFragmentManager = activity.supportFragmentManager
         if (supportFragmentManager.backStackEntryCount <= position) {

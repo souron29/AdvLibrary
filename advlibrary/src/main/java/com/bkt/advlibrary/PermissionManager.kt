@@ -6,7 +6,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class PermissionManager private constructor(
-    private val activity: AdvActivity,
+    private val activity: CommonActivity,
     private vararg val permissions: String
 ) {
     private var onResult: (Boolean, ArrayList<String>, Boolean, ArrayList<String>) -> Unit =
@@ -14,7 +14,7 @@ class PermissionManager private constructor(
     private val requestCode by lazy { Random().nextInt(99999) }
 
     companion object {
-        operator fun get(activity: AdvActivity, vararg permissions: String): PermissionManager {
+        operator fun get(activity: CommonActivity, vararg permissions: String): PermissionManager {
             return PermissionManager(activity, *permissions)
         }
     }

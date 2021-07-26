@@ -8,8 +8,8 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 
 class SimpleAdapter<M>(
-    val activity: AdvActivity,
-    val layout: Int,
+    private val activity: CommonActivity,
+    private val layout: Int,
     val onBind: (itemView: View, item: M, position: Int) -> Unit,
     val contentEquals: (item1: M, item2: M) -> Boolean = { p0, p1 -> p0 == p1 }
 ) : ListAdapter<M, SimpleAdapter<M>.ViewHolder>(object : DiffUtil.ItemCallback<M>() {
