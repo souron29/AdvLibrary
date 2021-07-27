@@ -1,18 +1,14 @@
 package com.bkt.advlibrary
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import java.util.*
 import java.util.concurrent.Executors
 import kotlin.concurrent.timerTask
 
 
-private val bgScope = CoroutineScope(IO)
-private val mainScope = CoroutineScope(Main)
+private val bgScope = CoroutineScope(Dispatchers.Default)
+private val mainScope = CoroutineScope(Dispatchers.Main)
+
 private val monoScope by lazy {
     CoroutineScope(
         Executors.newSingleThreadExecutor().asCoroutineDispatcher()
@@ -31,10 +27,26 @@ fun mainLaunch(block: () -> Unit) {
     }
 }
 
+/**
+ * Use this for a running transactions inside a single
+ */
 fun monoLaunch(block: () -> Unit) {
     monoScope.launch {
         block.invoke()
     }
+}
+
+/**
+ * Use this inside a mainLaunch to perform transactions in parallel and use the result on the UI thread
+ */
+fun <T> bgSeries(block: () -> T): T {
+    return runBlocking {
+        withContext(bgScope.coroutineContext) { block.invoke() }
+    }
+}
+
+fun <T> bgParallel(block: () -> T): Deferred<T> {
+    return bgScope.async { block.invoke() }
 }
 
 fun after(milliSecs: Long, block: () -> Unit) {
