@@ -10,6 +10,7 @@ import android.webkit.MimeTypeMap
 import androidx.annotation.RequiresPermission
 import androidx.core.content.FileProvider
 import com.bkt.advlibrary.FilesExtKt.getFileName
+import com.bkt.advlibrary.FilesExtKt.open
 import java.io.File
 
 
@@ -30,17 +31,38 @@ object FilesExtKt {
         return File(this, name.trim())
     }
 
-    fun File.open(activity: CommonActivity) {
+    fun File.getUri(activity: CommonActivity, authority: String): Uri? {
+        return FileProvider.getUriForFile(
+            activity,
+            authority,
+            this
+        )
+    }
+
+    fun File.open(activity: CommonActivity, authority: String) {
         val intent = Intent(Intent.ACTION_VIEW)
         val uri = FileProvider.getUriForFile(
             activity,
-            "com.bkt.bum.FileProviderDefault",
+            authority,
             this
         )
         val mime = uri.getMime(activity)
         intent.setDataAndType(uri, mime)
         intent.flags = FLAG_GRANT_READ_URI_PERMISSION or FLAG_GRANT_WRITE_URI_PERMISSION
         activity.startActivity(intent)
+    }
+
+    fun File.shareFile(activity: CommonActivity, authority: String) {
+        val share = Intent(Intent.ACTION_SEND)
+        val uri = FileProvider.getUriForFile(
+            activity,
+            authority,
+            this
+        )
+        val mime = uri.getMime(activity)
+        share.setDataAndType(uri, mime)
+        //share.setPackage("com.whatsapp")
+        activity.startActivity(share)
     }
 
     fun Uri?.getMime(activity: CommonActivity): String {
@@ -52,10 +74,9 @@ object FilesExtKt {
     }
 
     fun Uri?.getExtension(activity: CommonActivity): String {
-        val cR = activity.contentResolver
-        val mime = MimeTypeMap.getSingleton()
-        return if (this != null)
-            mime.getExtensionFromMimeType(cR.getType(this)) ?: ""
+        val fileName = this?.getFileName(activity) ?: ""
+        return if (fileName.contains("."))
+            fileName.substring(fileName.lastIndexOf("."))
         else ""
     }
 
