@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresPermission
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 
@@ -51,6 +52,7 @@ object ActivityExtKt {
         }
         return getString(stringId)
     }
+
     @RequiresPermission(Manifest.permission.VIBRATE)
     fun CommonActivity.vibrateOnce(time: Long) {
         val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
@@ -66,5 +68,17 @@ object ActivityExtKt {
         overridePendingTransition(0, 0)
         startActivity(intent)
         overridePendingTransition(0, 0)
+    }
+
+    fun CommonActivity.switchToNightTheme() {
+        delegate.localNightMode = AppCompatDelegate.MODE_NIGHT_YES
+    }
+
+    fun CommonActivity.switchToDayTheme() {
+        delegate.localNightMode = AppCompatDelegate.MODE_NIGHT_NO
+    }
+
+    fun CommonActivity.switchToSystemTheme() {
+        delegate.localNightMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
     }
 }
