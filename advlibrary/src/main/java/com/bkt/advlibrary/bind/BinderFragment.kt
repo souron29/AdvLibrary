@@ -22,6 +22,7 @@ abstract class BinderFragment<T : ViewDataBinding, VM : BinderModel>(private val
     ): View? {
         binder = DataBindingUtil.inflate(inflater, layoutId, container, false)
         vm = setProperties(binder)
+        vm.eventListener = this
         return binder.root
     }
 
