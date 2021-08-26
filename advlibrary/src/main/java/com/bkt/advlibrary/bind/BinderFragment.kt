@@ -12,8 +12,10 @@ import com.bkt.advlibrary.CommonFragment
 abstract class BinderFragment<T : ViewDataBinding, VM : BinderModel>(private val layoutId: Int) :
     CommonFragment("NAME"),
     EventListener {
-    private lateinit var binder: T
-    private lateinit var vm: VM
+    lateinit var binder: T
+        private set
+    lateinit var vm: VM
+        private set
 
     override fun onCreateView(
         inflater: LayoutInflater,

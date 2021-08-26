@@ -11,8 +11,11 @@ import com.bkt.advlibrary.CommonActivity
 abstract class BinderActivity<T : ViewDataBinding, VM : BinderModel>(val id: Int) :
     CommonActivity(),
     EventListener {
-    private lateinit var binder: T
-    private lateinit var vm: VM
+
+    lateinit var binder: T
+        private set
+    lateinit var vm: VM
+        private set
 
     override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
         super.onCreate(savedInstanceState, persistentState)
