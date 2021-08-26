@@ -1,5 +1,6 @@
 package com.bkt.advlibrary.bind
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 open class BinderModel : ViewModel() {
@@ -9,4 +10,6 @@ open class BinderModel : ViewModel() {
         eventListener.onEvent(BinderEvent(event, data))
         onComplete.invoke()
     }
+
+
 }

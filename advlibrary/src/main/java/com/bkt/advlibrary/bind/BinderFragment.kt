@@ -9,10 +9,10 @@ import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.viewModels
 import com.bkt.advlibrary.CommonFragment
 
-abstract class BinderFragment<T : ViewDataBinding, VM : BinderModel>(private val layoutId: Int) :
+abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>(private val layoutId: Int) :
     CommonFragment("NAME"),
     EventListener {
-    lateinit var binder: T
+    lateinit var binding: T
         private set
     lateinit var vm: VM
         private set
@@ -22,10 +22,26 @@ abstract class BinderFragment<T : ViewDataBinding, VM : BinderModel>(private val
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binder = DataBindingUtil.inflate(inflater, layoutId, container, false)
-        vm = setProperties(binder)
+        binding = DataBindingUtil.inflate(inflater, layoutId, container, false)
+        binding.lifecycleOwner = this
+        vm = setProperties(binding)
         vm.eventListener = this
-        return binder.root
+        setInternalFunctions()
+        return binding.root
+    }
+
+    private fun setInternalFunctions() {
+        vm.loadChildFragment.observe(binding.lifecycleOwner!!) {
+            loadChildFragment(it.first, it.second)
+        }
+        vm.popBackStackImmediate.observe(binding.lifecycleOwner!!) { immediate ->
+            if (immediate)
+                popBackStackImmediate()
+            else popBackStack()
+        }
+        vm.toast.observe(binding.lifecycleOwner!!) {
+            toast(it.first, it.second)
+        }
     }
 
     abstract fun setProperties(binder: T): VM
