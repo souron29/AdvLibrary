@@ -1,12 +1,13 @@
 package com.bkt.advlibrary
 
 import android.widget.EditText
+import androidx.appcompat.app.AppCompatActivity
 import com.bkt.advlibrary.ActivityExtKt.toast
 import com.bkt.advlibrary.GeneralExtKt.toDouble
 import com.bkt.advlibrary.GeneralExtKt.toText
 
 fun shouldNotBeEmpty(
-    activity: CommonActivity,
+    activity: AppCompatActivity,
     vararg ets: EditText,
     onError: (field: String) -> Unit = { field -> activity.toast("$field cannot be empty") }
 ): Boolean {
@@ -20,7 +21,7 @@ fun shouldNotBeEmpty(
 }
 
 fun shouldNotBeNegative(
-    activity: CommonActivity,
+    activity: AppCompatActivity,
     vararg ets: EditText,
     onError: (field: String) -> Unit = { field -> activity.toast("$field cannot be zero or negative") }
 ): Boolean {
@@ -34,7 +35,7 @@ fun shouldNotBeNegative(
 }
 
 fun shouldBeMinimumLength(
-    activity: CommonActivity, minLength: Int, vararg ets: EditText,
+    activity: AppCompatActivity, minLength: Int, vararg ets: EditText,
     onError: (field: String) -> Unit = { field -> activity.toast("$field cannot be less than $minLength characters") }
 ): Boolean {
     for (et in ets) {
@@ -47,7 +48,7 @@ fun shouldBeMinimumLength(
 }
 
 fun <T : Number> shouldBeMinimum(
-    activity: CommonActivity, min: T, vararg ets: EditText,
+    activity: AppCompatActivity, min: T, vararg ets: EditText,
     onError: (field: String) -> Unit = { field ->
         activity.toast(
             "$field cannot be less than ${

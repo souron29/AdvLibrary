@@ -6,7 +6,9 @@ import android.util.SparseArray
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.collection.ArraySet
+import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -63,7 +65,7 @@ object GeneralExtKt {
     }
 
     fun <VH : RecyclerView.ViewHolder> RecyclerView.setLinearAdapter(
-        activity: CommonActivity,
+        activity: AppCompatActivity,
         adapter: RecyclerView.Adapter<VH>,
         direction: Int = RecyclerView.VERTICAL
     ) {
@@ -72,7 +74,7 @@ object GeneralExtKt {
     }
 
     fun <VH : RecyclerView.ViewHolder> RecyclerView.setGridAdapter(
-        activity: CommonActivity,
+        activity: AppCompatActivity,
         adapter: RecyclerView.Adapter<VH>,
         span: Int = 2,
         direction: Int = RecyclerView.VERTICAL

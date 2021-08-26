@@ -11,13 +11,15 @@ import android.widget.Toast
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresPermission
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
+import androidx.fragment.app.FragmentActivity
 
 object ActivityExtKt {
 
-    fun CommonActivity.toast(string: Any, longToast: Boolean = false) {
+    fun AppCompatActivity.toast(string: Any, longToast: Boolean = false) {
         val time = if (longToast) Toast.LENGTH_LONG else Toast.LENGTH_SHORT
         if (string is Exception) {
             Toast.makeText(this, string.message, time).show()
@@ -54,7 +56,7 @@ object ActivityExtKt {
     }
 
     @RequiresPermission(Manifest.permission.VIBRATE)
-    fun CommonActivity.vibrateOnce(time: Long) {
+    fun AppCompatActivity.vibrateOnce(time: Long) {
         val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         if (Build.VERSION.SDK_INT < 26) {
             vibrator.vibrate(time)
@@ -63,22 +65,22 @@ object ActivityExtKt {
         }
     }
 
-    fun CommonActivity.restart() {
+    fun AppCompatActivity.restart() {
         finish()
         overridePendingTransition(0, 0)
         startActivity(intent)
         overridePendingTransition(0, 0)
     }
 
-    fun CommonActivity.switchToNightTheme() {
+    fun AppCompatActivity.switchToNightTheme() {
         delegate.localNightMode = AppCompatDelegate.MODE_NIGHT_YES
     }
 
-    fun CommonActivity.switchToDayTheme() {
+    fun AppCompatActivity.switchToDayTheme() {
         delegate.localNightMode = AppCompatDelegate.MODE_NIGHT_NO
     }
 
-    fun CommonActivity.switchToSystemTheme() {
+    fun AppCompatActivity.switchToSystemTheme() {
         delegate.localNightMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
     }
 }

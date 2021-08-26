@@ -8,6 +8,7 @@ import android.net.Uri
 import android.provider.OpenableColumns
 import android.webkit.MimeTypeMap
 import androidx.annotation.RequiresPermission
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import com.bkt.advlibrary.FilesExtKt.getFileName
 import com.bkt.advlibrary.FilesExtKt.open
@@ -15,7 +16,7 @@ import java.io.File
 
 
 object FilesExtKt {
-    fun File.openInFileManager(activity: CommonActivity) {
+    fun File.openInFileManager(activity: AppCompatActivity) {
         val path = if (isDirectory) {
             canonicalPath
         } else {
@@ -31,7 +32,7 @@ object FilesExtKt {
         return File(this, name.trim())
     }
 
-    fun File.getUri(activity: CommonActivity, authority: String): Uri? {
+    fun File.getUri(activity: AppCompatActivity, authority: String): Uri? {
         return FileProvider.getUriForFile(
             activity,
             authority,
@@ -39,7 +40,7 @@ object FilesExtKt {
         )
     }
 
-    fun File.open(activity: CommonActivity, authority: String) {
+    fun File.open(activity: AppCompatActivity, authority: String) {
         val intent = Intent(Intent.ACTION_VIEW)
         val uri = FileProvider.getUriForFile(
             activity,
@@ -52,7 +53,7 @@ object FilesExtKt {
         activity.startActivity(intent)
     }
 
-    fun File.shareFile(activity: CommonActivity, authority: String) {
+    fun File.shareFile(activity: AppCompatActivity, authority: String) {
         val share = Intent(Intent.ACTION_SEND)
         val uri = FileProvider.getUriForFile(
             activity,
@@ -65,7 +66,7 @@ object FilesExtKt {
         activity.startActivity(share)
     }
 
-    fun Uri?.getMime(activity: CommonActivity): String {
+    fun Uri?.getMime(activity: AppCompatActivity): String {
         val cR = activity.contentResolver
         //val mime = MimeTypeMap.getSingleton()
         return if (this != null)
@@ -73,14 +74,14 @@ object FilesExtKt {
         else ""
     }
 
-    fun Uri?.getExtension(activity: CommonActivity): String {
+    fun Uri?.getExtension(activity: AppCompatActivity): String {
         val fileName = this?.getFileName(activity) ?: ""
         return if (fileName.contains("."))
             fileName.substring(fileName.lastIndexOf("."))
         else ""
     }
 
-    fun Uri?.getFileName(activity: CommonActivity): String {
+    fun Uri?.getFileName(activity: AppCompatActivity): String {
         this?.apply {
             val returnCursor = activity.contentResolver.query(this, null, null, null, null)!!
             val nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
