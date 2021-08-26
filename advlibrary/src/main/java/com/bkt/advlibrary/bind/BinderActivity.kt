@@ -7,7 +7,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import com.bkt.advlibrary.CommonActivity
 
-abstract class BinderActivity<T : ViewDataBinding, VM : BinderModel>(val id: Int) :
+abstract class BinderActivity<T : ViewDataBinding, VM : ActivityBinderModel>(val id: Int) :
     CommonActivity(),
     EventListener {
 
@@ -21,6 +21,21 @@ abstract class BinderActivity<T : ViewDataBinding, VM : BinderModel>(val id: Int
         binding = DataBindingUtil.setContentView(this, id)
         vm = setProperties(binding)
         vm.eventListener = this
+        setInternalFunctions()
+    }
+
+    private fun setInternalFunctions() {
+        vm.loadFragment.observe(binding.lifecycleOwner!!) {
+            loadFragment(it.first, it.second)
+        }
+        vm.popBackStackImmediate.observe(binding.lifecycleOwner!!) { immediate ->
+            if (immediate)
+                supportFragmentManager.popBackStackImmediate()
+            else supportFragmentManager.popBackStack()
+        }
+        vm.toast.observe(binding.lifecycleOwner!!) {
+            toast(it.first, it.second)
+        }
     }
 
     abstract fun setProperties(binder: T): VM
