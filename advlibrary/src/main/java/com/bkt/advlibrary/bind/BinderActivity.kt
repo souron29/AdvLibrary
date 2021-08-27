@@ -11,15 +11,16 @@ abstract class BinderActivity<T : ViewDataBinding, VM : ActivityBinderModel>(val
     CommonActivity(),
     EventListener {
 
-    lateinit var binding: T
-        private set
+    private var _bind: T? = null
+    val binding get() = _bind!!
+
     lateinit var vm: VM
         private set
 
     override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
         super.onCreate(savedInstanceState, persistentState)
-        binding = DataBindingUtil.setContentView(this, id)
-        vm = setProperties(binding)
+        _bind = DataBindingUtil.setContentView(this, id)
+        vm = setProperties(_bind!!)
         vm.eventListener = this
         setInternalFunctions()
     }
