@@ -24,7 +24,6 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>(private
         savedInstanceState: Bundle?
     ): View? {
         _bind = DataBindingUtil.inflate(inflater, layoutId, container, false)
-        _bind!!.lifecycleOwner = this
         vm = setProperties(_bind!!)
         vm.eventListener = this
         setInternalFunctions()
