@@ -1,9 +1,9 @@
 package com.bkt.advlibrary
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Context
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
-fun AppCompatActivity.showConfirmDialog(
+fun Context.showConfirmDialog(
     title: String,
     body: String = "",
     yesButtonText: String = "Yes",

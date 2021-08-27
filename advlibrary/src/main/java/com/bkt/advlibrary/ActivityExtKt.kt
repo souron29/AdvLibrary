@@ -19,7 +19,7 @@ import androidx.fragment.app.FragmentActivity
 
 object ActivityExtKt {
 
-    fun AppCompatActivity.toast(string: Any, longToast: Boolean = false) {
+    fun Context.toast(string: Any, longToast: Boolean = false) {
         val time = if (longToast) Toast.LENGTH_LONG else Toast.LENGTH_SHORT
         if (string is Exception) {
             Toast.makeText(this, string.message, time).show()
@@ -56,7 +56,7 @@ object ActivityExtKt {
     }
 
     @RequiresPermission(Manifest.permission.VIBRATE)
-    fun AppCompatActivity.vibrateOnce(time: Long) {
+    fun Context.vibrateOnce(time: Long) {
         val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         if (Build.VERSION.SDK_INT < 26) {
             vibrator.vibrate(time)

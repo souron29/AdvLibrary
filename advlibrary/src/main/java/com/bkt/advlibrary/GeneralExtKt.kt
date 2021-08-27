@@ -1,14 +1,10 @@
 package com.bkt.advlibrary
 
+import android.content.Context
 import android.icu.text.NumberFormat
 import android.util.Log
 import android.util.SparseArray
-import android.view.View
-import android.widget.EditText
-import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.collection.ArraySet
-import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -65,22 +61,22 @@ object GeneralExtKt {
     }
 
     fun <VH : RecyclerView.ViewHolder> RecyclerView.setLinearAdapter(
-        activity: AppCompatActivity,
+        context: Context,
         adapter: RecyclerView.Adapter<VH>,
         direction: Int = RecyclerView.VERTICAL
     ) {
         this.adapter = adapter
-        this.layoutManager = LinearLayoutManager(activity, direction, false)
+        this.layoutManager = LinearLayoutManager(context, direction, false)
     }
 
     fun <VH : RecyclerView.ViewHolder> RecyclerView.setGridAdapter(
-        activity: AppCompatActivity,
+        context: Context,
         adapter: RecyclerView.Adapter<VH>,
         span: Int = 2,
         direction: Int = RecyclerView.VERTICAL
     ) {
         this.adapter = adapter
-        this.layoutManager = GridLayoutManager(activity, span, direction, false)
+        this.layoutManager = GridLayoutManager(context, span, direction, false)
     }
 
     fun logger(log_message: Any?, tag: String = "ZTAG") {
