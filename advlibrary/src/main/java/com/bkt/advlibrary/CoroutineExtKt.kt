@@ -45,7 +45,7 @@ fun <T> bgSeries(block: () -> T): T {
     }
 }
 
-fun <T> bgParallel(block: () -> T): Deferred<T> {
+fun <T> bgAsync(block: () -> T): Deferred<T> {
     return bgScope.async { block.invoke() }
 }
 

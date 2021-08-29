@@ -4,6 +4,7 @@ import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import androidx.annotation.ColorInt
+import com.google.android.material.snackbar.Snackbar
 
 
 fun View.hide(makeInvisible: Boolean = false) {
@@ -81,4 +82,11 @@ fun View.enable() {
 
 fun View.disable() {
     isEnabled = false
+}
+
+fun View.snack(text: String, length: Int = Snackbar.LENGTH_SHORT, block: Snackbar.() -> Unit = {}) {
+    Snackbar.make(this, text, length).apply {
+        block.invoke(this)
+        show()
+    }
 }
