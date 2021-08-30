@@ -24,6 +24,7 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>(private
         savedInstanceState: Bundle?
     ): View? {
         _bind = DataBindingUtil.inflate(inflater, layoutId, container, false)
+        _bind!!.lifecycleOwner = viewLifecycleOwner
         vm = setProperties(_bind!!)
         vm.eventListener = this
         setInternalFunctions()
@@ -36,16 +37,19 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>(private
     }
 
     private fun setInternalFunctions() {
-        vm.loadChildFragment.observe(binding.lifecycleOwner!!) {
+        vm.loadChildFragment.observe(viewLifecycleOwner) {
             loadChildFragment(it.first, it.second)
         }
-        vm.popBackStackImmediate.observe(binding.lifecycleOwner!!) { immediate ->
+        vm.popBackStackImmediate.observe(viewLifecycleOwner) { immediate ->
             if (immediate)
                 popBackStackImmediate()
             else popBackStack()
         }
-        vm.toast.observe(binding.lifecycleOwner!!) {
+        vm.toast.observe(viewLifecycleOwner) {
             toast(it.first, it.second)
+        }
+        vm.hide.observe(viewLifecycleOwner) {
+            hideKeyboard()
         }
     }
 

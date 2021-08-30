@@ -8,6 +8,7 @@ open class FragBinderModel : BinderModel() {
     internal val popBackStackImmediate = MutableLiveData<Boolean>()
     internal val loadChildFragment = MutableLiveData<Pair<CommonFragment, Int>>()
     internal val toast = MutableLiveData<Pair<String, Boolean>>()
+    internal val hide = MutableLiveData<Unit>()
 
     fun popBackStackImmediate() {
         popBackStackImmediate.postValue(true)
@@ -22,6 +23,10 @@ open class FragBinderModel : BinderModel() {
     }
 
     fun toast(text: String, longDuration: Boolean = false) {
-        toast.postValue(Pair(text,longDuration))
+        toast.postValue(Pair(text, longDuration))
+    }
+
+    fun hideKeyboard() {
+        hide.postValue(Unit)
     }
 }
