@@ -1,5 +1,6 @@
 package com.bkt.advlibrary
 
+import android.content.Context
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -65,4 +66,8 @@ class PermissionManager private constructor(
         }
     }
 
+}
+
+fun Context.hasPermissions(vararg permissions: String) = permissions.all { permission ->
+    checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
 }

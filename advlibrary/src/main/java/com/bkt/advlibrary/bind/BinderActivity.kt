@@ -45,5 +45,9 @@ abstract class BinderActivity<T : ViewDataBinding, VM : ActivityBinderModel>(val
         val vm by viewModels<VM>()
         return vm
     }
+
+    override fun onEvent(event: BinderEvent) {
+
+    }
 }
 

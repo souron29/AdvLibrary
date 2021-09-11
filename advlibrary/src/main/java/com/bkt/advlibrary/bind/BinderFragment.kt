@@ -59,5 +59,9 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>(private
         val vm by viewModels<VM>()
         return vm
     }
+
+    override fun onEvent(event: BinderEvent) {
+
+    }
 }
 

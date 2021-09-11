@@ -28,7 +28,7 @@ abstract class AdvanceAdapter<Value>(
     private var dataList = ArrayList<Value>()
     abstract fun onBind(view: View, item: Value, position: Int)
 
-    var filterCondition = { _: Value, _: String? -> true }
+    var filterCondition = { _: Value, _: CharSequence? -> true }
 
     fun setList(list: List<Value>) {
         val actualList = ArrayList(list)
@@ -64,7 +64,7 @@ abstract class AdvanceAdapter<Value>(
 
     }
 
-    fun filter(constraint: String?) {
+    fun filter(constraint: CharSequence?) {
         bgBlock {
             val list = dataList.filter { filterCondition.invoke(it, constraint) }
             mainLaunch { submitList(list) }

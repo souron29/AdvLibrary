@@ -1,6 +1,8 @@
 package com.bkt.advlibrary
 
 import android.Manifest
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
@@ -15,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 
 object ActivityExtKt {
@@ -83,4 +86,10 @@ object ActivityExtKt {
     fun AppCompatActivity.switchToSystemTheme() {
         delegate.localNightMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
     }
+}
+
+fun Context.copyToClipboard(content: String) {
+    val clipboardManager = ContextCompat.getSystemService(this, ClipboardManager::class.java)!!
+    val clip = ClipData.newPlainText("clipboard", content)
+    clipboardManager.setPrimaryClip(clip)
 }

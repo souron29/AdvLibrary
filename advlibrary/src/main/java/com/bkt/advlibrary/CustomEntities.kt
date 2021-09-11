@@ -3,10 +3,10 @@ package com.bkt.advlibrary
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 
-class LiveObject<T>(default: T) : MutableLiveData<T>(default) {
+class LiveObject<T>(private val default: T) : MutableLiveData<T>(default) {
 
     override fun getValue(): T {
-        return super.getValue()!!
+        return super.getValue() ?: default
     }
 
     override fun setValue(value: T) {
