@@ -3,14 +3,21 @@ package com.bkt.advlibrary
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 
-class LiveObject<T>(private val default: T) : MutableLiveData<T>(default) {
+class LiveObject<T>(initial: T) : MutableLiveData<T>(initial) {
+    var actualValue: T = initial
 
     override fun getValue(): T {
-        return super.getValue() ?: default
+        return actualValue
     }
 
     override fun setValue(value: T) {
+        this.actualValue = value
         super.setValue(value)
+    }
+
+    override fun postValue(value: T) {
+        this.actualValue = value
+        super.postValue(value)
     }
 }
 

@@ -132,3 +132,25 @@ fun Date.isSameMonthAs(date: Date = today): Boolean {
     cal2.time = date
     return cal1[Calendar.YEAR] == cal2[Calendar.YEAR] && cal1[Calendar.MONTH] == cal2[Calendar.MONTH]
 }
+
+
+fun Calendar.setValues(
+    day: Int = this[Calendar.DAY_OF_MONTH],
+    month: Int = this[Calendar.MONTH],
+    year: Int = this[Calendar.YEAR]
+): Calendar {
+    this[Calendar.DAY_OF_MONTH] = day
+    this[Calendar.MONTH] = month
+    this[Calendar.YEAR] = year
+    return this
+}
+
+fun Date.inSameMonthOf(rangeDate: Date): Boolean {
+    val rangeCal = rangeDate.getCalendar()
+    val effectiveCal = this.getCalendar()
+    return rangeCal[Calendar.YEAR] == effectiveCal[Calendar.YEAR] && rangeCal[Calendar.MONTH] == effectiveCal[Calendar.MONTH]
+}
+
+fun Date.between(startDate: Date, endDate: Date): Boolean {
+    return this.time >= startDate.time && this.time <= endDate.time
+}

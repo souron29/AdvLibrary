@@ -246,4 +246,20 @@ object GeneralExtKt {
             block.invoke()
     }
 
+    fun Int.toOrdinal(): String {
+        return "$this" + if (this in 11..13) {
+            "th"
+        } else when (this % 10) {
+            1 -> "st"
+            2 -> "nd"
+            3 -> "rd"
+            else -> "th"
+        }
+    }
+
+
+    fun <T> applyToAll(vararg items: T, block: T.() -> Unit) {
+        for (item in items)
+            block.invoke(item)
+    }
 }

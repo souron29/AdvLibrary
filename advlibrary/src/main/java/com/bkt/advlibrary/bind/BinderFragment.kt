@@ -40,6 +40,9 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>(private
         vm.loadChildFragment.observe(viewLifecycleOwner) {
             loadChildFragment(it.first, it.second)
         }
+        vm.loadFragment.observe(viewLifecycleOwner) {
+            loadFragment(it.first, it.second)
+        }
         vm.popBackStackImmediate.observe(viewLifecycleOwner) { immediate ->
             if (immediate)
                 popBackStackImmediate()

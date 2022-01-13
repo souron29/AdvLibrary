@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
+import com.bkt.advlibrary.GeneralExtKt.logger
 import java.lang.Exception
 
 open class CommonActivity : AppCompatActivity(), LifecycleOwner {
@@ -27,7 +28,7 @@ open class CommonActivity : AppCompatActivity(), LifecycleOwner {
                         .replace(container_id, fragment as Fragment, fragment.fragmentName)
                         .commitNowAllowingStateLoss()
             } catch (e: Exception) {
-                GeneralExtKt.logger("Error ${e.message} for ${fragment.fragmentName}")
+                logger("Error ${e.message} for ${fragment.fragmentName}")
             }
 
         }
