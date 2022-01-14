@@ -93,42 +93,51 @@ fun setColorTint(drawable: Drawable?, color: Int): Drawable? {
     return drawable
 }
 
-fun getColorStates(
-    @ColorRes primaryColor: Int,
+fun Context.getColorStates(
+    @ColorRes defaultColor: Int,
     @ColorRes disabledColor: Int = -1,
     @ColorRes checkedColor: Int = -1,
     @ColorRes unCheckedColor: Int = -1,
     @ColorRes pressedColor: Int = -1,
-    @ColorRes unPressedColor: Int = -1
+    @ColorRes unPressedColor: Int = -1,
+    @ColorRes selectedColor: Int = -1,
+    @ColorRes unSelectedColor: Int = -1
 
 ): ColorStateList {
     val states = ArrayList<IntArray>()
     val colors = ArrayList<Int>()
-    states.add(intArrayOf(R.attr.state_enabled))
-    colors.add(primaryColor)
 
     if (disabledColor != -1) {
-        states.add(intArrayOf(-R.attr.state_enabled))
-        colors.add(disabledColor)
+        states.add(intArrayOf(-android.R.attr.state_enabled))
+        colors.add(getColor(disabledColor))
     }
 
     if (checkedColor != -1) {
-        states.add(intArrayOf(R.attr.state_checked))
-        colors.add(primaryColor)
+        states.add(intArrayOf(android.R.attr.state_checked))
+        colors.add(getColor(checkedColor))
     }
     if (unCheckedColor != -1) {
-        states.add(intArrayOf(-R.attr.state_checked))
-        colors.add(unCheckedColor)
+        states.add(intArrayOf(-android.R.attr.state_checked))
+        colors.add(getColor(unCheckedColor))
     }
     if (pressedColor != -1) {
-        states.add(intArrayOf(R.attr.state_pressed))
-        colors.add(unCheckedColor)
+        states.add(intArrayOf(android.R.attr.state_pressed))
+        colors.add(getColor(pressedColor))
     }
     if (unPressedColor != -1) {
-        states.add(intArrayOf(-R.attr.state_pressed))
-        colors.add(unCheckedColor)
+        states.add(intArrayOf(-android.R.attr.state_pressed))
+        colors.add(getColor(unPressedColor))
     }
-    colors.add(primaryColor)
+    if (selectedColor != -1) {
+        states.add(intArrayOf(android.R.attr.state_selected))
+        colors.add(getColor(selectedColor))
+    }
+    if (unSelectedColor != -1) {
+        states.add(intArrayOf(-android.R.attr.state_selected))
+        colors.add(getColor(unSelectedColor))
+    }
+    states.add(intArrayOf())
+    colors.add(getColor(defaultColor))
     return ColorStateList(states.toTypedArray(), colors.toIntArray())
 }
 

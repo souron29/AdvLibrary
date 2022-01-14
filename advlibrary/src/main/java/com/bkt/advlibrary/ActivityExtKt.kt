@@ -9,9 +9,11 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.os.VibratorManager
 import android.widget.Toast
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
+import androidx.annotation.IntRange
 import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -59,13 +61,32 @@ object ActivityExtKt {
     }
 
     @RequiresPermission(Manifest.permission.VIBRATE)
-    fun Context.vibrateOnce(time: Long) {
+    fun Context.vibrateOnce(
+        time: Long,
+        @IntRange(
+            from = 1,
+            to = 255
+        ) amplitude: Int = 255
+    ) {
         val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         if (Build.VERSION.SDK_INT < 26) {
             vibrator.vibrate(time)
         } else {
-            vibrator.vibrate(VibrationEffect.createOneShot(time, -1))
+            vibrator.vibrate(VibrationEffect.createOneShot(time, amplitude))
         }
+    }
+
+    @RequiresPermission(Manifest.permission.VIBRATE)
+    fun Context.vibrateWaveform(timings: LongArray, amplitudes: IntArray, repeat: Int = -1) {
+        val vibrator = if (Build.VERSION.SDK_INT > 31) {
+            val vibratorManager =
+                this.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            vibratorManager.defaultVibrator
+        } else {
+            getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        }
+        vibrator.cancel()
+        vibrator.vibrate(VibrationEffect.createWaveform(timings, amplitudes, repeat))
     }
 
     fun AppCompatActivity.restart() {

@@ -1,9 +1,13 @@
 package com.bkt.advlibrary
 
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import androidx.annotation.ColorInt
+import androidx.annotation.LayoutRes
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.google.android.material.snackbar.Snackbar
 
 
@@ -90,3 +94,26 @@ fun View.snack(text: String, length: Int = Snackbar.LENGTH_SHORT, block: Snackba
         show()
     }
 }
+
+fun <T> ChipGroup.addChips(
+    @LayoutRes chipLayout: Int,
+    vararg mapping: P<T, String>,
+    chipModifier: (Chip, Int) -> Unit = { _: Chip, _: Int -> }
+): HashMap<Int, T> {
+    val inflater = LayoutInflater.from(context)
+    val map = HashMap<Int, T>()
+    for ((index, item) in mapping.withIndex()) {
+        val chip = inflater.inflate(
+            chipLayout,
+            this,
+            false
+        ) as Chip
+        chip.text = item.value
+        chipModifier.invoke(chip, index)
+        addView(chip)
+        map[chip.id] = item.key
+    }
+    return map
+}
+
+data class P<K, V>(var key: K, var value: V)
