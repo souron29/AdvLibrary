@@ -40,7 +40,7 @@ open class CommonActivity : AppCompatActivity(), LifecycleOwner {
                     supportFragmentManager.beginTransaction()
                         .replace(container_id, fragment as Fragment, fragment.fragmentName)
                         .addToBackStack(fragment.fragmentName)
-                        .commitNowAllowingStateLoss()
+                        .commit()
             } catch (e: Exception) {
                 logger("Error ${e.message} for ${fragment.fragmentName}")
             }
