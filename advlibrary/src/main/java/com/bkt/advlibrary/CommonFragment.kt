@@ -51,7 +51,7 @@ abstract class CommonFragment(open val fragmentName: String) : Fragment(), Lifec
         val txn = manager.beginTransaction()
             .replace(layoutId, fragment)
         if (addCurrentToStack)
-            txn.addToBackStack(fragmentName)
+            txn.addToBackStack(fragment.fragmentName)
         txn.commit()
     }
 

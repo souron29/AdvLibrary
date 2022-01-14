@@ -33,20 +33,28 @@ open class CommonActivity : AppCompatActivity(), LifecycleOwner {
 
         }
     }
-    fun loadFragment(fragment: CommonFragment, container_id: Int) {
+
+    fun loadFragment(
+        fragment: CommonFragment,
+        container_id: Int,
+        addCurrentToBackStack: Boolean = true
+    ) {
         Handler(Looper.getMainLooper()).post {
             try {
-                if (!supportFragmentManager.isDestroyed && !isDestroyed)
-                    supportFragmentManager.beginTransaction()
-                        .replace(container_id, fragment as Fragment, fragment.fragmentName)
-                        .addToBackStack(fragment.fragmentName)
-                        .commit()
+                if (!supportFragmentManager.isDestroyed && !isDestroyed) {
+                    val txn = supportFragmentManager.beginTransaction()
+                        .replace(container_id, fragment as Fragment)
+                    if (addCurrentToBackStack)
+                        txn.addToBackStack(fragment.fragmentName)
+                    txn.commit()
+                }
             } catch (e: Exception) {
                 logger("Error ${e.message} for ${fragment.fragmentName}")
             }
 
         }
     }
+
     fun hideKeyboard() {
         currentFocus?.let { view ->
             val systemService = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
