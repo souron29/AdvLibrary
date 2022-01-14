@@ -19,6 +19,10 @@ class LiveObject<T>(initial: T) : MutableLiveData<T>(initial) {
         this.actualValue = value
         super.postValue(value)
     }
+
+    fun setValueWithoutNotifying(value: T){
+        this.actualValue = value
+    }
 }
 
 class MediatorLiveObject<T, M : Any>(vararg objects: LiveObject<M>, private val block: () -> T) :

@@ -37,18 +37,45 @@ abstract class CommonFragment(open val fragmentName: String) : Fragment(), Lifec
 
     abstract fun initializeViews()
 
+    internal fun loadFragment(
+        fragment: CommonFragment,
+        layoutId: Int,
+        onParent: Boolean,
+        addCurrentToStack: Boolean = true
+    ) {
+        val manager = if (onParent) {
+            parentFragmentManager
+        } else {
+            childFragmentManager
+        }
+        val txn = manager.beginTransaction()
+            .replace(layoutId, fragment)
+        if (addCurrentToStack)
+            txn.addToBackStack(fragmentName)
+        txn.commit()
+    }
 
     fun loadChildFragment(
+        fragment: CommonFragment,
+        id: Int
+    ) {
+        loadFragment(fragment, id, onParent = false, addCurrentToStack = true)
+    }
+
+    fun replaceChildFragment(
         fragment: CommonFragment,
         id: Int,
         name: String = fragment.fragmentName
     ) {
-        childFragmentManager.beginTransaction().replace(id, fragment as Fragment, name)
-            .addToBackStack(name).commit()
+        loadFragment(fragment, id, onParent = false, addCurrentToStack = false)
     }
 
     fun loadFragment(fragment: CommonFragment, id: Int) {
-        advActivity.loadFragment(fragment, id)
+        loadFragment(fragment, id, onParent = true, addCurrentToStack = true)
+    }
+
+    fun replaceFragment(fragment: CommonFragment, id: Int) {
+        loadFragment(fragment, id, onParent = true, addCurrentToStack = false)
     }
 
     fun hideKeyboard() {

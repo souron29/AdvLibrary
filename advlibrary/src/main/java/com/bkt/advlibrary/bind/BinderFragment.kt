@@ -9,7 +9,10 @@ import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.viewModels
 import com.bkt.advlibrary.CommonFragment
 
-abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>(private val layoutId: Int, private val name:String) :
+abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>(
+    private val layoutId: Int,
+    private val name: String
+) :
     CommonFragment(name),
     EventListener {
     private var _bind: T? = null
@@ -37,23 +40,12 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>(private
     }
 
     private fun setInternalFunctions() {
-        vm.loadChildFragment.observe(viewLifecycleOwner) {
-            loadChildFragment(it.first, it.second)
-        }
-        vm.loadFragment.observe(viewLifecycleOwner) {
-            loadFragment(it.first, it.second)
-        }
         vm.popBackStackImmediate.observe(viewLifecycleOwner) { immediate ->
             if (immediate)
                 popBackStackImmediate()
             else popBackStack()
         }
-        vm.toast.observe(viewLifecycleOwner) {
-            toast(it.first, it.second)
-        }
-        vm.hide.observe(viewLifecycleOwner) {
-            hideKeyboard()
-        }
+
     }
 
     abstract fun setProperties(binder: T): VM
@@ -65,6 +57,27 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>(private
 
     override fun onEvent(event: BinderEvent) {
 
+    }
+
+    override fun onStart() {
+        super.onStart()
+        vm.fragLoad =
+            { fragment: CommonFragment, layoutId: Int, onParent: Boolean, addCurrentToStack: Boolean ->
+                loadFragment(fragment, layoutId, onParent, addCurrentToStack)
+            }
+        vm.toast = { text: String, longDuration: Boolean ->
+            toast(text, longDuration)
+        }
+        vm.hide = {
+            hideKeyboard()
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        vm.fragLoad = null
+        vm.toast = null
+        vm.hide = null
     }
 }
 
