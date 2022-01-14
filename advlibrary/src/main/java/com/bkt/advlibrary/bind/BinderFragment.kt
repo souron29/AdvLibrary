@@ -9,8 +9,8 @@ import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.viewModels
 import com.bkt.advlibrary.CommonFragment
 
-abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>(private val layoutId: Int) :
-    CommonFragment("NAME"),
+abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>(private val layoutId: Int, private val name:String) :
+    CommonFragment(name),
     EventListener {
     private var _bind: T? = null
     val binding get() = _bind!!
