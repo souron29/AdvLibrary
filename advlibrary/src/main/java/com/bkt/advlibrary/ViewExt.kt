@@ -97,8 +97,8 @@ fun View.snack(text: String, length: Int = Snackbar.LENGTH_SHORT, block: Snackba
 
 fun <T> ChipGroup.addChips(
     @LayoutRes chipLayout: Int,
-    vararg mapping: P<T, String>,
-    chipModifier: (Chip, Int) -> Unit = { _: Chip, _: Int -> }
+    vararg mapping: Pair<T, String>,
+    chipModifier: (Chip, index: Int) -> Unit = { _: Chip, _: Int -> }
 ): HashMap<Int, T> {
     val inflater = LayoutInflater.from(context)
     val map = HashMap<Int, T>()
@@ -108,12 +108,10 @@ fun <T> ChipGroup.addChips(
             this,
             false
         ) as Chip
-        chip.text = item.value
+        chip.text = item.second
         chipModifier.invoke(chip, index)
         addView(chip)
-        map[chip.id] = item.key
+        map[chip.id] = item.first
     }
     return map
 }
-
-data class P<K, V>(var key: K, var value: V)

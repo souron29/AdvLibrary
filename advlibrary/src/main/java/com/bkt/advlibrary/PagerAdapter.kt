@@ -10,18 +10,18 @@ class PagerAdapter(
     private val parent: CommonFragment
 ) : FragmentStateAdapter(parent) {
 
-    private val list = ArrayList<CommonFragment>()
+    val fragments = ArrayList<CommonFragment>()
 
     override fun getItemCount(): Int {
-        return list.size
+        return fragments.size
     }
 
     override fun createFragment(position: Int): Fragment {
-        return list[position]
+        return fragments[position]
     }
 
     fun addFragment(fragment: CommonFragment) {
-        list.add(fragment)
+        fragments.add(fragment)
     }
 
     fun setTab(tabLayout: TabLayout, pager: ViewPager2, block: (Int) -> String) {
@@ -31,6 +31,6 @@ class PagerAdapter(
     }
 
     fun getFragment(pos: Int): CommonFragment {
-        return list[pos]
+        return fragments[pos]
     }
 }

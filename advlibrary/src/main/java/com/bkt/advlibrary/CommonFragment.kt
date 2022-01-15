@@ -90,9 +90,11 @@ abstract class CommonFragment(open val fragmentName: String) : Fragment(), Lifec
         pagerDetails?.let { (pager, adapter, default) ->
             if (pager.currentItem == default) {
                 val frag = adapter.getFragment(default)
-                if (frag.childFragmentManager.fragments.isNotEmpty()) {
+                if (frag.isAdded && frag.childFragmentManager.fragments.isNotEmpty()) {
                     frag.childFragmentManager.popBackStack()
                     return true
+                } else if (!frag.isAdded) {
+                    return false
                 }
             } else {
                 pager.setCurrentItem(default, true)

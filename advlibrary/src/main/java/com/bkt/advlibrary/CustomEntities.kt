@@ -42,3 +42,18 @@ class MediatorLiveObject<T, M : Any>(vararg objects: LiveObject<M>, private val 
         return this
     }
 }
+
+class SummationMap<K> : LinkedHashMap<K, Double>() {
+    fun addValue(key: K, value: Double) {
+        val currentValue = get(key) ?: 0.0
+        put(key, currentValue + value)
+    }
+}
+
+class HashList<K, V> : LinkedHashMap<K, ArrayList<V>>() {
+    fun addValue(key: K, value: V) {
+        val currentList = get(key) ?: ArrayList()
+        currentList.add(value)
+        put(key, currentList)
+    }
+}
