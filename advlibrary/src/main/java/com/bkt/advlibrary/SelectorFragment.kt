@@ -28,9 +28,9 @@ class SelectorFragment<Item, Binding : ViewDataBinding>(
     var onClicked: ((Item, Int) -> Unit)? = null
 
     override fun initializeViews() {
+        vm.property = property
         binding.childContainer.setOnClickListener { }
         setupAdapter()
-        vm.property = property
     }
 
     private fun setupAdapter() {

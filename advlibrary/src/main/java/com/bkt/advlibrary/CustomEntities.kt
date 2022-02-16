@@ -25,19 +25,27 @@ class LiveObject<T>(initial: T) : MutableLiveData<T>(initial) {
     }
 }
 
-class MediatorLiveObject<T, M : Any>(vararg objects: LiveObject<M>, private val block: () -> T) :
+class MediatorLiveObject<T, M : Any>(
+    vararg objects: LiveObject<M>,
+    block: (() -> T)? = null
+) :
     MediatorLiveData<T>() {
     init {
         for (obj in objects) {
-            addSource(obj) {
-                value = block.invoke()
-            }
+            addLiveSource(obj, block)
         }
     }
 
-    fun <N> addSource(obj: LiveObject<N>): MediatorLiveObject<T, M> {
+    fun <N> addLiveSource(
+        obj: LiveObject<N>,
+        onChanged: (() -> T)? = null
+    ): MediatorLiveObject<T, M> {
+        var first = true
         super.addSource(obj) {
-            value = block.invoke()
+            if (!first) {
+                value = onChanged?.invoke()
+            }
+            first = false
         }
         return this
     }
