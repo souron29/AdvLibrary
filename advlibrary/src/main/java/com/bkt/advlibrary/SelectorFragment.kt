@@ -60,20 +60,20 @@ class SelectorFragment<Item, Binding : ViewDataBinding>(
         onReceive: (MutableList<Item>) -> Unit
     ): SelectorFragment<Item, Binding> {
         afterSettingVM {
-            vm.onReceive = onReceive
-            vm.adapter.multipleSelectionEnabled = true
-            vm.multipleSelectionEnabled.value = true
-            vm.property.buttonText = advActivity.getString(buttonText)
-            vm.property.buttonColor = advActivity.getColor(buttonColor)
-            vm.property.buttonTextColor = advActivity.getColor(textColor)
+            vm.enableMultipleSelection(
+                advActivity.getString(buttonText),
+                advActivity.getColor(buttonColor),
+                advActivity.getColor(textColor),
+                onReceive
+            )
         }
         return this
     }
 
     fun setData(list: MutableList<Item>) {
-        if (isAdded)
-            vm.adapter.setList(list)
-        vm.list = list
+        afterSettingVM {
+            vm.list.value = list
+        }
     }
 
     fun setOnLongClick(onLongClick: (Item, Int) -> Boolean) {
@@ -154,7 +154,7 @@ class SelectorAdapter<Item, Binding : ViewDataBinding>(
 class SelectorVM<Item, Binding : ViewDataBinding> : FragBinderModel() {
     val property = SelectorProperties()
     lateinit var onReceive: (MutableList<Item>) -> Unit
-    lateinit var adapter: SelectorAdapter<Item, Binding>
+    private lateinit var adapter: SelectorAdapter<Item, Binding>
     var multipleSelectionEnabled = LiveObject(false)
     var gridSpan = -1
     var direction = RecyclerView.VERTICAL
@@ -163,7 +163,7 @@ class SelectorVM<Item, Binding : ViewDataBinding> : FragBinderModel() {
     var onClicked: ((Item, Int) -> Unit)? = null
     var onLongClick: ((Item, Int) -> Boolean)? = null
 
-    internal var list: MutableList<Item> = ArrayList()
+    internal val list = LiveObject<MutableList<Item>>(ArrayList())
 
     fun sendSelectedFiles() {
         onReceive.invoke(ArrayList(adapter.selectedItems.values))
@@ -194,7 +194,23 @@ class SelectorVM<Item, Binding : ViewDataBinding> : FragBinderModel() {
             binding.recyclerView.setGridAdapter(activity, adapter, gridSpan)
         else
             binding.recyclerView.setLinearAdapter(activity, adapter)
-        adapter.setList(list)
+        list.observe(binding.lifecycleOwner!!) {
+            adapter.setList(it)
+        }
+    }
+
+    fun enableMultipleSelection(
+        buttonText: String,
+        buttonColor: Int,
+        textColor: Int,
+        onReceive: (MutableList<Item>) -> Unit
+    ) {
+        this.onReceive = onReceive
+        this.adapter.multipleSelectionEnabled = true
+        this.multipleSelectionEnabled.value = true
+        this.property.buttonText = buttonText
+        this.property.buttonColor = buttonColor
+        this.property.buttonTextColor = textColor
     }
 }
 
