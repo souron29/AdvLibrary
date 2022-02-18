@@ -20,7 +20,6 @@ class SelectorFragment<Item, Binding : ViewDataBinding>(
         R.layout.fragment_selector,
         "SelectorFragment"
     ) {
-    private var property = SelectorProperties()
     private var adapter = SelectorAdapter(layoutId, onBind)
     private var gridSpan: Int = -1
     private var direction = RecyclerView.VERTICAL
@@ -30,7 +29,6 @@ class SelectorFragment<Item, Binding : ViewDataBinding>(
     private var list: MutableList<Item> = ArrayList()
 
     override fun initializeViews() {
-        vm.property = property
         binding.childContainer.setOnClickListener { }
         setupAdapter()
     }
@@ -56,13 +54,15 @@ class SelectorFragment<Item, Binding : ViewDataBinding>(
         text: String,
         @ColorRes textColor: Int = android.R.color.black
     ): SelectorFragment<Item, Binding> {
-        this.property.headerText = text
-        afterSettingVM { this.property.headerTextColor = advActivity.getColor(textColor) }
+        afterSettingVM {
+            vm.property.headerText = text
+            vm.property.headerTextColor = advActivity.getColor(textColor)
+        }
         return this
     }
 
     fun setBackgroundColor(@ColorRes color: Int): SelectorFragment<Item, Binding> {
-        afterSettingVM { this.property.backgroundColor = advActivity.getColor(color) }
+        afterSettingVM { vm.property.backgroundColor = advActivity.getColor(color) }
         return this
     }
 
@@ -163,7 +163,7 @@ class SelectorAdapter<Item, Binding : ViewDataBinding>(
 class SelectorVM<Item, Binding : ViewDataBinding> : FragBinderModel() {
     var multipleSelectionEnabled = LiveObject(false)
     lateinit var onReceive: (MutableList<Item>) -> Unit
-    lateinit var property: SelectorProperties
+    val property = SelectorProperties()
     lateinit var adapter: SelectorAdapter<Item, Binding>
 
     fun sendSelectedFiles() {
