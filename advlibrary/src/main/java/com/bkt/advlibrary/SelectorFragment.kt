@@ -181,6 +181,7 @@ class SelectorVM<Item, Binding : ViewDataBinding> : FragBinderModel() {
     }
 
     private fun setupAdapter(activity: CommonActivity, binding: FragmentSelectorBinding) {
+        this.adapter.multipleSelectionEnabled = multipleSelectionEnabled.actualValue
         adapter.onClicked = { item, position ->
             onSelected?.apply {
                 invoke(item)
@@ -206,7 +207,6 @@ class SelectorVM<Item, Binding : ViewDataBinding> : FragBinderModel() {
         onReceive: (MutableList<Item>) -> Unit
     ) {
         this.onReceive = onReceive
-        this.adapter.multipleSelectionEnabled = true
         this.multipleSelectionEnabled.value = true
         this.property.buttonText = buttonText
         this.property.buttonColor = buttonColor
