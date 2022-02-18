@@ -22,3 +22,13 @@ fun String.search(text: String): Boolean {
 val String.capitalizeWords
     get() = this.lowercase(Locale.getDefault()).split(" ")
         .joinToString(" ") { it -> it.replaceFirstChar { innerIt -> innerIt.titlecase() } }
+
+fun CharSequence?.isAbsent(): Boolean {
+    return this == null || this.isEmpty()
+}
+
+
+fun CharSequence?.ifAbsent(default: CharSequence): CharSequence {
+    return if (this.isAbsent()) default
+    else this!!
+}
