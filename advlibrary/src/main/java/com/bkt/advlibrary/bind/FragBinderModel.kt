@@ -1,5 +1,6 @@
 package com.bkt.advlibrary.bind
 
+import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.lifecycle.MutableLiveData
 import com.bkt.advlibrary.CommonFragment
@@ -20,20 +21,20 @@ open class FragBinderModel : BinderModel() {
         popBackStackImmediate.postValue(false)
     }
 
-    fun loadChildFragment(childFragment: CommonFragment, @LayoutRes layoutId: Int) {
-        fragLoad?.invoke(childFragment, layoutId, false, true)
+    fun loadChildFragment(childFragment: CommonFragment, @IdRes id: Int) {
+        fragLoad?.invoke(childFragment, id, false, true)
     }
 
-    fun replaceChildFragment(childFragment: CommonFragment, @LayoutRes layoutId: Int) {
-        fragLoad?.invoke(childFragment, layoutId, false, false)
+    fun replaceChildFragment(childFragment: CommonFragment, @IdRes id: Int) {
+        fragLoad?.invoke(childFragment, id, false, false)
     }
 
-    fun loadFragment(fragment: CommonFragment, @LayoutRes layoutId: Int) {
-        fragLoad?.invoke(fragment, layoutId, true, true)
+    fun loadFragment(fragment: CommonFragment, @IdRes id: Int) {
+        fragLoad?.invoke(fragment, id, true, true)
     }
 
-    fun replaceFragment(fragment: CommonFragment, @LayoutRes layoutId: Int) {
-        fragLoad?.invoke(fragment, layoutId, true, false)
+    fun replaceFragment(fragment: CommonFragment, @IdRes id: Int) {
+        fragLoad?.invoke(fragment, id, true, false)
     }
 
     fun toast(text: String, longDuration: Boolean = false) {
