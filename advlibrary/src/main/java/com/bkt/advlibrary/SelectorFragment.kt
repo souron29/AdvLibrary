@@ -50,18 +50,21 @@ class SelectorFragment<Item, Binding : ViewDataBinding>(
         adapter.setList(list)
     }
 
-    fun setHeaderText(text: String, @ColorRes textColor: Int) {
+    fun setHeaderText(text: String, @ColorRes textColor: Int): SelectorFragment<Item, Binding> {
         this.property.headerText = text
         this.property.headerTextColor = textColor
+        return this
     }
 
-    fun setBackgroundColor(@ColorRes color: Int){
+    fun setBackgroundColor(@ColorRes color: Int): SelectorFragment<Item, Binding> {
         this.property.backgroundColor = color
+        return this
     }
 
-    fun setGridSpan(span: Int, direction: Int = RecyclerView.VERTICAL) {
+    fun setGridSpan(span: Int, direction: Int = RecyclerView.VERTICAL): SelectorFragment<Item, Binding> {
         this.gridSpan = span
         this.direction = direction
+        return this
     }
 
     fun setData(list: List<Item>) {

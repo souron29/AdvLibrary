@@ -154,3 +154,9 @@ fun Date.inSameMonthOf(rangeDate: Date): Boolean {
 fun Date.between(startDate: Date, endDate: Date): Boolean {
     return this.time >= startDate.time && this.time <= endDate.time
 }
+
+fun Long.toDateFromMillis(): Date {
+    val cal = Calendar.getInstance()
+    cal.timeInMillis = this
+    return cal.time
+}

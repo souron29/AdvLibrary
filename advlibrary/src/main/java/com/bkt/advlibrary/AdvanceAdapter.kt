@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 
 abstract class AdvanceAdapter<Value>(
-    private val activity: CommonActivity,
     @LayoutRes private val layoutId: Int,
     private val areItemsTheSame: (Value, Value) -> Boolean = { v1, v2 -> v1 == v2 },
     private val areContentsTheSame: (Value, Value) -> Boolean = { _, _ -> false }
@@ -37,7 +36,7 @@ abstract class AdvanceAdapter<Value>(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AdvanceHolder {
-        val view = LayoutInflater.from(activity).inflate(layoutId, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(layoutId, parent, false)
         val holder = AdvanceHolder(view)
         view.tag = holder
         onCreate(view, holder)
