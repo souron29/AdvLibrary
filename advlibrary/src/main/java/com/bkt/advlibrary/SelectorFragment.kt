@@ -114,6 +114,7 @@ class SelectorFragment<Item, Binding : ViewDataBinding>(
         binder.lifecycleOwner = viewLifecycleOwner
         return model as SelectorVM<Item, Binding>
     }
+
 }
 
 class SelectorAdapter<Item, Binding : ViewDataBinding>(
