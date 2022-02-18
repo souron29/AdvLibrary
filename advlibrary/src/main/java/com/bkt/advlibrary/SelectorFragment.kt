@@ -152,11 +152,11 @@ class SelectorAdapter<Item, Binding : ViewDataBinding>(
 }
 
 class SelectorVM<Item, Binding : ViewDataBinding> : FragBinderModel() {
-    var multipleSelectionEnabled = LiveObject(false)
-    lateinit var onReceive: (MutableList<Item>) -> Unit
     val property = SelectorProperties()
+    lateinit var onReceive: (MutableList<Item>) -> Unit
     lateinit var adapter: SelectorAdapter<Item, Binding>
-    var gridSpan: Int = -1
+    var multipleSelectionEnabled = LiveObject(false)
+    var gridSpan = -1
     var direction = RecyclerView.VERTICAL
 
     var onSelected: ((Item) -> Unit)? = null
