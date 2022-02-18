@@ -11,11 +11,12 @@ import com.bkt.advlibrary.CommonFragment
 
 abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>(
     private val layoutId: Int,
-    private val name: String
+    name: String
 ) :
     CommonFragment(name),
     EventListener {
     private var _bind: T? = null
+    private var onVmSet = ArrayList<() -> Unit>()
     val binding get() = _bind!!
 
     lateinit var vm: VM
@@ -29,6 +30,7 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>(
         _bind = DataBindingUtil.inflate(inflater, layoutId, container, false)
         _bind!!.lifecycleOwner = viewLifecycleOwner
         vm = setProperties(_bind!!)
+        onVmSet.forEach { it.invoke() }
         vm.eventListener = this
         setInternalFunctions()
         return binding.root
@@ -78,6 +80,10 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>(
         vm.fragLoad = null
         vm.toast = null
         vm.hide = null
+    }
+
+    protected fun afterSettingVM(block: () -> Unit) {
+        onVmSet.add(block)
     }
 }
 
