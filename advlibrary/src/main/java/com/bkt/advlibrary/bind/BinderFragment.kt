@@ -83,7 +83,10 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>(
     }
 
     protected fun afterSettingVM(block: () -> Unit) {
-        onVmSet.add(block)
+        if (this::vm.isInitialized)
+            block.invoke()
+        else
+            onVmSet.add(block)
     }
 }
 

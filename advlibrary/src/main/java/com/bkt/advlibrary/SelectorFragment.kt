@@ -14,40 +14,16 @@ import com.bkt.advlibrary.databinding.FragmentSelectorBinding
 
 class SelectorFragment<Item, Binding : ViewDataBinding>(
     @LayoutRes private val layoutId: Int,
-    onBind: (b: Binding, item: Item, position: Int, partOfSelection: Boolean) -> Unit
+    private val onBind: (b: Binding, item: Item, position: Int, partOfSelection: Boolean) -> Unit
 ) :
     BinderFragment<FragmentSelectorBinding, SelectorVM<Item, Binding>>(
         R.layout.fragment_selector,
         "SelectorFragment"
     ) {
-    private var adapter = SelectorAdapter(layoutId, onBind)
-    private var gridSpan: Int = -1
-    private var direction = RecyclerView.VERTICAL
-    private var multipleSelectionEnabled = false
-    var onSelected: ((Item) -> Unit)? = null
-    var onClicked: ((Item, Int) -> Unit)? = null
-    private var list: MutableList<Item> = ArrayList()
 
     override fun initializeViews() {
+        vm.initiate(advActivity, layoutId, onBind, binding)
         binding.childContainer.setOnClickListener { }
-        setupAdapter()
-    }
-
-    private fun setupAdapter() {
-        adapter.onClicked = { item, position ->
-            onSelected?.apply {
-                invoke(item)
-                popBackStackImmediate()
-            }
-            onClicked?.apply {
-                invoke(item, position)
-            }
-        }
-        if (gridSpan > 1)
-            binding.recyclerView.setGridAdapter(advActivity, adapter, gridSpan)
-        else
-            binding.recyclerView.setLinearAdapter(advActivity, adapter)
-        adapter.setList(list)
     }
 
     fun setHeaderText(
@@ -70,8 +46,10 @@ class SelectorFragment<Item, Binding : ViewDataBinding>(
         span: Int,
         direction: Int = RecyclerView.VERTICAL
     ): SelectorFragment<Item, Binding> {
-        this.gridSpan = span
-        this.direction = direction
+        afterSettingVM {
+            vm.gridSpan = span
+            vm.direction = direction
+        }
         return this
     }
 
@@ -81,10 +59,9 @@ class SelectorFragment<Item, Binding : ViewDataBinding>(
         @ColorRes textColor: Int,
         onReceive: (MutableList<Item>) -> Unit
     ): SelectorFragment<Item, Binding> {
-        this.multipleSelectionEnabled = true
-        this.adapter.multipleSelectionEnabled = true
         afterSettingVM {
             vm.onReceive = onReceive
+            vm.adapter.multipleSelectionEnabled = true
             vm.multipleSelectionEnabled.value = true
             vm.property.buttonText = advActivity.getString(buttonText)
             vm.property.buttonColor = advActivity.getColor(buttonColor)
@@ -95,12 +72,26 @@ class SelectorFragment<Item, Binding : ViewDataBinding>(
 
     fun setData(list: MutableList<Item>) {
         if (isAdded)
-            adapter.setList(list)
-        this.list = list
+            vm.adapter.setList(list)
+        vm.list = list
     }
 
-    fun setOnLonClick(onLongClick: (Item, Int) -> Boolean) {
-        this.adapter.onLongClick = onLongClick
+    fun setOnLongClick(onLongClick: (Item, Int) -> Boolean) {
+        afterSettingVM {
+            vm.onLongClick = onLongClick
+        }
+    }
+
+    fun setOnClick(onClick: (Item, Int) -> Unit) {
+        afterSettingVM {
+            vm.onClicked = onClick
+        }
+    }
+
+    fun setOnSelect(onSelected: (Item) -> Unit) {
+        afterSettingVM {
+            vm.onSelected = onSelected
+        }
     }
 
     fun loadNewFragment(fragment: CommonFragment) {
@@ -165,10 +156,45 @@ class SelectorVM<Item, Binding : ViewDataBinding> : FragBinderModel() {
     lateinit var onReceive: (MutableList<Item>) -> Unit
     val property = SelectorProperties()
     lateinit var adapter: SelectorAdapter<Item, Binding>
+    var gridSpan: Int = -1
+    var direction = RecyclerView.VERTICAL
+
+    var onSelected: ((Item) -> Unit)? = null
+    var onClicked: ((Item, Int) -> Unit)? = null
+    var onLongClick: ((Item, Int) -> Boolean)? = null
+
+    internal var list: MutableList<Item> = ArrayList()
 
     fun sendSelectedFiles() {
         onReceive.invoke(ArrayList(adapter.selectedItems.values))
         popBackStackImmediate()
+    }
+
+    fun initiate(
+        activity: CommonActivity,
+        layoutId: Int,
+        onBind: (b: Binding, item: Item, position: Int, partOfSelection: Boolean) -> Unit,
+        binding: FragmentSelectorBinding
+    ) {
+        adapter = SelectorAdapter(layoutId, onBind)
+        setupAdapter(activity, binding)
+    }
+
+    private fun setupAdapter(activity: CommonActivity, binding: FragmentSelectorBinding) {
+        adapter.onClicked = { item, position ->
+            onSelected?.apply {
+                invoke(item)
+                popBackStackImmediate()
+            }
+            onClicked?.apply {
+                invoke(item, position)
+            }
+        }
+        if (gridSpan > 1)
+            binding.recyclerView.setGridAdapter(activity, adapter, gridSpan)
+        else
+            binding.recyclerView.setLinearAdapter(activity, adapter)
+        adapter.setList(list)
     }
 }
 
