@@ -141,6 +141,44 @@ fun Context.getColorStates(
     return ColorStateList(states.toTypedArray(), colors.toIntArray())
 }
 
+fun getColorStates(
+    @ColorInt primaryColor: Int,
+    @ColorInt disabledColor: Int = -1,
+    @ColorInt checkedColor: Int = -1,
+    @ColorInt unCheckedColor: Int = -1,
+    @ColorInt pressedColor: Int = -1,
+    @ColorInt unPressedColor: Int = -1
+
+): ColorStateList {
+    val states = ArrayList<IntArray>()
+    val colors = ArrayList<Int>()
+    states.add(intArrayOf(R.attr.state_enabled))
+    colors.add(primaryColor)
+
+    if (disabledColor != -1) {
+        states.add(intArrayOf(-R.attr.state_enabled))
+        colors.add(disabledColor)
+    }
+
+    if (checkedColor != -1) {
+        states.add(intArrayOf(R.attr.state_checked))
+        colors.add(primaryColor)
+    }
+    if (unCheckedColor != -1) {
+        states.add(intArrayOf(-R.attr.state_checked))
+        colors.add(unCheckedColor)
+    }
+    if (pressedColor != -1) {
+        states.add(intArrayOf(R.attr.state_pressed))
+        colors.add(unCheckedColor)
+    }
+    if (unPressedColor != -1) {
+        states.add(intArrayOf(-R.attr.state_pressed))
+        colors.add(unCheckedColor)
+    }
+    return ColorStateList(states.toTypedArray(), colors.toIntArray())
+}
+
 fun Drawable.resizeDrawable(context: Context, width: Float, height: Float): Drawable {
     return LayerDrawable(arrayOf(this)).also {
         it.setLayerSize(
