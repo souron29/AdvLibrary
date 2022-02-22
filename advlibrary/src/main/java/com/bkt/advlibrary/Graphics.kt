@@ -152,8 +152,6 @@ fun getColorStates(
 ): ColorStateList {
     val states = ArrayList<IntArray>()
     val colors = ArrayList<Int>()
-    states.add(intArrayOf(R.attr.state_enabled))
-    colors.add(primaryColor)
 
     if (disabledColor != -1) {
         states.add(intArrayOf(-R.attr.state_enabled))
@@ -162,7 +160,7 @@ fun getColorStates(
 
     if (checkedColor != -1) {
         states.add(intArrayOf(R.attr.state_checked))
-        colors.add(primaryColor)
+        colors.add(checkedColor)
     }
     if (unCheckedColor != -1) {
         states.add(intArrayOf(-R.attr.state_checked))
@@ -170,12 +168,14 @@ fun getColorStates(
     }
     if (pressedColor != -1) {
         states.add(intArrayOf(R.attr.state_pressed))
-        colors.add(unCheckedColor)
+        colors.add(pressedColor)
     }
     if (unPressedColor != -1) {
         states.add(intArrayOf(-R.attr.state_pressed))
-        colors.add(unCheckedColor)
+        colors.add(unPressedColor)
     }
+    states.add(intArrayOf())
+    colors.add(primaryColor)
     return ColorStateList(states.toTypedArray(), colors.toIntArray())
 }
 
