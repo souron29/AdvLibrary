@@ -1,17 +1,20 @@
-package com.bkt.advlibrary
+package com.bkt.advlibrary.bind
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bkt.advlibrary.bgBlock
+import com.bkt.advlibrary.mainLaunch
 
-class SimpleAdapter<M>(
-    private val layout: Int,
-    val onBind: (itemView: View, item: M, position: Int) -> Unit,
+class SimpleAdapter<M, BINDING : ViewDataBinding>(
+    private val layoutId: Int,
+    val onBind: (b: BINDING, item: M, position: Int) -> Unit,
     val contentEquals: (item1: M, item2: M) -> Boolean = { p0, p1 -> p0 == p1 }
-) : ListAdapter<M, SimpleAdapter<M>.ViewHolder>(object : DiffUtil.ItemCallback<M>() {
+) : ListAdapter<M, SimpleAdapter<M, BINDING>.ViewHolder>(object : DiffUtil.ItemCallback<M>() {
     override fun areItemsTheSame(p0: M, p1: M): Boolean {
         return p0 == p1
     }
@@ -24,16 +27,17 @@ class SimpleAdapter<M>(
     var filterCondition = { _: M, _: String? -> true }
 
     override fun onCreateViewHolder(parent: ViewGroup, p1: Int): ViewHolder {
-        val v: View = LayoutInflater.from(parent.context).inflate(layout, parent, false)
-        val holder = ViewHolder(v)
-        v.tag = holder
+        val inflater = LayoutInflater.from(parent.context)
+        val binding: BINDING = DataBindingUtil.inflate(inflater, layoutId, parent, false)
+        val holder = ViewHolder(binding)
+        binding.root.tag = holder
         return holder
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)
         item?.let {
-            onBind(holder.itemView, item, position)
+            onBind(holder.binding, item, position)
         }
     }
 
@@ -41,7 +45,7 @@ class SimpleAdapter<M>(
         //super.onBindViewHolder(holder, position, payloads)
         val item = getItem(position)
         item?.let {
-            onBind(holder.itemView, item, position)
+            onBind(holder.binding, item, position)
         }
     }
 
@@ -58,6 +62,6 @@ class SimpleAdapter<M>(
         }
     }
 
-    inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view)
+    inner class ViewHolder(val binding: BINDING) : RecyclerView.ViewHolder(binding.root)
 
 }

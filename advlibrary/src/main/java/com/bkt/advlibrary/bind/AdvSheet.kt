@@ -14,7 +14,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class AdvSheet<T : ViewDataBinding>(
     @LayoutRes private val layoutId: Int,
-    private val onCreate: (T, BottomSheetDialogFragment) -> Unit = { _, _ -> }
+    private val onCreate: (b: T, sheet: BottomSheetDialogFragment) -> Unit = { _, _ -> }
 ) :
     BottomSheetDialogFragment() {
     private var _bind: T? = null
