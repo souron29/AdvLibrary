@@ -47,7 +47,6 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>(
                 popBackStackImmediate()
             else popBackStack()
         }
-
     }
 
     abstract fun setProperties(binder: T): VM
