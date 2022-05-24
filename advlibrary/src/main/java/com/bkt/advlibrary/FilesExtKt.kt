@@ -7,19 +7,35 @@ import android.content.Intent.FLAG_GRANT_WRITE_URI_PERMISSION
 import android.net.Uri
 import android.provider.OpenableColumns
 import androidx.core.content.FileProvider
+import com.bkt.advlibrary.ActivityExtKt.toast
 import java.io.File
 
 
 fun File.openInFileManager(context: Context) {
-    val path = if (isDirectory) {
-        canonicalPath
+    val intentForFileManager = Intent(Intent.ACTION_VIEW)
+
+    val path = if (this.isDirectory) {
+        this.canonicalPath
     } else {
-        parentFile?.canonicalPath
+        this.parentFile?.canonicalPath
     }
-    val selectedUri = Uri.parse(path)
-    val intent = Intent(Intent.ACTION_VIEW)
-    intent.setDataAndType(selectedUri, "resource/folder")
-    context.startActivity(intent)
+    val selectedUri =  Uri.parse(path)
+    intentForFileManager.setDataAndType(selectedUri, "resource/folder")
+    if (intentForFileManager.resolveActivity(context.packageManager) != null) {
+        context.startActivity(intentForFileManager)
+    } else {
+        context.toast("No File Manager found")
+        val intentGeneric = Intent(Intent.ACTION_VIEW)
+        val filePath = FileProvider.getUriForFile(
+            context,
+            "com.bkt.bum.FileProviderDefault",
+            this
+        )
+        val mime = filePath.getMime(context)
+        intentGeneric.flags = FLAG_GRANT_READ_URI_PERMISSION
+        intentGeneric.setDataAndType(filePath, mime)
+        context.startActivity(intentGeneric)
+    }
 }
 
 fun File.child(name: String): File {
