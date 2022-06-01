@@ -5,17 +5,19 @@ import android.os.Handler
 import android.os.Looper
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.commit
 import androidx.lifecycle.LifecycleOwner
 import androidx.viewpager2.widget.ViewPager2
 
 abstract class CommonFragment(open val fragmentName: String) : Fragment(), LifecycleOwner {
     val stackCount: Int
         get() = if (isAdded) childFragmentManager.backStackEntryCount else 0
+    val advActivity by lazy { activity as CommonActivity }
 
     private var pagerDetails: PagerDetails? = null
     private var onClose = {}
 
-    val advActivity by lazy { activity as CommonActivity }
 
     fun onClosed(onClose: () -> Unit) {
         this.onClose = onClose
@@ -41,41 +43,48 @@ abstract class CommonFragment(open val fragmentName: String) : Fragment(), Lifec
         fragment: CommonFragment,
         layoutId: Int,
         onParent: Boolean,
-        addCurrentToStack: Boolean = true
+        addCurrentToStack: Boolean = true,
+        body: FragmentTransaction.() -> Unit = {}
     ) {
         val manager = if (onParent) {
             parentFragmentManager
         } else {
             childFragmentManager
         }
-        val txn = manager.beginTransaction()
-            .replace(layoutId, fragment)
-        if (addCurrentToStack)
-            txn.addToBackStack(fragment.fragmentName)
-        txn.commit()
+        manager.commit {
+            body.invoke(this)
+            replace(layoutId, fragment)
+            if (addCurrentToStack)
+                addToBackStack(fragment.fragmentName)
+        }
     }
 
     fun loadChildFragment(
         fragment: CommonFragment,
-        id: Int
+        id: Int,
+        body: FragmentTransaction.() -> Unit = {}
     ) {
-        loadFragment(fragment, id, onParent = false, addCurrentToStack = true)
+        loadFragment(fragment, id, onParent = false, addCurrentToStack = true, body)
     }
 
     fun replaceChildFragment(
         fragment: CommonFragment,
         id: Int,
-        name: String = fragment.fragmentName
+        body: FragmentTransaction.() -> Unit = {}
     ) {
-        loadFragment(fragment, id, onParent = false, addCurrentToStack = false)
+        loadFragment(fragment, id, onParent = false, addCurrentToStack = false, body)
     }
 
-    fun loadFragment(fragment: CommonFragment, id: Int) {
-        loadFragment(fragment, id, onParent = true, addCurrentToStack = true)
+    fun loadFragment(
+        fragment: CommonFragment, id: Int, body: FragmentTransaction.() -> Unit = {}
+    ) {
+        loadFragment(fragment, id, onParent = true, addCurrentToStack = true, body)
     }
 
-    fun replaceFragment(fragment: CommonFragment, id: Int) {
-        loadFragment(fragment, id, onParent = true, addCurrentToStack = false)
+    fun replaceFragment(
+        fragment: CommonFragment, id: Int, body: FragmentTransaction.() -> Unit = {}
+    ) {
+        loadFragment(fragment, id, onParent = true, addCurrentToStack = false, body)
     }
 
     fun hideKeyboard() {
