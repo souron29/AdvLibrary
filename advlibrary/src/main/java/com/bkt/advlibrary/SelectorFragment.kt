@@ -191,6 +191,18 @@ class SelectorVM<Item, Binding : ViewDataBinding> : FragBinderModel() {
                 invoke(item, position)
             }
         }
+        adapter.onLongClick = { item, position ->
+            var ret = false
+            onSelected?.apply {
+                invoke(item)
+                popBackStackImmediate()
+                ret = true
+            }
+            onLongClick?.apply {
+                ret = invoke(item, position)
+            }
+            ret
+        }
         if (gridSpan > 1)
             binding.recyclerView.setGridAdapter(activity, adapter, gridSpan)
         else
