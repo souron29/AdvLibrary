@@ -29,6 +29,7 @@ abstract class AdvanceAdapter<Value>(
 
     var filterCondition = { _: Value, _: CharSequence? -> true }
     private var mRecyclerView: RecyclerView? = null
+    private var swipeHelper: SwipeHelper? = null
 
     fun setList(list: List<Value>) {
         val actualList = ArrayList(list)
@@ -50,7 +51,9 @@ abstract class AdvanceAdapter<Value>(
                     onSwiped.invoke(holder.adapterPosition, false, true)
             }
         }
-        swipeHelper.attachToRecyclerView(mRecyclerView)
+        if (mRecyclerView != null)
+            swipeHelper.attachToRecyclerView(mRecyclerView)
+        else this.swipeHelper = swipeHelper
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AdvanceHolder {
@@ -96,6 +99,7 @@ abstract class AdvanceAdapter<Value>(
             animator.supportsChangeAnimations = false
         }
         this.mRecyclerView = recyclerView
+        swipeHelper?.attachToRecyclerView(mRecyclerView)
     }
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
