@@ -28,6 +28,7 @@ abstract class AdvanceAdapter<Value>(
     abstract fun onBind(view: View, item: Value, position: Int)
 
     var filterCondition = { _: Value, _: CharSequence? -> true }
+    var onSwiped: ((Boolean, Boolean) -> Unit)? = null
 
     fun setList(list: List<Value>) {
         val actualList = ArrayList(list)
@@ -77,8 +78,21 @@ abstract class AdvanceAdapter<Value>(
         if (animator is SimpleItemAnimator) {
             animator.supportsChangeAnimations = false
         }
-    }
+        if (onSwiped != null) {
+            val swipeHelper = object : SwipeHelper() {
+                override fun onSwipeLeft(holder: RecyclerView.ViewHolder?) {
+                    super.onSwipeLeft(holder)
+                    onSwiped?.invoke(true, false)
+                }
 
+                override fun onSwipeRight(holder: RecyclerView.ViewHolder?) {
+                    super.onSwipeRight(holder)
+                    onSwiped?.invoke(false, true)
+                }
+            }
+            /**/swipeHelper.attachToRecyclerView(recyclerView)
+        }
+    }
     data class AdvanceHolder(val view: View) :
         RecyclerView.ViewHolder(view)
 

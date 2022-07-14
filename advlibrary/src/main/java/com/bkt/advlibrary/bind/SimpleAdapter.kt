@@ -7,6 +7,7 @@ import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bkt.advlibrary.SwipeHelper
 import com.bkt.advlibrary.bgBlock
 import com.bkt.advlibrary.mainLaunch
 
@@ -25,6 +26,7 @@ class SimpleAdapter<M, BINDING : ViewDataBinding>(
 }) {
     private var dataList = ArrayList<M>()
     var filterCondition = { _: M, _: String? -> true }
+    var onSwiped: ((Boolean, Boolean) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, p1: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -59,6 +61,24 @@ class SimpleAdapter<M, BINDING : ViewDataBinding>(
         bgBlock {
             val list = dataList.filter { filterCondition.invoke(it, constraint) }
             mainLaunch { submitList(list) }
+        }
+    }
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        if (onSwiped != null) {
+            val swipeHelper = object : SwipeHelper() {
+                override fun onSwipeLeft(holder: RecyclerView.ViewHolder?) {
+                    super.onSwipeLeft(holder)
+                    onSwiped?.invoke(true, false)
+                }
+
+                override fun onSwipeRight(holder: RecyclerView.ViewHolder?) {
+                    super.onSwipeRight(holder)
+                    onSwiped?.invoke(false, true)
+                }
+            }
+            /**/swipeHelper.attachToRecyclerView(recyclerView)
         }
     }
 
