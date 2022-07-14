@@ -28,6 +28,7 @@ class SimpleAdapter<M, BINDING : ViewDataBinding>(
     private var dataList = ArrayList<M>()
     var filterCondition = { _: M, _: String? -> true }
     private var mRecyclerView: RecyclerView? = null
+    private var swipeHelper: SwipeHelper? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, p1: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -79,12 +80,15 @@ class SimpleAdapter<M, BINDING : ViewDataBinding>(
                     onSwiped.invoke(holder.adapterPosition, false, true)
             }
         }
-        swipeHelper.attachToRecyclerView(mRecyclerView)
+        if (mRecyclerView != null)
+            swipeHelper.attachToRecyclerView(mRecyclerView)
+        else this.swipeHelper = swipeHelper
     }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         this.mRecyclerView = recyclerView
+        swipeHelper?.attachToRecyclerView(mRecyclerView)
     }
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
