@@ -22,7 +22,24 @@ class SimpleAdapter<M>(
 }) {
     private var dataList = ArrayList<M>()
     var filterCondition = { _: M, _: String? -> true }
-    var onSwiped: ((Boolean, Boolean) -> Unit)? = null
+    private var mRecyclerView: RecyclerView? = null
+
+    fun setSwiper(onSwiped: (Int, Boolean, Boolean) -> Unit) {
+        val swipeHelper = object : SwipeHelper() {
+            override fun onSwipeLeft(holder: RecyclerView.ViewHolder?) {
+                super.onSwipeLeft(holder)
+                if (holder != null)
+                    onSwiped.invoke(holder.adapterPosition, true, false)
+            }
+
+            override fun onSwipeRight(holder: RecyclerView.ViewHolder?) {
+                super.onSwipeRight(holder)
+                if (holder != null)
+                    onSwiped.invoke(holder.adapterPosition, false, true)
+            }
+        }
+        swipeHelper.attachToRecyclerView(mRecyclerView)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, p1: Int): ViewHolder {
         val v: View = LayoutInflater.from(parent.context).inflate(layout, parent, false)
@@ -63,19 +80,11 @@ class SimpleAdapter<M>(
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
-        if (onSwiped != null) {
-            val swipeHelper = object : SwipeHelper() {
-                override fun onSwipeLeft(holder: RecyclerView.ViewHolder?) {
-                    super.onSwipeLeft(holder)
-                    onSwiped?.invoke(true, false)
-                }
+        this.mRecyclerView = recyclerView
+    }
 
-                override fun onSwipeRight(holder: RecyclerView.ViewHolder?) {
-                    super.onSwipeRight(holder)
-                    onSwiped?.invoke(false, true)
-                }
-            }
-            /**/swipeHelper.attachToRecyclerView(recyclerView)
-        }
+    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView)
+        this.mRecyclerView = null
     }
 }

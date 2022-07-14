@@ -7,6 +7,7 @@ import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SimpleItemAnimator
 import com.bkt.advlibrary.SwipeHelper
 import com.bkt.advlibrary.bgBlock
 import com.bkt.advlibrary.mainLaunch
@@ -26,7 +27,7 @@ class SimpleAdapter<M, BINDING : ViewDataBinding>(
 }) {
     private var dataList = ArrayList<M>()
     var filterCondition = { _: M, _: String? -> true }
-    var onSwiped: ((Boolean, Boolean) -> Unit)? = null
+    private var mRecyclerView: RecyclerView? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, p1: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -64,22 +65,31 @@ class SimpleAdapter<M, BINDING : ViewDataBinding>(
         }
     }
 
+    fun setSwiper(onSwiped: (Int, Boolean, Boolean) -> Unit) {
+        val swipeHelper = object : SwipeHelper() {
+            override fun onSwipeLeft(holder: RecyclerView.ViewHolder?) {
+                super.onSwipeLeft(holder)
+                if (holder != null)
+                    onSwiped.invoke(holder.adapterPosition, true, false)
+            }
+
+            override fun onSwipeRight(holder: RecyclerView.ViewHolder?) {
+                super.onSwipeRight(holder)
+                if (holder != null)
+                    onSwiped.invoke(holder.adapterPosition, false, true)
+            }
+        }
+        swipeHelper.attachToRecyclerView(mRecyclerView)
+    }
+
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
-        if (onSwiped != null) {
-            val swipeHelper = object : SwipeHelper() {
-                override fun onSwipeLeft(holder: RecyclerView.ViewHolder?) {
-                    super.onSwipeLeft(holder)
-                    onSwiped?.invoke(true, false)
-                }
+        this.mRecyclerView = recyclerView
+    }
 
-                override fun onSwipeRight(holder: RecyclerView.ViewHolder?) {
-                    super.onSwipeRight(holder)
-                    onSwiped?.invoke(false, true)
-                }
-            }
-            /**/swipeHelper.attachToRecyclerView(recyclerView)
-        }
+    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView)
+        this.mRecyclerView = null
     }
 
     inner class ViewHolder(val binding: BINDING) : RecyclerView.ViewHolder(binding.root)
