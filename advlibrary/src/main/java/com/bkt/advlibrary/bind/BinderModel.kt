@@ -10,5 +10,7 @@ sealed class BinderModel : ViewModel() {
         onComplete.invoke()
     }
 
+    fun doNothing() {
 
+    }
 }

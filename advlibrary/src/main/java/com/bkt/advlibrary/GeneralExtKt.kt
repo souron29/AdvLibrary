@@ -81,6 +81,7 @@ object GeneralExtKt {
 
     fun logger(log_message: Any?, tag: String = "ZTAG") {
         Log.i(tag, log_message?.toString() ?: "null")
+        logit(log_message?.toString() ?: "")
     }
 
 
@@ -262,4 +263,9 @@ object GeneralExtKt {
         for (item in items)
             block.invoke(item)
     }
+}
+
+val internalLog = StringBuilder()
+fun logit(text: String) {
+    internalLog.append(text).append("\n")
 }
