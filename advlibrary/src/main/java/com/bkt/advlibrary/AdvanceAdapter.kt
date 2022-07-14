@@ -28,12 +28,29 @@ abstract class AdvanceAdapter<Value>(
     abstract fun onBind(view: View, item: Value, position: Int)
 
     var filterCondition = { _: Value, _: CharSequence? -> true }
-    var onSwiped: ((Int, Boolean, Boolean) -> Unit)? = null
+    private var mRecyclerView: RecyclerView? = null
 
     fun setList(list: List<Value>) {
         val actualList = ArrayList(list)
         submitList(actualList)
         dataList = actualList
+    }
+
+    fun setSwiper(onSwiped: (Int, Boolean, Boolean) -> Unit) {
+        val swipeHelper = object : SwipeHelper() {
+            override fun onSwipeLeft(holder: RecyclerView.ViewHolder?) {
+                super.onSwipeLeft(holder)
+                if (holder != null)
+                    onSwiped.invoke(holder.adapterPosition, true, false)
+            }
+
+            override fun onSwipeRight(holder: RecyclerView.ViewHolder?) {
+                super.onSwipeRight(holder)
+                if (holder != null)
+                    onSwiped.invoke(holder.adapterPosition, false, true)
+            }
+        }
+        swipeHelper.attachToRecyclerView(mRecyclerView)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AdvanceHolder {
@@ -78,22 +95,12 @@ abstract class AdvanceAdapter<Value>(
         if (animator is SimpleItemAnimator) {
             animator.supportsChangeAnimations = false
         }
-        if (onSwiped != null) {
-            val swipeHelper = object : SwipeHelper() {
-                override fun onSwipeLeft(holder: RecyclerView.ViewHolder?) {
-                    super.onSwipeLeft(holder)
-                    if (holder != null)
-                        onSwiped?.invoke(holder.adapterPosition, true, false)
-                }
+        this.mRecyclerView = recyclerView
+    }
 
-                override fun onSwipeRight(holder: RecyclerView.ViewHolder?) {
-                    super.onSwipeRight(holder)
-                    if (holder != null)
-                        onSwiped?.invoke(holder.adapterPosition, false, true)
-                }
-            }
-            /**/swipeHelper.attachToRecyclerView(recyclerView)
-        }
+    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView)
+        this.mRecyclerView = null
     }
 
     data class AdvanceHolder(val view: View) :
