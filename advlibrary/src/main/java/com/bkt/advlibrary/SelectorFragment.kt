@@ -5,8 +5,6 @@ import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.RecyclerView
-import com.bkt.advlibrary.GeneralExtKt.setGridAdapter
-import com.bkt.advlibrary.GeneralExtKt.setLinearAdapter
 import com.bkt.advlibrary.bind.BinderAdapter
 import com.bkt.advlibrary.bind.BinderFragment
 import com.bkt.advlibrary.bind.FragBinderModel

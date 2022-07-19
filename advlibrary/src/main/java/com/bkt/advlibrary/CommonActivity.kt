@@ -7,8 +7,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
-import com.bkt.advlibrary.GeneralExtKt.logger
-import java.lang.Exception
 
 open class CommonActivity : AppCompatActivity(), LifecycleOwner {
     var onPermissionsResult: (

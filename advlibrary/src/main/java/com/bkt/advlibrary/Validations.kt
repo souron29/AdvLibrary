@@ -3,8 +3,6 @@ package com.bkt.advlibrary
 import android.content.Context
 import android.widget.EditText
 import com.bkt.advlibrary.ActivityExtKt.toast
-import com.bkt.advlibrary.GeneralExtKt.toDouble
-import com.bkt.advlibrary.GeneralExtKt.toText
 
 fun shouldNotBeEmpty(
     context: Context,
