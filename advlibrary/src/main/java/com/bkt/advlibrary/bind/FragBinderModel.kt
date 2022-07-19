@@ -12,6 +12,7 @@ open class FragBinderModel : BinderModel() {
         null
     internal var toast: ((String, Boolean) -> Unit)? = null
     internal var hide: (() -> Unit)? = null
+    internal  var fragment: (() -> CommonFragment)? = null
 
     fun popBackStackImmediate() {
         popBackStackImmediate.postValue(true)
@@ -19,6 +20,10 @@ open class FragBinderModel : BinderModel() {
 
     fun popBackStack() {
         popBackStackImmediate.postValue(false)
+    }
+
+    fun getParentFragment(): CommonFragment? {
+        return fragment?.invoke()
     }
 
     fun loadChildFragment(childFragment: CommonFragment, @IdRes id: Int) {

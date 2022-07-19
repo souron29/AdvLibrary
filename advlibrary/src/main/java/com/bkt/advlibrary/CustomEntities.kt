@@ -108,7 +108,7 @@ class HashList<K, V> : LinkedHashMap<K, ArrayList<V>>() {
     }
 }
 
-fun <K> HashMap<K, Int>.addValue(key: K, value: Int) {
+fun <K> HashMap<K, Int>.addToKeyValue(key: K, value: Int) {
     val currentValue = get(key) ?: 0
     put(key, currentValue + value)
 }

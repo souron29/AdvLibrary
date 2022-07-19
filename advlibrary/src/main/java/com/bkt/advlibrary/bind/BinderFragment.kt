@@ -47,6 +47,8 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>(
                 popBackStackImmediate()
             else popBackStack()
         }
+        vm.fragment = { this }
+        vm.activity = { advActivity }
     }
 
     abstract fun setProperties(binder: T): VM
@@ -86,6 +88,11 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>(
             block.invoke()
         else
             onVmSet.add(block)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        vm.fragment = null
     }
 }
 

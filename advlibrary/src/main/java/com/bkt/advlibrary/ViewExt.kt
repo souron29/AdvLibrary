@@ -1,14 +1,22 @@
 package com.bkt.advlibrary
 
+import android.graphics.Color
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.annotation.LayoutRes
+import androidx.core.view.setPadding
+import com.bkt.advlibrary.ActivityExtKt.scanForActivity
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 
 
 fun View.hide(makeInvisible: Boolean = false) {
@@ -114,4 +122,53 @@ fun <T> ChipGroup.addChips(
         map[chip.id] = item.first
     }
     return map
+}
+
+fun ViewGroup.addEditText(et: EditTextProperty): EditText {
+    val style = R.style.Widget_MaterialComponents_TextInputLayout_OutlinedBox
+    val textInputLayout = TextInputLayout(context.scanForActivity()!!, null, style)
+
+    val layoutParams = LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.MATCH_PARENT,
+        LinearLayout.LayoutParams.WRAP_CONTENT
+    )
+    textInputLayout.hint = et.hint
+    textInputLayout.layoutParams = layoutParams
+    textInputLayout.setPadding(20)
+    textInputLayout.boxBackgroundMode = TextInputLayout.BOX_BACKGROUND_OUTLINE
+    textInputLayout.boxStrokeColor = et.color
+
+    val textInputEditText = TextInputEditText(context.scanForActivity()!!)
+    textInputEditText.layoutParams = layoutParams
+    textInputEditText.setPadding(20)
+
+    et.setProperties(textInputEditText)
+
+    textInputLayout.addView(textInputEditText, layoutParams)
+    this.addView(textInputLayout)
+    return textInputEditText
+}
+
+data class EditTextProperty(
+    var hint: String = "",
+    var isDateField: Boolean = false,
+    var isMoneyField: Boolean = false,
+    @ColorInt var color: Int = Color.BLACK
+) {
+    val text = LiveObject("")
+
+
+    fun setProperties(editText: TextInputEditText) {
+        editText.setTextColor(color)
+        editText.background = null
+        if (isDateField) {
+            editText.setDatePicker()
+            editText.inputType =
+                InputType.TYPE_CLASS_DATETIME or InputType.TYPE_DATETIME_VARIATION_DATE
+        }
+        if (isMoneyField) {
+            editText.inputType =
+                InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL or InputType.TYPE_NUMBER_FLAG_DECIMAL
+        }
+    }
 }

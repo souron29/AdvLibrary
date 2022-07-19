@@ -100,6 +100,14 @@ abstract class CommonFragment(open val fragmentName: String) : Fragment(), Lifec
             if (pager.currentItem == default) {
                 val frag = adapter.getFragment(default)
                 if (frag.isAdded && frag.childFragmentManager.fragments.isNotEmpty()) {
+                    val size = frag.childFragmentManager.fragments.size
+                    val childFrag = frag.childFragmentManager.fragments[size - 1] as CommonFragment?
+                    if (childFrag != null && childFrag.backPressHandled())
+                        return true
+                    else if (childFrag != null) {
+                        childFrag.popBackStack()
+                        return true
+                    }
                     frag.childFragmentManager.popBackStack()
                     return true
                 } else if (!frag.isAdded) {

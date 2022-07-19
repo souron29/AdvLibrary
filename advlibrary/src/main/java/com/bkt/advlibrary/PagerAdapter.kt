@@ -1,5 +1,6 @@
 package com.bkt.advlibrary
 
+import android.util.SparseArray
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
@@ -10,18 +11,43 @@ class PagerAdapter(
     private val parent: CommonFragment
 ) : FragmentStateAdapter(parent) {
 
-    val fragments = ArrayList<CommonFragment>()
+    private val fragments = SparseArray<CommonFragment>()
+    private val fragmentList = ArrayList<CommonFragment>()
+
+    fun getExistingFragments(): ArrayList<CommonFragment> {
+        return ArrayList( fragments.getValueList())
+    }
 
     override fun getItemCount(): Int {
-        return fragments.size
+        return fragments.size()
     }
 
     override fun createFragment(position: Int): Fragment {
         return fragments[position]
     }
 
-    fun addFragment(fragment: CommonFragment) {
-        fragments.add(fragment)
+    fun addFragment(fragment: CommonFragment): Int {
+        fragmentList.add(fragment)
+        fragments[fragmentList.indexOf(fragment)] = fragment
+        return fragmentList.size - 1
+    }
+
+    fun removeFragment(fragment: CommonFragment) {
+        val index = fragmentList.indexOf(fragment)
+        fragmentList.removeAt(index)
+        fragments.remove(index)
+    }
+
+    fun removeAt(index: Int) {
+        fragmentList.removeAt(index)
+        fragments.remove(index)
+    }
+
+    fun replaceFragment(fragment: CommonFragment, index: Int) {
+        logger("Fragment ${fragments[index]}")
+        fragments[index] = fragment
+        fragmentList[index] = fragment
+        logger("Fragment ${fragments[index]}")
     }
 
     fun setTab(tabLayout: TabLayout, pager: ViewPager2, block: (Int) -> String) {

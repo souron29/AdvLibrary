@@ -1,6 +1,7 @@
 package com.bkt.advlibrary
 
 import com.bkt.advlibrary.DateFormats
+import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.time.ZoneId
 import java.time.temporal.ChronoUnit
@@ -123,6 +124,36 @@ fun String.toDate(format: String = DateFormats.DATE): Date? {
     val df = SimpleDateFormat(format, Locale.US)
     df.timeZone = timeZoneIST
     return df.parse(this)
+}
+
+fun String.toDateOrNull(
+    format: String = DateFormats.DATE,
+    preserveCurrentTime: Boolean = false
+): Date? {
+    val df = SimpleDateFormat(format, Locale.US)
+    df.timeZone = timeZoneIST
+    return try {
+        val date = df.parse(this)
+        val dateCal = Calendar.getInstance()
+        dateCal.time = date
+
+        val returnCal = Calendar.getInstance()
+        returnCal[Calendar.DAY_OF_YEAR] = dateCal[Calendar.DAY_OF_YEAR]
+        if (preserveCurrentTime)
+            returnCal.time
+        else dateCal.time
+    } catch (e: Exception) {
+        null
+    }
+}
+
+fun Date.addCurrentTime(): Date {
+    val dateCal = Calendar.getInstance()
+    dateCal.time = this
+
+    val returnCal = Calendar.getInstance()
+    returnCal[Calendar.DAY_OF_YEAR] = dateCal[Calendar.DAY_OF_YEAR]
+    return returnCal.time
 }
 
 fun Date.isSameMonthAs(date: Date = today): Boolean {

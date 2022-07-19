@@ -5,8 +5,8 @@ import android.widget.EditText
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bkt.advlibrary.GeneralExtKt.setLinearAdapter
 import com.bkt.advlibrary.setDatePicker
+import com.bkt.advlibrary.setLinearAdapter
 
 @BindingAdapter("android:visibility")
 fun setVisibility(view: View, visible: Boolean) {
@@ -30,4 +30,23 @@ fun <T, H : RecyclerView.ViewHolder> setLinearAdapter(
     adapter: ListAdapter<T, H>
 ) {
     et.setLinearAdapter(et.context, adapter)
+}
+
+@BindingAdapter("horizontalAdapter")
+fun <T, H : RecyclerView.ViewHolder> setHorizontalLinearAdapter(
+    et: RecyclerView,
+    adapter: ListAdapter<T, H>
+) {
+    et.setLinearAdapter(et.context, adapter, RecyclerView.HORIZONTAL)
+}
+
+@BindingAdapter("app:onFocusChange")
+fun setEditTextFocusListener(
+    et: EditText,
+    listener: (hasFocus: Boolean) -> Unit?
+) {
+
+    et.setOnFocusChangeListener { _, b ->
+        listener.invoke(b)
+    }
 }

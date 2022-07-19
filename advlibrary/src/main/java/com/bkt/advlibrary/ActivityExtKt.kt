@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.os.Build
@@ -106,6 +107,14 @@ object ActivityExtKt {
 
     fun AppCompatActivity.switchToSystemTheme() {
         delegate.localNightMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+    }
+
+    fun Context.scanForActivity(): AppCompatActivity? {
+        return when (this) {
+            is AppCompatActivity -> this
+            is ContextWrapper -> baseContext.scanForActivity()
+            else -> null
+        }
     }
 }
 

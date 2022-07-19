@@ -37,6 +37,7 @@ abstract class BinderActivity<T : ViewDataBinding, VM : ActivityBinderModel>(val
         vm.toast.observe(binding.lifecycleOwner!!) {
             toast(it.first, it.second)
         }
+        vm.activity = { this }
     }
 
     abstract fun setProperties(binder: T): VM
@@ -44,6 +45,12 @@ abstract class BinderActivity<T : ViewDataBinding, VM : ActivityBinderModel>(val
     inline fun <reified VM : BinderModel> getModel(clazz: Class<VM>): VM {
         val vm by viewModels<VM>()
         return vm
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        vm.activity = null
+
     }
 
     override fun onEvent(event: BinderEvent) {
