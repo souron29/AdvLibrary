@@ -8,11 +8,14 @@ import androidx.collection.ArraySet
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.collections.LinkedHashMap
+import kotlin.math.abs
 
 fun <T> getLast(list: List<T>): T {
     return list[list.size - 1]
@@ -31,9 +34,17 @@ fun ifEmpty(text: String, value: String): String {
         value
     } else text
 }
+fun Double.toText(decimalPlaces: Int = 2): String {
+    return BigDecimal(this).setScale(decimalPlaces, RoundingMode.HALF_UP).toString()
+}
 
-fun String.toDouble(value: Double): Double {
-    return if (this.isBlank()) {
+fun Double.precision(): Int {
+    val text = abs(this).toString()
+    return text.substringAfter(".").length - 1
+}
+
+fun String?.toDoubleOr(value: Double): Double {
+    return if (this == null || this.isBlank()) {
         value
     } else this.toDouble()
 }
@@ -42,10 +53,6 @@ fun String.toInt(valueIfNull: Int): Int {
     return if (this.isBlank()) {
         valueIfNull
     } else this.toInt()
-}
-
-fun Double.toText(): String {
-    return DecimalFormat("0.##").format(this)
 }
 
 fun Double.toCurrency(): String {
@@ -82,50 +89,8 @@ fun logger(log_message: Any?, tag: String = "ZTAG") {
     logit(log_message?.toString() ?: "")
 }
 
-
-/*fun <K, O> QuerySnapshot.toObjectMap(
-    qs: QuerySnapshot,
-    clazz: Class<O>?,
-    primaryKey: Function1<O, K>
-): HashMap<K, O> {
-    Intrinsics.checkParameterIsNotNull(`$this$toObjectMap`, "\$this\$toObjectMap")
-    Intrinsics.checkParameterIsNotNull(clazz, "clazz")
-    Intrinsics.checkParameterIsNotNull(primaryKey, "primaryKey")
-    val hashMap = HashMap<K, O>()
-    val it: Iterator<QueryDocumentSnapshot> = `$this$toObjectMap`.iterator()
-    while (it.hasNext()) {
-        val obj: Any = it.next().toObject(clazz)
-        hashMap[primaryKey.invoke(obj)] = obj
-    }
-    return hashMap
-}
-
-fun <O> toObjectSparse(
-    `$this$toObjectSparse`: QuerySnapshot,
-    clazz: Class<O>?,
-    primaryKey: Function1<O, Int>
-): SparseArray<O> {
-    Intrinsics.checkParameterIsNotNull(`$this$toObjectSparse`, "\$this\$toObjectSparse")
-    Intrinsics.checkParameterIsNotNull(clazz, "clazz")
-    Intrinsics.checkParameterIsNotNull(primaryKey, "primaryKey")
-    val array: SparseArray<*> = SparseArray<Any?>()
-    val it: Iterator<QueryDocumentSnapshot> = `$this$toObjectSparse`.iterator()
-    while (it.hasNext()) {
-        val obj: Any = it.next().toObject(clazz)
-        SparseExtKt.set(array, primaryKey.invoke(obj), obj)
-    }
-    return array
-}*/
-
-/*fun <T> observe(
-    `$this$observe`: MutableLiveData<T>,
-    owner: LifecycleOwner?,
-    block: Function1<T?, Unit>?
-) {
-    `$this$observe`.observe(owner, `GeneralExtKt$observe$1`<Any?>(block))
-}*/
-fun <Item, Key> List<Item>.toMap(key: (Item) -> Key): HashMap<Key, Item> {
-    val map = HashMap<Key, Item>()
+fun <Item, Key> List<Item>.toMap(key: (Item) -> Key): LinkedHashMap<Key, Item> {
+    val map = LinkedHashMap<Key, Item>()
     forEach { map[key.invoke(it)] = it }
     return map
 }

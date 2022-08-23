@@ -11,7 +11,7 @@ class PermissionManager private constructor(
     private val activity: CommonActivity,
     private vararg val permissions: String
 ) {
-    private var onResult: (Boolean, ArrayList<String>, Boolean, ArrayList<String>) -> Unit =
+    private var onResult: (allGranted: Boolean, grantedPermissions: ArrayList<String>, allDenied: Boolean, deniedPermissions: ArrayList<String>) -> Unit =
         { _, _, _, _ -> }
     private val requestCode by lazy { Random().nextInt(99999) }
 

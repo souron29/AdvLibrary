@@ -1,5 +1,9 @@
 package com.bkt.advlibrary.bind
 
+import android.graphics.drawable.Drawable
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.ViewModel
 import com.bkt.advlibrary.CommonActivity
 
@@ -19,5 +23,16 @@ sealed class BinderModel : ViewModel() {
 
     fun doNothing() {
 
+    }
+
+    fun getString(@StringRes id: Int): String? {
+        return getActivity()?.getString(id)
+    }
+
+    fun getDrawable(@DrawableRes id: Int): Drawable? {
+        getActivity()?.let {
+            return AppCompatResources.getDrawable(it, id)
+        }
+        return null
     }
 }

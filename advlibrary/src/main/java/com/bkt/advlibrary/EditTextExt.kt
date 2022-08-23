@@ -84,7 +84,7 @@ fun EditText.setDatePicker(
 
 
 fun EditText.getTrimText(): String {
-    return text?.trim().toString() ?: ""
+    return text?.trim().toString()
 }
 
 fun EditText.getInt(valueIfNull: Int = 0): Int {

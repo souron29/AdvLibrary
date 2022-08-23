@@ -42,7 +42,7 @@ abstract class BinderActivity<T : ViewDataBinding, VM : ActivityBinderModel>(val
 
     abstract fun setProperties(binder: T): VM
 
-    inline fun <reified VM : BinderModel> getModel(clazz: Class<VM>): VM {
+    inline fun <reified VM : BinderModel> getModel(): VM {
         val vm by viewModels<VM>()
         return vm
     }

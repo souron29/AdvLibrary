@@ -98,7 +98,7 @@ class SelectorFragment<Item, Binding : ViewDataBinding>(
     }
 
     override fun setProperties(binder: FragmentSelectorBinding): SelectorVM<Item, Binding> {
-        val model = getModel(SelectorVM::class.java)
+        val model = getModel<SelectorVM<Item, Binding>>()
         binder.vm = model
         binder.lifecycleOwner = viewLifecycleOwner
         return model as SelectorVM<Item, Binding>

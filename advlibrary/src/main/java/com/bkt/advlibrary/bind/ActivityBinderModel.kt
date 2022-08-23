@@ -1,6 +1,7 @@
 package com.bkt.advlibrary.bind
 
 import androidx.annotation.LayoutRes
+import androidx.annotation.StringRes
 import androidx.lifecycle.MutableLiveData
 import com.bkt.advlibrary.CommonFragment
 
@@ -22,6 +23,6 @@ open class ActivityBinderModel : BinderModel() {
     }
 
     fun toast(text: String, longDuration: Boolean = false) {
-        toast.postValue(Pair(text,longDuration))
+        toast.postValue(Pair(text, longDuration))
     }
 }

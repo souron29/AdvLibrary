@@ -16,7 +16,9 @@ import android.util.TypedValue
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.ContextCompat
 import java.io.IOException
+import java.util.ArrayList
 
 fun getBitmap(context: Context, image_uri: Uri?): Bitmap? {
     return try {
@@ -93,91 +95,30 @@ fun setColorTint(drawable: Drawable?, color: Int): Drawable? {
     return drawable
 }
 
-fun Context.getColorStates(
-    @ColorRes defaultColor: Int,
-    @ColorRes disabledColor: Int = -1,
-    @ColorRes checkedColor: Int = -1,
-    @ColorRes unCheckedColor: Int = -1,
-    @ColorRes pressedColor: Int = -1,
-    @ColorRes unPressedColor: Int = -1,
-    @ColorRes selectedColor: Int = -1,
-    @ColorRes unSelectedColor: Int = -1
+fun Context.getColorStateList(vararg colorStates: ColorState): ColorStateList {
+    val statesList = ArrayList<IntArray>()
+    val colorList = ArrayList<Int>()
 
-): ColorStateList {
-    val states = ArrayList<IntArray>()
-    val colors = ArrayList<Int>()
-
-    if (disabledColor != -1) {
-        states.add(intArrayOf(-android.R.attr.state_enabled))
-        colors.add(getColor(disabledColor))
+    colorStates.forEach {
+        statesList.add(it.states.map { state -> state.value }.toIntArray())
+        colorList.add(ContextCompat.getColor(this, it.colorId))
     }
-
-    if (checkedColor != -1) {
-        states.add(intArrayOf(android.R.attr.state_checked))
-        colors.add(getColor(checkedColor))
-    }
-    if (unCheckedColor != -1) {
-        states.add(intArrayOf(-android.R.attr.state_checked))
-        colors.add(getColor(unCheckedColor))
-    }
-    if (pressedColor != -1) {
-        states.add(intArrayOf(android.R.attr.state_pressed))
-        colors.add(getColor(pressedColor))
-    }
-    if (unPressedColor != -1) {
-        states.add(intArrayOf(-android.R.attr.state_pressed))
-        colors.add(getColor(unPressedColor))
-    }
-    if (selectedColor != -1) {
-        states.add(intArrayOf(android.R.attr.state_selected))
-        colors.add(getColor(selectedColor))
-    }
-    if (unSelectedColor != -1) {
-        states.add(intArrayOf(-android.R.attr.state_selected))
-        colors.add(getColor(unSelectedColor))
-    }
-    states.add(intArrayOf())
-    colors.add(getColor(defaultColor))
-    return ColorStateList(states.toTypedArray(), colors.toIntArray())
+    return ColorStateList(statesList.toTypedArray(), colorList.toIntArray())
 }
 
-fun getColorStates(
-    @ColorInt primaryColor: Int,
-    @ColorInt disabledColor: Int = -1,
-    @ColorInt checkedColor: Int = -1,
-    @ColorInt unCheckedColor: Int = -1,
-    @ColorInt pressedColor: Int = -1,
-    @ColorInt unPressedColor: Int = -1
+class ColorState(@ColorRes val colorId: Int, vararg val states: State)
 
-): ColorStateList {
-    val states = ArrayList<IntArray>()
-    val colors = ArrayList<Int>()
-
-    if (disabledColor != -1) {
-        states.add(intArrayOf(-R.attr.state_enabled))
-        colors.add(disabledColor)
-    }
-
-    if (checkedColor != -1) {
-        states.add(intArrayOf(R.attr.state_checked))
-        colors.add(checkedColor)
-    }
-    if (unCheckedColor != -1) {
-        states.add(intArrayOf(-R.attr.state_checked))
-        colors.add(unCheckedColor)
-    }
-    if (pressedColor != -1) {
-        states.add(intArrayOf(R.attr.state_pressed))
-        colors.add(pressedColor)
-    }
-    if (unPressedColor != -1) {
-        states.add(intArrayOf(-R.attr.state_pressed))
-        colors.add(unPressedColor)
-    }
-    states.add(intArrayOf())
-    colors.add(primaryColor)
-    return ColorStateList(states.toTypedArray(), colors.toIntArray())
+enum class State(val value: Int) {
+    STATE_ENABLED(android.R.attr.state_enabled),
+    STATE_NOT_ENABLED(-android.R.attr.state_enabled),
+    STATE_CHECKED(android.R.attr.state_checked),
+    STATE_NOT_CHECKED(-android.R.attr.state_checked),
+    STATE_PRESSED(android.R.attr.state_pressed),
+    STATE_NOT_PRESSED(-android.R.attr.state_pressed),
+    STATE_CHECKABLE(android.R.attr.state_checkable),
+    STATE_NOT_CHECKABLE(-android.R.attr.state_checkable),
 }
+
 
 fun Drawable.resizeDrawable(context: Context, width: Float, height: Float): Drawable {
     return LayerDrawable(arrayOf(this)).also {

@@ -30,7 +30,7 @@ class AdvSheet<T : ViewDataBinding>(
         return binding.root
     }
 
-    inline fun <reified VM : BinderModel> getModel(java: Class<VM>): VM {
+    inline fun <reified VM : BinderModel> getModel(): VM {
         val vm by viewModels<VM>()
         return vm
     }

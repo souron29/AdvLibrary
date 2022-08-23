@@ -19,7 +19,7 @@ fun File.openInFileManager(context: Context) {
     } else {
         this.parentFile?.canonicalPath
     }
-    val selectedUri =  Uri.parse(path)
+    val selectedUri = Uri.parse(path)
     intentForFileManager.setDataAndType(selectedUri, "resource/folder")
     if (intentForFileManager.resolveActivity(context.packageManager) != null) {
         context.startActivity(intentForFileManager)
@@ -36,6 +36,13 @@ fun File.openInFileManager(context: Context) {
         intentGeneric.setDataAndType(filePath, mime)
         context.startActivity(intentGeneric)
     }
+}
+
+fun File.openInFileManager2(context: Context) {
+    val intent = Intent(Intent.ACTION_VIEW)
+    intent.setDataAndType(Uri.parse(canonicalPath), "resource/folder")
+    intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+    context.startActivity(intent)
 }
 
 fun File.child(name: String): File {

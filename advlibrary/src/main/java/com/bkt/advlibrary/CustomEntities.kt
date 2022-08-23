@@ -40,55 +40,20 @@ class LiveObject<T>(initial: T) : MutableLiveData<T>(initial) {
     }
 }
 
-class MediatorLiveObject<T, M : Any>(
-    vararg objects: LiveObject<M>,
-    block: (() -> T)? = null
-) :
-    MediatorLiveData<T>() {
-    init {
-        for (obj in objects) {
-            addLiveSource(obj, block)
-        }
-    }
-
-    fun <N> addLiveSource(
-        obj: LiveObject<N>,
-        onChanged: (() -> T)? = null
-    ): MediatorLiveObject<T, M> {
-        var first = true
-        super.addSource(obj) {
-            if (!first) {
-                value = onChanged?.invoke()
-            }
-            first = false
-        }
-        return this
-    }
-}
-
-class AdvMediatorLiveObject<Type> : MediatorLiveData<Type>() {
-    val currentDataList = java.util.HashMap<Int, Any?>()
-    private var counter = 0
-
+class MediatorLiveObject : MediatorLiveData<Unit>() {
     fun <S : Any?> addSources(vararg sources: LiveData<S>) {
         for (source in sources) {
-            super.addSource(source) {
-                currentDataList[counter] = it
-            }
-            counter++
+            super.addSource(source) { value = Unit }
         }
     }
 
     fun <S : Any?> addSource(source: LiveData<S>) {
-        super.addSource(source) {
-            currentDataList[counter] = it
-        }
-        counter++
+        super.addSource(source) { value = Unit }
     }
 
-    fun observe(owner: LifecycleOwner, observer: (java.util.HashMap<Int, Any?>, Type) -> Unit) {
+    fun observe(owner: LifecycleOwner, observer: () -> Unit) {
         super.observe(owner) {
-            observer.invoke(currentDataList, it)
+            observer.invoke()
         }
     }
 }
@@ -112,3 +77,4 @@ fun <K> HashMap<K, Int>.addToKeyValue(key: K, value: Int) {
     val currentValue = get(key) ?: 0
     put(key, currentValue + value)
 }
+

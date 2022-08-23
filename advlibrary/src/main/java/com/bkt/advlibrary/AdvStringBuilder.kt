@@ -7,8 +7,8 @@ import android.text.style.*
 import android.view.View
 import androidx.annotation.ColorInt
 
-class AdvStringBuilder {
-    private val sb = SpannableStringBuilder()
+class AdvStringBuilder(private val initialText: CharSequence = "") {
+    private var sb = SpannableStringBuilder(initialText)
 
     fun append(text: CharSequence?): AdvStringBuilder {
         if (text != null)
@@ -93,7 +93,7 @@ class AdvStringBuilder {
 
 
     fun clear(): AdvStringBuilder {
-        sb.clear()
+        sb = SpannableStringBuilder()
         return this
     }
 

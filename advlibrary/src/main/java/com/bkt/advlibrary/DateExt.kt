@@ -99,6 +99,56 @@ fun Date.getWeekEnd(): Date {
     return calendar.time
 }
 
+fun Date.endOfDay(): Date {
+    val calendar = Calendar.getInstance()
+    calendar.time = this
+    calendar[Calendar.HOUR_OF_DAY] = 23
+    calendar[Calendar.MINUTE] = 59
+    calendar[Calendar.SECOND] = 59
+    calendar[Calendar.MILLISECOND] = 999
+    return calendar.time
+}
+
+fun Date.startOfDay(): Date {
+    val calendar = Calendar.getInstance()
+    calendar.time = this
+    calendar[Calendar.HOUR_OF_DAY] = 0
+    calendar[Calendar.MINUTE] = 0
+    calendar[Calendar.SECOND] = 0
+    calendar[Calendar.MILLISECOND] = 0
+    return calendar.time
+}
+
+fun Date.getYearStart(): Date {
+    val calendar = getCalendar()
+    calendar[Calendar.DAY_OF_YEAR] = calendar.getActualMinimum(Calendar.DAY_OF_YEAR)
+    return calendar.time
+}
+
+fun Date.getYearEnd(): Date {
+    val calendar = getCalendar()
+    calendar[Calendar.DAY_OF_YEAR] = calendar.getActualMaximum(Calendar.DAY_OF_YEAR)
+    return calendar.time
+}
+
+fun Date.getFinancialYearStart(): Date {
+    val calendar = getCalendar()
+    if (calendar[Calendar.MONTH] < Calendar.APRIL)
+        calendar[Calendar.YEAR] -= 1
+    calendar[Calendar.MONTH] = Calendar.APRIL
+    calendar[Calendar.DAY_OF_MONTH] = calendar.getActualMinimum(Calendar.DAY_OF_MONTH)
+    return calendar.time
+}
+
+fun Date.getFinancialYearEnd(): Date {
+    val calendar = getCalendar()
+    if (calendar[Calendar.MONTH] > Calendar.MARCH)
+        calendar[Calendar.YEAR] += 1
+    calendar[Calendar.MONTH] = Calendar.MARCH
+    calendar[Calendar.DAY_OF_MONTH] = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+    return calendar.time
+}
+
 fun Date.getDaysTo(toDate: Date, useTime: Boolean = false): Double {
     val endTime: Long
     val startTime: Long
@@ -190,4 +240,12 @@ fun Long.toDateFromMillis(): Date {
     val cal = Calendar.getInstance()
     cal.timeInMillis = this
     return cal.time
+}
+
+operator fun Date.minus(days: Int): Date {
+    return this.add(-days)
+}
+
+operator fun Date.plus(i: Int): Date {
+    return this.add(i)
 }

@@ -53,7 +53,7 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>(
 
     abstract fun setProperties(binder: T): VM
 
-    inline fun <reified VM : BinderModel> getModel(java: Class<VM>): VM {
+    inline fun <reified VM : BinderModel> getModel(): VM {
         val vm by viewModels<VM>()
         return vm
     }

@@ -24,7 +24,7 @@ fun shouldNotBeNegative(
     onError: (field: String) -> Unit = { field -> context.toast("$field cannot be zero or negative") }
 ): Boolean {
     for (et in ets) {
-        if (et.getTrimText().toDouble(0.0) <= 0.0) {
+        if (et.getTrimText().toDoubleOr(0.0) <= 0.0) {
             onError.invoke(et.hint?.toString() ?: "")
             return false
         }

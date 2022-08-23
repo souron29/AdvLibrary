@@ -11,11 +11,11 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import android.util.TypedValue
+import android.view.WindowManager
 import android.widget.Toast
-import androidx.annotation.ColorRes
-import androidx.annotation.DrawableRes
+import androidx.annotation.*
 import androidx.annotation.IntRange
-import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
@@ -116,10 +116,33 @@ object ActivityExtKt {
             else -> null
         }
     }
+
+    fun AppCompatActivity.setStatusBarColorTo(@ColorRes colorId: Int) {
+        // clear FLAG_TRANSLUCENT_STATUS flag:
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+
+        // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        // finally change the color
+        window.statusBarColor = ContextCompat.getColor(this, colorId)
+    }
 }
 
 fun Context.copyToClipboard(content: String) {
     val clipboardManager = ContextCompat.getSystemService(this, ClipboardManager::class.java)!!
     val clip = ClipData.newPlainText("clipboard", content)
     clipboardManager.setPrimaryClip(clip)
+}
+
+
+fun Context.dpToPx(dp: Float): Float {
+    return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, resources.displayMetrics)
+}
+
+fun Context.spToPx(sp: Float): Float {
+    return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, resources.displayMetrics)
+}
+
+fun Context.getDimen(@DimenRes id: Int): Float {
+    return resources.getDimension(id) / resources.displayMetrics.density
 }

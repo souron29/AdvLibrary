@@ -3,6 +3,7 @@ package com.bkt.advlibrary
 import android.graphics.Color
 import android.text.InputType
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
@@ -11,6 +12,7 @@ import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.annotation.LayoutRes
 import androidx.core.view.setPadding
+import androidx.recyclerview.widget.RecyclerView
 import com.bkt.advlibrary.ActivityExtKt.scanForActivity
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
@@ -103,23 +105,22 @@ fun View.snack(text: String, length: Int = Snackbar.LENGTH_SHORT, block: Snackba
     }
 }
 
-fun <T> ChipGroup.addChips(
-    @LayoutRes chipLayout: Int,
-    vararg mapping: Pair<T, String>,
-    chipModifier: (Chip, index: Int) -> Unit = { _: Chip, _: Int -> }
-): HashMap<Int, T> {
-    val inflater = LayoutInflater.from(context)
-    val map = HashMap<Int, T>()
-    for ((index, item) in mapping.withIndex()) {
-        val chip = inflater.inflate(
-            chipLayout,
-            this,
-            false
-        ) as Chip
-        chip.text = item.second
-        chipModifier.invoke(chip, index)
-        addView(chip)
-        map[chip.id] = item.first
-    }
-    return map
+
+
+fun RecyclerView.disableTouchInterceptOnView() {
+    this.addOnItemTouchListener(object : RecyclerView.OnItemTouchListener {
+
+        override fun onTouchEvent(view: RecyclerView, event: MotionEvent) {}
+
+        override fun onInterceptTouchEvent(view: RecyclerView, event: MotionEvent): Boolean {
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    view.parent?.requestDisallowInterceptTouchEvent(true)
+                }
+            }
+            return false
+        }
+
+        override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {}
+    })
 }

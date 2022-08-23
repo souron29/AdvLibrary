@@ -32,7 +32,7 @@ fun writeBoolToSettings(context: Context, key: String, value: Boolean, ifEmpty: 
         val edit = PreferenceManager.getDefaultSharedPreferences(context).edit()
         edit.putBoolean(key, value)
         edit.apply()
-    } else if (getStringSettings(context, key)!!.isEmpty()) {
+    } else if (getStringSettings(context, key).isEmpty()) {
         val edit2 = PreferenceManager.getDefaultSharedPreferences(context).edit()
         edit2.putBoolean(key, value)
         edit2.apply()
