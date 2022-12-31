@@ -7,7 +7,7 @@ import android.text.style.*
 import android.view.View
 import androidx.annotation.ColorInt
 
-class AdvStringBuilder(private val initialText: CharSequence = "") {
+class AdvStringBuilder(private val initialText: CharSequence? = null) {
     private var sb = SpannableStringBuilder(initialText)
 
     fun append(text: CharSequence?): AdvStringBuilder {
@@ -16,16 +16,18 @@ class AdvStringBuilder(private val initialText: CharSequence = "") {
         return this
     }
 
-    private fun appendSpan(text: CharSequence, span: CharacterStyle) {
+    fun appendSpan(text: CharSequence, vararg spans: CharacterStyle) {
         sb.append(text)
         val start = sb.length - text.length
         val end = sb.length
-        sb.setSpan(
-            span,
-            start,
-            end,
-            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-        )
+
+        for (span in spans)
+            sb.setSpan(
+                span,
+                start,
+                end,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
     }
 
     fun appendBold(text: CharSequence?): AdvStringBuilder {

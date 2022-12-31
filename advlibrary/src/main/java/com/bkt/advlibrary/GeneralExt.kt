@@ -34,7 +34,7 @@ fun ifEmpty(text: String, value: String): String {
         value
     } else text
 }
-fun Double.toText(decimalPlaces: Int = 2): String {
+fun Double.toText(decimalPlaces: Int = this.precision()): String {
     return BigDecimal(this).setScale(decimalPlaces, RoundingMode.HALF_UP).toString()
 }
 

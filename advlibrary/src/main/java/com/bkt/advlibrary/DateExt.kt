@@ -178,17 +178,18 @@ fun String.toDate(format: String = DateFormats.DATE): Date? {
 
 fun String.toDateOrNull(
     format: String = DateFormats.DATE,
-    preserveCurrentTime: Boolean = false
+    preserveCurrentTime: Boolean = true
 ): Date? {
     val df = SimpleDateFormat(format, Locale.US)
     df.timeZone = timeZoneIST
     return try {
-        val date = df.parse(this)
+        val date = df.parse(this)!!
         val dateCal = Calendar.getInstance()
         dateCal.time = date
 
         val returnCal = Calendar.getInstance()
         returnCal[Calendar.DAY_OF_YEAR] = dateCal[Calendar.DAY_OF_YEAR]
+        returnCal[Calendar.YEAR] = dateCal[Calendar.YEAR]
         if (preserveCurrentTime)
             returnCal.time
         else dateCal.time
