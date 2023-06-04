@@ -1,5 +1,9 @@
 package com.bkt.advlibrary
 
+import java.math.BigDecimal
+import java.math.RoundingMode
+import java.text.NumberFormat
+import java.util.*
 import kotlin.math.roundToLong
 
 fun Int.pow(exp: Int): Int {
@@ -34,4 +38,15 @@ fun Double.round(radix: Int): Double {
 
 fun Double?.roundToNearest(value: Int): Double {
     return ((this ?: 0.0) / value.toDouble()).roundToLong() * value.toDouble()
+}
+
+fun BigDecimal.roundedText(maxRadix: Int): String {
+    val amountDecimal = remainder(BigDecimal.ONE)
+    return if (amountDecimal.compareTo(BigDecimal(0.0)) == 0)
+        setScale(0, RoundingMode.HALF_UP).toString()
+    else setScale(kotlin.math.min(scale(), maxRadix), RoundingMode.HALF_UP).toString()
+}
+
+fun BigDecimal.toCurrency(): String {
+    return NumberFormat.getCurrencyInstance(Locale("en", "in")).format(this)
 }

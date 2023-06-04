@@ -15,8 +15,10 @@ import android.provider.MediaStore
 import android.util.TypedValue
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
+import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import java.io.IOException
 import java.util.ArrayList
 
@@ -133,4 +135,15 @@ fun Drawable.resizeDrawable(context: Context, width: Float, height: Float): Draw
 fun Drawable.setColor(@ColorInt color: Int): Drawable {
     colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN)
     return this
+}
+
+fun Int.toColor(context: Context): Int {
+    return context.getColor(this)
+}
+
+fun Context.getDrawableTinted(@DrawableRes drawableId: Int, @ColorRes colorId: Int): Drawable {
+    val unwrappedDrawable = AppCompatResources.getDrawable(this, drawableId)!!
+    val wrappedDrawable = DrawableCompat.wrap(unwrappedDrawable)
+    DrawableCompat.setTint(wrappedDrawable, getColor(colorId))
+    return wrappedDrawable
 }

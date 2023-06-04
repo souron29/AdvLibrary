@@ -1,7 +1,5 @@
 package com.bkt.advlibrary
 
-import com.bkt.advlibrary.DateFormats
-import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.time.ZoneId
 import java.time.temporal.ChronoUnit
@@ -9,6 +7,11 @@ import java.util.*
 
 val timeZoneIST: TimeZone = TimeZone.getTimeZone("Asia/Kolkata")
 val today: Date by lazy { Calendar.getInstance().time }
+
+fun sysdate(): Date {
+    return Calendar.getInstance().time
+}
+
 fun Date.getCalendar(): Calendar {
     val cal = Calendar.getInstance(Locale.US)
     cal.time = this
@@ -79,6 +82,10 @@ fun Date.getMonthEnd(): Date {
     calendar[Calendar.DAY_OF_MONTH] = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
     return calendar.time
 }
+
+fun Date.getPreviousMonth() = this.getCalendar().also {
+    it.add(Calendar.MONTH, -1)
+}.time
 
 fun Date.getWeekStart(): Date {
     val calendar = getCalendar()
@@ -231,6 +238,16 @@ fun Date.inSameMonthOf(rangeDate: Date): Boolean {
     val rangeCal = rangeDate.getCalendar()
     val effectiveCal = this.getCalendar()
     return rangeCal[Calendar.YEAR] == effectiveCal[Calendar.YEAR] && rangeCal[Calendar.MONTH] == effectiveCal[Calendar.MONTH]
+}
+
+fun Date?.isSameDateAs(otherDate: Date?): Boolean {
+    if (this == null || otherDate == null)
+        return false
+    val rangeCal = otherDate.getCalendar()
+    val effectiveCal = this.getCalendar()
+
+    return rangeCal[Calendar.YEAR] == effectiveCal[Calendar.YEAR] && rangeCal[Calendar.MONTH] == effectiveCal[Calendar.MONTH] &&
+            rangeCal[Calendar.DAY_OF_MONTH] == effectiveCal[Calendar.DAY_OF_MONTH]
 }
 
 fun Date.between(startDate: Date, endDate: Date): Boolean {

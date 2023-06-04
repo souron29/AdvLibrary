@@ -20,7 +20,7 @@ class LiveObject<T>(initial: T) : MutableLiveData<T>(initial) {
         super.postValue(value)
     }
 
-    fun setValueWithoutNotifying(value: T){
+    fun setValueWithoutNotifying(value: T) {
         this.actualValue = value
     }
 
@@ -56,6 +56,40 @@ class MediatorLiveObject : MediatorLiveData<Unit>() {
             observer.invoke()
         }
     }
+}
+
+class CyclicalData<T> {
+    private val dataList by lazy { java.util.ArrayList<T>() }
+    private var index = -1
+
+    fun add(value: T) {
+        dataList.add(value)
+    }
+
+    fun remove(value: T) {
+        dataList.remove(value)
+    }
+
+    fun removeAt(index: Int) {
+        dataList.removeAt(index)
+    }
+
+    fun reset() {
+        index = -1
+    }
+
+    fun next(): T? {
+        index++
+        if (index > dataList.lastIndex)
+            index = 0
+        return dataList.getOrNull(index)
+    }
+
+    fun clear() {
+        dataList.clear()
+        index = -1
+    }
+
 }
 
 class SummationMap<K> : LinkedHashMap<K, Double>() {

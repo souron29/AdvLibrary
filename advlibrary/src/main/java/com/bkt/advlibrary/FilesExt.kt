@@ -8,7 +8,9 @@ import android.net.Uri
 import android.provider.OpenableColumns
 import androidx.core.content.FileProvider
 import com.bkt.advlibrary.ActivityExtKt.toast
-import java.io.File
+import java.io.*
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
 
 
 fun File.openInFileManager(context: Context) {
@@ -117,5 +119,38 @@ fun File.cleanFolder() {
                 file.cleanFolder()
             else file.delete()
         }
+    }
+}
+
+fun List<File>.zipFiles(folder: File, fileName: String): File? {
+    try {
+        val zipFilePath = "${folder.absolutePath}/$fileName"
+        var origin: BufferedInputStream?
+        val dest = FileOutputStream(zipFilePath)
+        val out = ZipOutputStream(
+            BufferedOutputStream(
+                dest
+            )
+        )
+        val bufferSize = 2048
+        val data = ByteArray(bufferSize)
+        for (file in this) {
+            val fi = FileInputStream(file)
+            origin = BufferedInputStream(fi, bufferSize)
+            val entry =
+                ZipEntry(file.absolutePath.substring(file.absolutePath.lastIndexOf("/") + 1))
+            out.putNextEntry(entry)
+            var count: Int
+            while (origin.read(data, 0, bufferSize).also { count = it } != -1) {
+                out.write(data, 0, count)
+            }
+            origin.close()
+        }
+
+        out.close()
+        return File(zipFilePath)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        return null
     }
 }

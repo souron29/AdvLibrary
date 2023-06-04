@@ -1,6 +1,7 @@
 package com.bkt.advlibrary
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -21,7 +22,9 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.FragmentActivity
+import com.bkt.advlibrary.ActivityExtKt.vibrateOnce
 
 object ActivityExtKt {
 
@@ -145,4 +148,29 @@ fun Context.spToPx(sp: Float): Float {
 
 fun Context.getDimen(@DimenRes id: Int): Float {
     return resources.getDimension(id) / resources.displayMetrics.density
+}
+
+@RequiresPermission(Manifest.permission.VIBRATE)
+fun Context.errorVibrate() {
+    vibrateOnce(500, 255)
+}
+
+@RequiresPermission(Manifest.permission.VIBRATE)
+fun Context.successVibrate() {
+    vibrateOnce(100, 100)
+}
+
+object ClipManager {
+
+    fun getText(context: Context): CharSequence? {
+        val manager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        return manager.primaryClip?.getItemAt(0)?.coerceToText(context)
+    }
+
+    fun pasteText(context: Context, text: CharSequence, label: CharSequence = "Text") {
+        val clip = ClipData.newPlainText(label, text)
+        val manager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        manager.setPrimaryClip(clip)
+    }
+
 }
