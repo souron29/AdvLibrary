@@ -108,6 +108,12 @@ class AdvStringBuilder(private val initialText: CharSequence = "", vararg spans:
     fun get(): CharSequence {
         return sb
     }
+
+    override fun toString(): String {
+        return sb.toString()
+    }
+
+
 }
 
 data class AdvSpan(val isBold: Boolean = false, val color: Int = -1, val size: Float = 1.0f)
