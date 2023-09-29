@@ -78,9 +78,11 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>(
 
     override fun onStop() {
         super.onStop()
-        vm.fragLoad = null
-        vm.toast = null
-        vm.hide = null
+        if (this::vm.isInitialized) {
+            vm.fragLoad = null
+            vm.toast = null
+            vm.hide = null
+        }
     }
 
     protected fun afterSettingVM(block: () -> Unit) {
@@ -92,7 +94,8 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>(
 
     override fun onDestroy() {
         super.onDestroy()
-        vm.fragment = null
+        if (this::vm.isInitialized)
+            vm.fragment = null
     }
 }
 

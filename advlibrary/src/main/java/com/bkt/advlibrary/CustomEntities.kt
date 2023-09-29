@@ -58,9 +58,17 @@ class MediatorLiveObject : MediatorLiveData<Unit>() {
     }
 }
 
-class CyclicalData<T> {
-    private val dataList by lazy { java.util.ArrayList<T>() }
+class CyclicalData<T>(vararg values: T) {
+    private val dataList by lazy { ArrayList<T>() }
     private var index = -1
+
+    val value: T
+        get() = dataList[minOf(maxOf(index, 0), dataList.lastIndex)]
+
+    init {
+        if (values.isNotEmpty())
+            dataList.addAll(values)
+    }
 
     fun add(value: T) {
         dataList.add(value)
