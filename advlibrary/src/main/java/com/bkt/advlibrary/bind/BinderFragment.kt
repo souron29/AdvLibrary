@@ -8,6 +8,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.viewModels
 import com.bkt.advlibrary.CommonFragment
+import com.bkt.advlibrary.popBackStack
+import com.bkt.advlibrary.popBackStackImmediate
 
 abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>(
     private val layoutId: Int,

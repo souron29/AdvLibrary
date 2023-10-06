@@ -66,12 +66,25 @@ open class CommonActivity : AppCompatActivity(), LifecycleOwner {
     }
 
     override fun onBackPressed() {
-        val lastFrag = supportFragmentManager.fragments.lastOrNull()
+        checkAndPopFrag()
+    }
+
+    private fun checkAndPopFrag(
+        indexOfFragToPop: Int = supportFragmentManager.fragments.lastIndex
+    ) {
+        val fragList = supportFragmentManager.fragments
+        val lastFrag = fragList.getOrNull(indexOfFragToPop)
+
         if (lastFrag == null)
             super.onBackPressed()
-        else if (lastFrag !is CommonFragment)
-            supportFragmentManager.popBackStack()
-        else if (lastFrag.isAdded && !lastFrag.backPressHandled()) {
+        else if (lastFrag !is CommonFragment) {
+
+            val popped = supportFragmentManager.popBackStackImmediate()
+            // using to detect glide SupportRequestManagerFragment (sticky fragment)
+            if (!popped) {
+                checkAndPopFrag(indexOfFragToPop - 1)
+            }
+        } else if (lastFrag.isAdded && !lastFrag.backPressHandled()) {
             val count = supportFragmentManager.backStackEntryCount
             when {
                 count > 1 -> supportFragmentManager.popBackStack()

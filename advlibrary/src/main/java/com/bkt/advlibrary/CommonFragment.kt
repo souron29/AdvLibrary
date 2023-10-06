@@ -1,8 +1,6 @@
 package com.bkt.advlibrary
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
@@ -120,35 +118,21 @@ abstract class CommonFragment(open val fragmentName: String) : Fragment(), Lifec
         }
 
         if (pagerDetails == null) {
-            val child = childFragmentManager.fragments.lastOrNull() as CommonFragment?
-            val childHandled = child?.backPressHandled() ?: false
-            if (childHandled)
-                return true
-            else if (child != null) {
-                child.popBackStackImmediate()
-                return true
+            return when (val child = childFragmentManager.fragments.lastOrNull()) {
+                null -> return false
+                is CommonFragment -> {
+                    val childHandled = child.backPressHandled()
+                    if (!childHandled)
+                        child.popBackStackImmediate()
+                    true
+                }
+                else -> {
+                    child.popBackStackImmediate()
+                    true
+                }
             }
         }
         return false
-    }
-
-    fun popBackStackImmediate(): Boolean {
-        if (!isAdded) {
-            return false
-        }
-        return parentFragmentManager.popBackStackImmediate()
-    }
-
-    fun popBackStack() {
-        if (isAdded) {
-            parentFragmentManager.popBackStack()
-        }
-    }
-
-    fun popChildFragment() {
-        if (isAdded) {
-            childFragmentManager.popBackStack()
-        }
     }
 
     fun toast(text: String, longToast: Boolean = true) {
@@ -163,3 +147,22 @@ internal data class PagerDetails(
     val adapter: PagerAdapter,
     val defaultItem: Int = 0
 )
+
+fun Fragment.popBackStackImmediate(): Boolean {
+    if (!isAdded) {
+        return false
+    }
+    return parentFragmentManager.popBackStackImmediate()
+}
+
+fun Fragment.popBackStack() {
+    if (isAdded) {
+        parentFragmentManager.popBackStack()
+    }
+}
+
+fun Fragment.popChildFragment() {
+    if (isAdded) {
+        childFragmentManager.popBackStack()
+    }
+}
