@@ -118,21 +118,30 @@ abstract class CommonFragment(open val fragmentName: String) : Fragment(), Lifec
         }
 
         if (pagerDetails == null) {
-            return when (val child = childFragmentManager.fragments.lastOrNull()) {
-                null -> return false
-                is CommonFragment -> {
-                    val childHandled = child.backPressHandled()
-                    if (!childHandled)
-                        child.popBackStackImmediate()
-                    true
-                }
-                else -> {
+            return handleChildPop()
+        }
+        return false
+    }
+
+    private fun handleChildPop(indexOfFrag: Int = childFragmentManager.fragments.lastIndex): Boolean {
+        return when (val child = childFragmentManager.fragments.getOrNull(indexOfFrag)) {
+            null -> return false
+            is CommonFragment -> {
+                val childHandled = child.backPressHandled()
+                if (!childHandled)
                     child.popBackStackImmediate()
+                true
+            }
+            else -> {
+                val popped = child.popBackStackImmediate()
+                if (popped)
                     true
+                else {
+                    // may be received glide fragment
+                    handleChildPop(indexOfFrag - 1)
                 }
             }
         }
-        return false
     }
 
     fun toast(text: String, longToast: Boolean = true) {
