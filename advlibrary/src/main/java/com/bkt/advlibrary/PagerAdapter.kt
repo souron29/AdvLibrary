@@ -15,7 +15,7 @@ class PagerAdapter(
     private val fragmentList = ArrayList<CommonFragment>()
 
     fun getExistingFragments(): ArrayList<CommonFragment> {
-        return ArrayList( fragments.getValueList())
+        return ArrayList(fragments.getValueList())
     }
 
     override fun getItemCount(): Int {
@@ -36,6 +36,17 @@ class PagerAdapter(
         val index = fragmentList.indexOf(fragment)
         fragmentList.removeAt(index)
         fragments.remove(index)
+    }
+
+    fun clearAllFragments() {
+        fragmentList.clear()
+        fragments.clear()
+    }
+
+    fun addAllFragments(listOfFragments: List<CommonFragment>) {
+        listOfFragments.forEach {
+            addFragment(it)
+        }
     }
 
     fun removeAt(index: Int) {
