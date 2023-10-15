@@ -1,9 +1,10 @@
 package com.bkt.advlibrary
 
 import androidx.lifecycle.*
+import java.io.Serializable
 import java.util.HashMap
 
-class LiveObject<T>(initial: T) : MutableLiveData<T>(initial) {
+class LiveObject<T>(initial: T) : MutableLiveData<T>(initial), Serializable {
     var actualValue: T = initial
 
     override fun getValue(): T {
@@ -40,7 +41,7 @@ class LiveObject<T>(initial: T) : MutableLiveData<T>(initial) {
     }
 }
 
-class MediatorLiveObject : MediatorLiveData<Unit>() {
+class MediatorLiveObject : MediatorLiveData<Unit>(), Serializable {
     fun <S : Any?> addSources(vararg sources: LiveData<S>) {
         for (source in sources) {
             super.addSource(source) { value = Unit }
@@ -58,7 +59,7 @@ class MediatorLiveObject : MediatorLiveData<Unit>() {
     }
 }
 
-class CyclicalData<T>(vararg values: T) {
+class CyclicalData<T>(vararg values: T): Serializable {
     private val dataList by lazy { ArrayList<T>() }
     private var index = -1
 
