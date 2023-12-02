@@ -48,7 +48,7 @@ fun BigDecimal.roundedText(maxRadix: Int): String {
 }
 
 fun BigDecimal.toCurrency(): String {
-    val text = NumberFormat.getCurrencyInstance(Locale("en", "in")).format(this)
+    val text = NumberFormat.getCurrencyInstance(Locale("en", "in")).format(this.stripTrailingZeros())
     return when {
         text.endsWith(".00") -> text.replace(".00", "")
         else -> text

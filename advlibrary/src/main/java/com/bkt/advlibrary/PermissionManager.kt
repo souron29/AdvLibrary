@@ -2,10 +2,8 @@ package com.bkt.advlibrary
 
 import android.content.Context
 import android.content.pm.PackageManager
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import java.util.*
-import kotlin.collections.ArrayList
 
 class PermissionManager private constructor(
     private val activity: CommonActivity,
@@ -22,7 +20,7 @@ class PermissionManager private constructor(
     }
 
     fun ask(onResponse: (Boolean, ArrayList<String>, Boolean, ArrayList<String>) -> Unit = { _, _, _, _ -> }) {
-        this.onResult = onResponse
+        onResult = onResponse
         bgLaunch {
             val hasPermission = permissions.all {
                 ActivityCompat.checkSelfPermission(
@@ -32,7 +30,7 @@ class PermissionManager private constructor(
             }
             if (hasPermission) {
                 mainLaunch {
-                    this.onResult.invoke(
+                    onResult.invoke(
                         true,
                         ArrayList(permissions.asList()),
                         false,

@@ -27,6 +27,18 @@ fun mainLaunch(block: () -> Unit) {
     }
 }
 
+fun <T> runInBg(block: suspend CoroutineScope.() -> T): Job {
+    return bgScope.launch {
+        block.invoke(this)
+    }
+}
+
+fun <T> runInMain(block: suspend CoroutineScope.() -> T): Job {
+    return mainScope.launch {
+        block.invoke(this)
+    }
+}
+
 /**
  * Use this for a running transactions inside a single
  */
