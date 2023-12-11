@@ -131,7 +131,7 @@ fun TextView.assignIf(condition: Boolean, valueIf: Any?, valueElse: Any? = null)
         }
 }
 
-fun EditText?.setTextWatcher(block:(CharSequence?)->Unit){
+fun EditText?.setTextWatcher(block: (CharSequence?) -> Unit) {
     this?.addTextChangedListener {
         block.invoke(it)
     }
@@ -183,5 +183,8 @@ data class EditTextProperty(
             editText.inputType =
                 InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL or InputType.TYPE_NUMBER_FLAG_DECIMAL
         }
+
+        if (text.value.isNotEmpty())
+            editText.setText(text.value)
     }
 }
