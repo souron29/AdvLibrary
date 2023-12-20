@@ -170,7 +170,6 @@ data class EditTextProperty(
 ) {
     val text = LiveObject("")
 
-
     fun setProperties(editText: TextInputEditText) {
         editText.setTextColor(color)
         editText.background = null
