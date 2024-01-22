@@ -2,6 +2,7 @@ package com.bkt.advlibrary
 
 import androidx.lifecycle.*
 import java.io.Serializable
+import java.math.BigDecimal
 import java.util.HashMap
 
 class LiveObject<T>(initial: T) : MutableLiveData<T>(initial), Serializable {
@@ -119,5 +120,31 @@ class HashList<K, V> : LinkedHashMap<K, ArrayList<V>>() {
 fun <K> HashMap<K, Int>.addToKeyValue(key: K, value: Int) {
     val currentValue = get(key) ?: 0
     put(key, currentValue + value)
+}
+
+class SummationMapBig<K> : LinkedHashMap<K, BigDecimal>() {
+    fun addValue(key: K, value: BigDecimal) {
+        val currentValue = get(key) ?: BigDecimal.ZERO
+        put(key, currentValue + value)
+    }
+
+    fun getValue(key: K): BigDecimal {
+        return get(key) ?: BigDecimal.ZERO
+    }
+}
+
+class SummationMapInt<K> : LinkedHashMap<K, Int>() {
+    fun addValue(key: K, value: Int) {
+        val currentValue = get(key) ?: 0
+        put(key, currentValue + value)
+    }
+
+    fun addOne(key: K) {
+        addValue(key, 1)
+    }
+
+    fun getValue(key: K): Int {
+        return get(key) ?: 0
+    }
 }
 
