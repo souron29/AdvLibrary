@@ -315,17 +315,22 @@ fun <E> setAutoAdapterCompleteList(
     listOfItems: List<DropdownItem<E>>,
     selectedItem: LiveObject<E>?
 ) {
-    val activity = view.context.scanForActivity() as FragmentActivity
+    val activity = view.context.scanForActivity() as CommonActivity
     val layoutId = android.R.layout.simple_spinner_dropdown_item
+    var displayableListOfItems = listOfItems
 
     val adapter =
         object : ArrayAdapter<DropdownItem<E>>(activity, layoutId, listOfItems) {
+            private val filter = createFilterForArrayAdapter(listOfItems) {
+                displayableListOfItems = it
+            }
+
             override fun getCount(): Int {
-                return listOfItems.size
+                return displayableListOfItems.size
             }
 
             override fun getItem(position: Int): DropdownItem<E> {
-                return listOfItems[position]
+                return displayableListOfItems[position]
             }
 
             override fun getItemId(position: Int): Long {
@@ -346,10 +351,16 @@ fun <E> setAutoAdapterCompleteList(
                 }
                 return convertView
             }
+
+            override fun getFilter(): Filter {
+                return filter
+            }
         }
+
     view.setAdapter(adapter)
     view.setOnItemClickListener { _, _, position, _ ->
-        val item = listOfItems[position]
+        // find the actual selected item from the displayed items
+        val item = displayableListOfItems[position]
         if (selectedItem != null)
             selectedItem.value = item.mainItem
 
@@ -359,6 +370,32 @@ fun <E> setAutoAdapterCompleteList(
                 it.isSelected = item == it
             }
         }
+        activity.hideKeyboard()
+    }
+}
+
+fun <E> createFilterForArrayAdapter(
+    listOfItems: List<DropdownItem<E>>,
+    onListChanged: (List<DropdownItem<E>>) -> Unit
+): Filter {
+    return object : Filter() {
+        override fun performFiltering(filterText: CharSequence?): FilterResults {
+            val result = FilterResults()
+            if (filterText.isNullOrEmpty()) {
+                result.values = listOfItems
+                result.count = listOfItems.size
+            } else {
+                val filteredList = listOfItems.filter { it.text.contains(filterText) }
+                result.values = filteredList
+                result.count = filteredList.size
+            }
+            return result
+        }
+
+        override fun publishResults(p0: CharSequence?, p1: FilterResults?) {
+            (p1?.values as List<DropdownItem<E>>?)?.let(onListChanged)
+        }
+
     }
 }
 
