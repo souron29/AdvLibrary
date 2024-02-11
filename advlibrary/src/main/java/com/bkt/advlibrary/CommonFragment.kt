@@ -1,12 +1,15 @@
 package com.bkt.advlibrary
 
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
+import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.LifecycleOwner
 import androidx.viewpager2.widget.ViewPager2
+import java.io.Serializable
 
 abstract class CommonFragment(open val fragmentName: String) : Fragment(), LifecycleOwner {
     val stackCount: Int
@@ -15,7 +18,6 @@ abstract class CommonFragment(open val fragmentName: String) : Fragment(), Lifec
 
     private var pagerDetails: PagerDetails? = null
     private var onClose = {}
-
 
     fun onClosed(onClose: () -> Unit) {
         this.onClose = onClose
@@ -148,7 +150,23 @@ abstract class CommonFragment(open val fragmentName: String) : Fragment(), Lifec
         if (isAdded)
             (activity as CommonActivity).toast(text, longToast)
     }
+    fun passArguments(vararg args: Serializable) {
+        val arguments = this.arguments ?: Bundle()
+        for ((count, arg) in args.withIndex()) {
+            val param = "ParamArg$count"
+            arguments.putSerializable(param, arg)
+        }
+        this.arguments = arguments
+    }
 
+    fun <T : Serializable> getArgument(argIndex: Int, clazz: Class<T>? = null): T? {
+        val param = "ParamArg$argIndex"
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && clazz != null) {
+            arguments?.getSerializable(param, clazz)
+        } else {
+            arguments?.getSerializable(param) as T?
+        }
+    }
 }
 
 internal data class PagerDetails(
@@ -174,4 +192,22 @@ fun Fragment.popChildFragment() {
     if (isAdded) {
         childFragmentManager.popBackStack()
     }
+}
+
+/**
+ * Used to send data back to the calling fragment
+ *
+ * We can listen for result data using
+ * fragment.setFragmentResultListener(requestKey) { key, bundle -> }
+ *
+ */
+fun <V : Serializable> Fragment.sendResultData(
+    requestKey: String,
+    vararg keyValuePairs: Pair<String, V>
+) {
+    val result = Bundle()
+    for ((resultKey, value) in keyValuePairs) {
+        result.putSerializable(resultKey, value)
+    }
+    this.setFragmentResult(requestKey, result)
 }

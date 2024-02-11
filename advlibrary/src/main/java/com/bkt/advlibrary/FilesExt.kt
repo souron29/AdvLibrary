@@ -6,6 +6,7 @@ import android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
 import android.content.Intent.FLAG_GRANT_WRITE_URI_PERMISSION
 import android.net.Uri
 import android.provider.OpenableColumns
+import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider
 import com.bkt.advlibrary.ActivityExtKt.toast
 import java.io.*
@@ -43,7 +44,7 @@ fun File.openInFileManager(context: Context) {
 fun File.openInFileManager2(context: Context) {
     val intent = Intent(Intent.ACTION_VIEW)
     intent.setDataAndType(Uri.parse(canonicalPath), "resource/folder")
-    intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+    intent.flags = FLAG_GRANT_READ_URI_PERMISSION
     context.startActivity(intent)
 }
 
@@ -152,5 +153,57 @@ fun List<File>.zipFiles(folder: File, fileName: String): File? {
     } catch (e: Exception) {
         e.printStackTrace()
         return null
+    }
+}
+
+fun Context.getFileUri(file: File, authority: String): Uri? {
+    return FileProvider.getUriForFile(this, authority, file)
+}
+
+fun Context.shareFiles(onGenerate: (ShareDetails) -> Unit) {
+    val shareDetails = ShareDetails()
+    onGenerate.invoke(shareDetails)
+    // using different intents else activity will search for parcelable when we send list of parcelables
+    val intentBuilder = ShareCompat.IntentBuilder(this)
+
+    intentBuilder.setType(shareDetails.fileType)
+    shareDetails.fileUris.forEach { uri ->
+        intentBuilder.addStream(uri)
+    }
+
+    intentBuilder.addEmailTo(shareDetails.emailsTo.toTypedArray())
+    intentBuilder.addEmailCc(shareDetails.emailsCC.toTypedArray())
+    intentBuilder.addEmailBcc(shareDetails.emailsBCC.toTypedArray())
+    if (shareDetails.subject.isNotEmpty())
+        intentBuilder.setSubject(shareDetails.subject.toString())
+    // Avoid Can't share empty message in whatsapp when sharing only attachments.
+    // Whatsapp doesn't accept empty body. So do not set it
+    if (shareDetails.body.isNotEmpty())
+        intentBuilder.setText(shareDetails.body.toString())
+    val chooserIntent = intentBuilder.intent
+
+    if (shareDetails.targetPackage.isNotEmpty() && shareDetails.targetClass.isNotEmpty())
+        chooserIntent.setClassName(shareDetails.targetPackage, shareDetails.targetClass)
+    if (shareDetails.targetPackage.isNotEmpty())
+        chooserIntent.setPackage(shareDetails.targetPackage)
+    startActivity(Intent.createChooser(chooserIntent, "Share ${shareDetails.subject}"))
+}
+
+class ShareDetails {
+    var body: CharSequence = ""
+    var subject: CharSequence = ""
+    val emailsTo = ArrayList<String>()
+    val emailsCC = ArrayList<String>()
+    val emailsBCC = ArrayList<String>()
+
+    var fileType = "*/*"
+    var targetClass = ""
+    var targetPackage = ""
+    var authority = "com.bkt.bum.FileProviderDefault"
+    val fileUris = ArrayList<Uri>()
+
+    fun addFiles(context: Context, authority: String, vararg files: File) {
+        val uris = files.map { context.getFileUri(it, authority)!! }
+        fileUris.addAll(uris)
     }
 }

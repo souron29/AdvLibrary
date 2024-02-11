@@ -1,12 +1,8 @@
 package com.bkt.advlibrary
 
-import android.R
 import android.content.Context
 import android.content.res.ColorStateList
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffColorFilter
+import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.LayerDrawable
@@ -15,12 +11,12 @@ import android.provider.MediaStore
 import android.util.TypedValue
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
+import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import java.io.IOException
-import java.util.ArrayList
 
 fun getBitmap(context: Context, image_uri: Uri?): Bitmap? {
     return try {
@@ -146,4 +142,24 @@ fun Context.getDrawableTinted(@DrawableRes drawableId: Int, @ColorRes colorId: I
     val wrappedDrawable = DrawableCompat.wrap(unwrappedDrawable)
     DrawableCompat.setTint(wrappedDrawable, getColor(colorId))
     return wrappedDrawable
+}
+
+fun Context.getAdvDrawable(
+    @DrawableRes drawableId: Int = 0,
+    @DimenRes sizeRes: Int = 0,
+    @ColorInt color: Int = 0,
+    @ColorRes colorRes: Int = 0
+): Drawable? {
+    val drawable = AppCompatResources.getDrawable(this, drawableId)
+    if (sizeRes != 0) {
+        val size = resources.getDimensionPixelSize(sizeRes)
+        drawable?.setBounds(0, 0, size, size)
+    }
+    if (color != 0) {
+        drawable?.colorFilter = BlendModeColorFilter(color, BlendMode.SRC_ATOP)
+    } else if (colorRes != 0) {
+        val colorInt = ContextCompat.getColor(this, colorRes)
+        drawable?.colorFilter = BlendModeColorFilter(colorInt, BlendMode.SRC_ATOP)
+    }
+    return drawable
 }

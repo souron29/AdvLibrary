@@ -6,6 +6,9 @@ import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import androidx.annotation.ColorInt
+import androidx.annotation.ColorRes
+import androidx.annotation.DimenRes
+import androidx.annotation.DrawableRes
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 
@@ -125,4 +128,46 @@ fun View.disableTouchInterceptOnView() {
         false
 
     }
+}
+
+fun TextView.topDrawable(
+    @DrawableRes drawableId: Int = 0,
+    @DimenRes sizeRes: Int = 0,
+    @ColorInt color: Int = 0,
+    @ColorRes colorRes: Int = 0
+) {
+    this.setCompoundDrawables(
+        null,
+        context.getAdvDrawable(drawableId, sizeRes, color, colorRes),
+        null,
+        null
+    )
+}
+
+fun TextView.rightDrawable(
+    @DrawableRes drawableId: Int = 0,
+    @DimenRes sizeRes: Int = 0,
+    @ColorInt color: Int = 0,
+    @ColorRes colorRes: Int = 0
+) {
+    this.setCompoundDrawables(
+        null,
+        null,
+        context.getAdvDrawable(drawableId, sizeRes, color, colorRes),
+        null
+    )
+}
+
+fun TextView.leftDrawable(
+    @DrawableRes drawableId: Int = 0,
+    @DimenRes sizeRes: Int = 0,
+    @ColorInt color: Int = 0,
+    @ColorRes colorRes: Int = 0
+) {
+    this.setCompoundDrawables(
+        context.getAdvDrawable(drawableId, sizeRes, color, colorRes),
+        null,
+        null,
+        null
+    )
 }

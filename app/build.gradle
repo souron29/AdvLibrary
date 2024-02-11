@@ -5,13 +5,13 @@ plugins {
 }
 
 android {
-    compileSdk 30
+    compileSdk 34
     buildToolsVersion "30.0.3"
 
     defaultConfig {
         //applicationId "com.bkt.library"
         minSdk 26
-        targetSdk 30
+        targetSdk 34
     }
 
     buildTypes {

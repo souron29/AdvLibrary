@@ -1,6 +1,7 @@
 package com.bkt.advlibrary
 
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.time.ZoneId
 import java.time.temporal.ChronoUnit
 import java.util.*
@@ -71,6 +72,14 @@ fun Date.add(days: Int, months: Int = 0, years: Int = 0): Date {
     return c.time
 }
 
+fun Date.addTime(hours: Int, minutes: Int = 0): Date {
+    val calendar = this.getCalendar()
+    calendar.add(Calendar.HOUR_OF_DAY, hours)
+    calendar.add(Calendar.MINUTE, minutes)
+    this.time = calendar.timeInMillis
+    return this
+}
+
 fun Date.getMonthStart(): Date {
     val calendar = getCalendar()
     calendar[Calendar.DAY_OF_MONTH] = calendar.getActualMinimum(Calendar.DAY_OF_MONTH)
@@ -123,6 +132,31 @@ fun Date.startOfDay(): Date {
     calendar[Calendar.MINUTE] = 0
     calendar[Calendar.SECOND] = 0
     calendar[Calendar.MILLISECOND] = 0
+    return calendar.time
+}
+
+fun Date.isWeekend(): Boolean {
+    return getCalendar().get(Calendar.DAY_OF_WEEK) in listOf(
+        Calendar.SATURDAY,
+        Calendar.SUNDAY
+    )
+}
+
+fun Date.getLastWeekdayOfWeek(): Date {
+    val cal = getCalendar()
+    when {
+        cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY -> cal.add(Calendar.DATE, -1)
+        cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY -> cal.add(Calendar.DATE, -2)
+        else -> {}
+    }
+    return cal.time
+}
+
+fun String.toDateAsMillis(): Date? {
+    if (this.length != 13)
+        return null
+    val calendar = Calendar.getInstance()
+    calendar.timeInMillis = this.toLong()
     return calendar.time
 }
 
@@ -266,4 +300,23 @@ operator fun Date.minus(days: Int): Date {
 
 operator fun Date.plus(i: Int): Date {
     return this.add(i)
+}
+
+fun LocalDate.toDate(): Date {
+    return Date.from(this.atStartOfDay(ZoneId.systemDefault()).toInstant())
+}
+
+fun Date.toLocalDate(): LocalDate {
+    return this.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+}
+
+fun Date.between(
+    startDate: LocalDate,
+    endDate: LocalDate,
+    inclusiveOf: Pair<Boolean, Boolean> = Pair(true, true)
+): Boolean {
+    val thisDate = toLocalDate()
+    val isAfterStartDate = if (inclusiveOf.first) thisDate >= startDate else thisDate > startDate
+    val isBeforeEndDate = if (inclusiveOf.second) thisDate <= endDate else thisDate < endDate
+    return isAfterStartDate && isBeforeEndDate
 }

@@ -1,18 +1,29 @@
 package com.bkt.advlibrary.bind
 
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
+import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Typeface
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.annotation.ColorInt
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.ImageViewCompat
 import androidx.databinding.BindingAdapter
+import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import androidx.viewpager2.widget.ViewPager2
 import com.bkt.advlibrary.*
+import com.bkt.advlibrary.ActivityExtKt.scanForActivity
 import com.google.android.material.tabs.TabLayout
 import java.math.BigDecimal
+import java.util.*
 
 @BindingAdapter("android:visibility")
 fun setVisibility(view: View, visible: Boolean) {
@@ -29,6 +40,98 @@ fun setAsDateField(
 
 }
 
+@BindingAdapter("app:dateTimeFieldEnabled")
+fun setAsDateAndTimeField(
+    et: EditText,
+    isDateEnabled: Boolean = false
+) {
+    if (isDateEnabled)
+        et.setDateAndTimePicker()
+}
+
+fun EditText.setDateAndTimePicker(
+    startDate: Date = Calendar.getInstance().time,
+    format: String = DateFormats.DD_MMM_YYYY_TIME,
+    setAsMin: Boolean = false,
+    onSelect: (Date) -> Unit = {}
+) {
+    val calendar = Calendar.getInstance()
+    calendar.time = startDate
+    this.isFocusable = false
+    this.setText(startDate.format(format))
+    this.setOnClickListener {
+        val currentDate = this.getTrimText().toDate(format)!!
+        calendar.time = currentDate
+        val datePickerDialog = DatePickerDialog(
+            it.context,
+            { _, year, month, dayOfMonth ->
+                calendar[Calendar.YEAR] = year
+                calendar[Calendar.MONTH] = month
+                calendar[Calendar.DAY_OF_MONTH] = dayOfMonth
+
+                this.startTimePicker(calendar) { date ->
+                    this.setText(date.format(format))
+                    onSelect.invoke(date)
+                }
+            },
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        )
+        if (setAsMin) {
+            val datePicker = datePickerDialog.datePicker
+            datePicker.minDate = startDate.time
+        }
+        datePickerDialog.show()
+    }
+}
+
+fun EditText.startTimePicker(calendar: Calendar, onSelect: (Date) -> Unit) {
+    val timePicker = TimePickerDialog(
+        this.context,
+        { _, h, m ->
+            calendar[Calendar.HOUR_OF_DAY] = h
+            calendar[Calendar.MINUTE] = m
+            onSelect.invoke(calendar.time)
+        },
+        calendar[Calendar.HOUR_OF_DAY],
+        calendar[Calendar.MINUTE],
+        false
+    )
+    timePicker.show()
+}
+
+@BindingAdapter("app:timeFieldEnabled")
+fun setAsTimeField(
+    et: EditText,
+    isTimePicker: Boolean = false
+) {
+    if (isTimePicker) {
+        val calendar = Calendar.getInstance()
+        et.isFocusable = false
+        if (et.getTrimText().isEmpty())
+            et.setText(calendar.time.format(DateFormats.TIME))
+        else
+            calendar.time = et.getTrimText().toDate(DateFormats.TIME)!!
+        et.setOnClickListener {
+            val currentDate = et.getTrimText().toDate(DateFormats.TIME)!!
+            calendar.time = currentDate
+            et.startTimePicker(calendar) {
+                et.setText(calendar.time.format(DateFormats.TIME))
+            }
+        }
+    }
+}
+
+fun Context.showKeyboard(editText: EditText) {
+    editText.requestFocus()
+    val service = getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager
+    service.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT)
+}
+
+/**
+ * Recyclerview Related Binders
+ */
 
 @BindingAdapter("linearAdapter")
 fun <T, H : RecyclerView.ViewHolder> setLinearAdapter(
@@ -45,6 +148,27 @@ fun <T, H : RecyclerView.ViewHolder> setHorizontalLinearAdapter(
 ) {
     et.setLinearAdapter(et.context, adapter, RecyclerView.HORIZONTAL)
 }
+
+@BindingAdapter("app:verticalStagAdapter", "app:gridCount", requireAll = false)
+fun <T, H : RecyclerView.ViewHolder> setVerticalStagAdapter(
+    et: RecyclerView,
+    adapter: ListAdapter<T, H>,
+    span: Int?
+) {
+    et.layoutManager = StaggeredGridLayoutManager(span ?: 1, StaggeredGridLayoutManager.VERTICAL)
+    et.adapter = adapter
+}
+
+@BindingAdapter("app:horizontalStagAdapter", "app:gridCount", requireAll = false)
+fun <T, H : RecyclerView.ViewHolder> setHorizontalStagAdapter(
+    et: RecyclerView,
+    adapter: ListAdapter<T, H>,
+    span: Int?
+) {
+    et.layoutManager = StaggeredGridLayoutManager(span ?: 1, StaggeredGridLayoutManager.HORIZONTAL)
+    et.adapter = adapter
+}
+
 
 @BindingAdapter("app:onFocusChange")
 fun setEditTextFocusListener(
@@ -152,5 +276,151 @@ fun setTabs(tabLayout: TabLayout, listOfTabs: List<TabData>, firstTabPosition: I
 data class TabData(val text: CharSequence) {
     fun matches(matchingText: CharSequence): Boolean {
         return text.contains(matchingText, ignoreCase = true)
+    }
+}
+
+/**
+ * View Pager related binders
+ */
+
+@BindingAdapter("app:adapter")
+fun setPagerAdapter(pager: ViewPager2, adapter: PagerAdapter) {
+    pager.adapter = adapter
+}
+
+@BindingAdapter("app:offscreenLimit")
+fun setPagerLimit(pager: ViewPager2, limit: Int) {
+    pager.offscreenPageLimit = limit
+}
+
+@BindingAdapter("app:pagePosition")
+fun setPagerPosition(pager: ViewPager2, pos: Int) {
+    pager.currentItem = pos
+}
+
+
+/**
+ * Textview Related Binders
+ */
+
+/*@BindingAdapter("app:autoCompleteList")
+fun setAutoCompleteAdapter(view: AutoCompleteTextView, listOfText: List<String>) {
+    val adapter = ArrayAdapter(view.context, android.R.layout.simple_list_item_1, listOfText)
+    view.setAdapter(adapter)
+}*/
+
+@BindingAdapter("app:autoCompleteList", "app:selectedItem", requireAll = false)
+fun <E> setAutoAdapterCompleteList(
+    view: AutoCompleteTextView,
+    listOfItems: List<DropdownItem<E>>,
+    selectedItem: LiveObject<E>?
+) {
+    val activity = view.context.scanForActivity() as FragmentActivity
+    val layoutId = android.R.layout.simple_spinner_dropdown_item
+
+    val adapter =
+        object : ArrayAdapter<DropdownItem<E>>(activity, layoutId, listOfItems) {
+            override fun getCount(): Int {
+                return listOfItems.size
+            }
+
+            override fun getItem(position: Int): DropdownItem<E> {
+                return listOfItems[position]
+            }
+
+            override fun getItemId(position: Int): Long {
+                return position.toLong()
+            }
+
+            override fun getView(position: Int, view: View?, parent: ViewGroup): View {
+                val inflater = activity.layoutInflater
+                val convertView = view ?: inflater.inflate(layoutId, parent, false)
+
+                try {
+                    val item = getItem(position)
+                    val textView =
+                        convertView.findViewById<TextView>(android.R.id.text1)
+                    textView.text = item.text
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+                return convertView
+            }
+        }
+    view.setAdapter(adapter)
+    view.setOnItemClickListener { _, _, position, _ ->
+        val item = listOfItems[position]
+        if (selectedItem != null)
+            selectedItem.value = item.mainItem
+
+        view.setText(item.text)
+        bgLaunch {
+            listOfItems.forEach {
+                it.isSelected = item == it
+            }
+        }
+    }
+}
+
+@BindingAdapter("app:listOfItems", "app:selectedItem", requireAll = false)
+fun <E> setSpinnerAdapter(
+    spinner: Spinner,
+    listOfItems: List<DropdownItem<E>>,
+    selectedItem: LiveObject<E>?
+) {
+    val activity = spinner.context.scanForActivity() as FragmentActivity
+    val layoutId = android.R.layout.simple_spinner_dropdown_item
+
+    val adapter =
+        object : ArrayAdapter<DropdownItem<E>>(activity, layoutId, listOfItems) {
+            override fun getCount(): Int {
+                return listOfItems.size
+            }
+
+            override fun getItem(position: Int): DropdownItem<E> {
+                return listOfItems[position]
+            }
+
+            override fun getItemId(position: Int): Long {
+                return position.toLong()
+            }
+
+            override fun getView(position: Int, view: View?, parent: ViewGroup): View {
+                val inflater = activity.layoutInflater
+                val convertView = view ?: inflater.inflate(layoutId, parent, false)
+
+                try {
+                    val item = getItem(position)
+                    val textView =
+                        convertView.findViewById<TextView>(android.R.id.text1)
+                    textView.text = item.text
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+                return convertView
+            }
+        }
+    spinner.adapter = adapter
+    spinner.setOnItemClickListener { _, _, position, _ ->
+        val item = listOfItems[position]
+        if (selectedItem != null)
+            selectedItem.value = item.mainItem
+
+        bgLaunch {
+            listOfItems.forEach {
+                it.isSelected = item == it
+            }
+        }
+    }
+}
+
+data class DropdownItem<E>(val text: CharSequence, val mainItem: E, var isSelected: Boolean = false)
+
+
+@BindingAdapter("app:onRefresh")
+fun onRefresh(swipeRefreshLayout: SwipeRefreshLayout, doThis: () -> Unit) {
+    swipeRefreshLayout.setOnRefreshListener {
+        doThis.invoke()
+        swipeRefreshLayout.isRefreshing = false
     }
 }
