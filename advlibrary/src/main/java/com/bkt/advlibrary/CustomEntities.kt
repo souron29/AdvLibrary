@@ -40,6 +40,17 @@ class LiveObject<T>(initial: T) : MutableLiveData<T>(initial), Serializable {
             }
         }
     }
+
+    fun scan(owner: LifecycleOwner, ignoreFirstTime: Boolean = true, observer: Observer<T>) {
+        var firstTime = true
+        super.observe(owner) {
+            if (firstTime && ignoreFirstTime) {
+                firstTime = false
+                return@observe
+            }
+            observer.onChanged(it)
+        }
+    }
 }
 
 class MediatorLiveObject : MediatorLiveData<Unit>(), Serializable {
@@ -60,7 +71,7 @@ class MediatorLiveObject : MediatorLiveData<Unit>(), Serializable {
     }
 }
 
-class CyclicalData<T>(vararg values: T): Serializable {
+class CyclicalData<T>(vararg values: T) : Serializable {
     private val dataList by lazy { ArrayList<T>() }
     private var index = -1
 
