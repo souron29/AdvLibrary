@@ -136,9 +136,10 @@ fun Context.showKeyboard(editText: EditText) {
 @BindingAdapter("linearAdapter")
 fun <T, H : RecyclerView.ViewHolder> setLinearAdapter(
     et: RecyclerView,
-    adapter: ListAdapter<T, H>
+    adapter: ListAdapter<T, H>?
 ) {
-    et.setLinearAdapter(et.context, adapter)
+    if (adapter != null)
+        et.setLinearAdapter(et.context, adapter)
 }
 
 @BindingAdapter("horizontalAdapter")

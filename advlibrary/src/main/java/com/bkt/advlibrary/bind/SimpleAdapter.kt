@@ -59,6 +59,26 @@ class SimpleAdapter<M, BINDING : ViewDataBinding>(
         dataList = actualList
     }
 
+    /**
+     * Can be used in case of filter where we can filter one list and show the output but retain the actual list
+     */
+    fun setList(mainList: List<M>, displayList: List<M>) {
+        val actualList = ArrayList(mainList)
+        submitList(ArrayList(displayList))
+        dataList = actualList
+    }
+
+    /**
+     * Can be used in case of filter where we can filter one list and show the output but retain the actual list
+     */
+    fun setFilteredList(mainList: List<M>, constraint: String?) {
+        bgBlock {
+            val filteredList = mainList.filter { filterCondition.invoke(it, constraint) }
+            this@SimpleAdapter.dataList = ArrayList(mainList)
+            mainLaunch { submitList(filteredList) }
+        }
+    }
+
     fun filter(constraint: String?) {
         bgBlock {
             val list = dataList.filter { filterCondition.invoke(it, constraint) }
