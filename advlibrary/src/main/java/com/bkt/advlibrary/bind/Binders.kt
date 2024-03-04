@@ -221,7 +221,7 @@ fun setAsBold(view: TextView, isBold: Boolean) {
     else view.setTypeface(null, Typeface.NORMAL)
 }
 
-@BindingAdapter("app:onImeAction")
+@BindingAdapter("app:onFocusChange")
 fun onFocusChange(et: EditText, focusChangeListener: View.OnFocusChangeListener) {
     et.onFocusChangeListener = focusChangeListener
 }

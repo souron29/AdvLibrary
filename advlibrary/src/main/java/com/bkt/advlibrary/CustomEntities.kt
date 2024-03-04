@@ -120,14 +120,6 @@ class SummationMap<K> : LinkedHashMap<K, Double>() {
     }
 }
 
-class HashList<K, V> : LinkedHashMap<K, ArrayList<V>>() {
-    fun addValue(key: K, value: V) {
-        val currentList = get(key) ?: ArrayList()
-        currentList.add(value)
-        put(key, currentList)
-    }
-}
-
 fun <K> HashMap<K, Int>.addToKeyValue(key: K, value: Int) {
     val currentValue = get(key) ?: 0
     put(key, currentValue + value)

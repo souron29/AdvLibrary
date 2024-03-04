@@ -2,6 +2,25 @@ package com.bkt.advlibrary
 
 import java.math.BigDecimal
 
+
+class HashList<K, V> : LinkedHashMap<K, ArrayList<V>>() {
+    fun addValue(key: K, value: V) {
+        val currentList = get(key) ?: ArrayList()
+        currentList.add(value)
+        put(key, currentList)
+    }
+
+    fun addValues(key: K, values: Collection<V>) {
+        val list = this[key] ?: ArrayList()
+        list.addAll(values)
+        this[key] = list
+    }
+
+    fun getList(key: K): ArrayList<V> {
+        return this[key] ?: ArrayList()
+    }
+}
+
 fun <T> List<T>.ifNotEmpty(doOnNotEmpty: (List<T>) -> Unit) {
     if (this.isNotEmpty())
         doOnNotEmpty.invoke(this)
