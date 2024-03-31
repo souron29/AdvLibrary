@@ -80,13 +80,17 @@ class SimpleAdapter<M, BINDING : ViewDataBinding>(
     }
 
     fun filter(constraint: String?) {
+        if (constraint == null || constraint.isEmpty()) {
+            setList(dataList)
+            return
+        }
         bgBlock {
             val list = dataList.filter { filterCondition.invoke(it, constraint) }
             mainLaunch { submitList(list) }
         }
     }
 
-    fun setSwiper(onSwiped: (Int, Boolean, Boolean) -> Unit) {
+    fun setSwiper(onSwiped: (position: Int, leftSwipe: Boolean, rightSwipe: Boolean) -> Unit) {
         val swipeHelper = object : SwipeHelper() {
             override fun onSwipeLeft(holder: RecyclerView.ViewHolder?) {
                 super.onSwipeLeft(holder)

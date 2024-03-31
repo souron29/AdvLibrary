@@ -126,6 +126,8 @@ abstract class CommonFragment(open val fragmentName: String) : Fragment(), Lifec
     }
 
     private fun handleChildPop(indexOfFrag: Int = childFragmentManager.fragments.lastIndex): Boolean {
+        if (indexOfFrag < 0)
+            return popBackStackImmediate()
         return when (val child = childFragmentManager.fragments.getOrNull(indexOfFrag)) {
             null -> return false
             is CommonFragment -> {
@@ -150,6 +152,7 @@ abstract class CommonFragment(open val fragmentName: String) : Fragment(), Lifec
         if (isAdded)
             (activity as CommonActivity).toast(text, longToast)
     }
+
     fun passArguments(vararg args: Serializable) {
         val arguments = this.arguments ?: Bundle()
         for ((count, arg) in args.withIndex()) {

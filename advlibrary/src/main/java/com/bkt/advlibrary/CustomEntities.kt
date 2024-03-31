@@ -51,6 +51,36 @@ class LiveObject<T>(initial: T) : MutableLiveData<T>(initial), Serializable {
             observer.onChanged(it)
         }
     }
+
+    fun scan(owner: LifecycleOwner, skipCount: Int = 0, observer: Observer<T>) {
+        var currentCount = skipCount
+        super.observe(owner) {
+            if (currentCount <= 0)
+                observer.onChanged(it)
+            currentCount--
+        }
+    }
+
+    fun <T> scanAlongWith(
+        owner: LifecycleOwner,
+        vararg objects: LiveObject<T>,
+        skipCount: Int = 0,
+        observer: () -> Unit
+    ) {
+        var currentCount = skipCount
+        this.observe(owner) {
+            if (currentCount <= 0)
+                observer.invoke()
+            currentCount--
+        }
+        objects.forEach {
+            it.observe(owner) {
+                if (currentCount <= 0)
+                    observer.invoke()
+                currentCount--
+            }
+        }
+    }
 }
 
 class MediatorLiveObject : MediatorLiveData<Unit>(), Serializable {
