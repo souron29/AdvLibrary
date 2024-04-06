@@ -153,11 +153,12 @@ abstract class CommonFragment(open val fragmentName: String) : Fragment(), Lifec
             (activity as CommonActivity).toast(text, longToast)
     }
 
-    fun passArguments(vararg args: Serializable) {
+    fun passArguments(vararg args: Serializable?) {
         val arguments = this.arguments ?: Bundle()
         for ((count, arg) in args.withIndex()) {
             val param = "ParamArg$count"
-            arguments.putSerializable(param, arg)
+            if (arg != null)
+                arguments.putSerializable(param, arg)
         }
         this.arguments = arguments
     }
