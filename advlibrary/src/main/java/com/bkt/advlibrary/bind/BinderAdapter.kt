@@ -2,14 +2,14 @@ package com.bkt.advlibrary.bind
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bkt.advlibrary.bgBlock
-import com.bkt.advlibrary.mainLaunch
 
 abstract class BinderAdapter<Value, B : ViewDataBinding>(
     @LayoutRes private val layoutId: Int,
@@ -24,7 +24,7 @@ abstract class BinderAdapter<Value, B : ViewDataBinding>(
     override fun areContentsTheSame(oldItem: Value, newItem: Value): Boolean {
         return areContentsTheSame.invoke(oldItem, newItem)
     }
-}) {
+}), Filterable {
     private var dataList = ArrayList<Value>()
     var filterCondition = { _: Value, _: String? -> true }
 
@@ -62,10 +62,25 @@ abstract class BinderAdapter<Value, B : ViewDataBinding>(
         RecyclerView.ViewHolder(binding.root)
 
     fun filter(constraint: String?) {
-        bgBlock {
-            val list = dataList.filter { filterCondition.invoke(it, constraint) }
-            mainLaunch { submitList(list) }
-        }
+        filter.filter(constraint)
     }
 
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                val filteredList = ArrayList<Value>()
+                filteredList.addAll(dataList.filter { item ->
+                    constraint.isNullOrEmpty() ||
+                            filterCondition.invoke(item, constraint.toString())
+                })
+                val results = FilterResults()
+                results.values = filteredList
+                return results
+            }
+
+            override fun publishResults(p0: CharSequence?, filterResults: FilterResults?) {
+                submitList(filterResults?.values as List<Value>)
+            }
+        }
+    }
 }

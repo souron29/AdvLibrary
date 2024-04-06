@@ -17,12 +17,13 @@ abstract class BinderActivity<T : ViewDataBinding, VM : ActivityBinderModel>(val
     lateinit var vm: VM
         private set
 
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         _bind = DataBindingUtil.setContentView(this, id)
         vm = setProperties(_bind!!)
         vm.eventListener = this
         setInternalFunctions()
+        initialize()
     }
 
     private fun setInternalFunctions() {
@@ -40,6 +41,7 @@ abstract class BinderActivity<T : ViewDataBinding, VM : ActivityBinderModel>(val
         vm.activity = { this }
     }
 
+    abstract fun initialize()
     abstract fun setProperties(binder: T): VM
 
     inline fun <reified VM : BinderModel> getModel(): VM {

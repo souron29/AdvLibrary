@@ -62,7 +62,10 @@ fun <T> bgAsync(block: () -> T): Deferred<T> {
 }
 
 fun after(milliSecs: Long, block: () -> Unit) {
-    Timer().schedule(timerTask { block.invoke() }, milliSecs)
+    runInBg {
+        delay(milliSecs)
+        mainLaunch(block)
+    }
 }
 
 fun <T> bgBlock(block: suspend CoroutineScope.() -> T): T {
