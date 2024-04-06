@@ -14,9 +14,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.ImageViewCompat
 import androidx.databinding.BindingAdapter
 import androidx.fragment.app.FragmentActivity
+import androidx.recyclerview.widget.*
 import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewpager2.widget.ViewPager2
 import com.bkt.advlibrary.*
@@ -133,43 +132,81 @@ fun Context.showKeyboard(editText: EditText) {
  * Recyclerview Related Binders
  */
 
-@BindingAdapter("linearAdapter")
+@BindingAdapter("app:linearAdapter", "app:reverseLayout", requireAll = false)
 fun <T, H : RecyclerView.ViewHolder> setLinearAdapter(
     et: RecyclerView,
-    adapter: ListAdapter<T, H>?
+    adapter: ListAdapter<T, H>?,
+    reverseLayout: Boolean?
 ) {
-    if (adapter != null)
-        et.setLinearAdapter(et.context, adapter)
+    et.adapter = adapter
+    et.layoutManager =
+        LinearLayoutManager(et.context, RecyclerView.VERTICAL, reverseLayout ?: false)
 }
 
-@BindingAdapter("horizontalAdapter")
+@BindingAdapter("app:horizontalAdapter", "app:reverseLayout", requireAll = false)
 fun <T, H : RecyclerView.ViewHolder> setHorizontalLinearAdapter(
     et: RecyclerView,
-    adapter: ListAdapter<T, H>
+    adapter: ListAdapter<T, H>?,
+    reverseLayout: Boolean?
 ) {
-    et.setLinearAdapter(et.context, adapter, RecyclerView.HORIZONTAL)
+    et.adapter = adapter
+    et.layoutManager =
+        LinearLayoutManager(et.context, RecyclerView.HORIZONTAL, reverseLayout ?: false)
 }
 
 @BindingAdapter("app:verticalStagAdapter", "app:gridCount", requireAll = false)
 fun <T, H : RecyclerView.ViewHolder> setVerticalStagAdapter(
     et: RecyclerView,
-    adapter: ListAdapter<T, H>,
+    adapter: ListAdapter<T, H>?,
     span: Int?
 ) {
     et.layoutManager = StaggeredGridLayoutManager(span ?: 1, StaggeredGridLayoutManager.VERTICAL)
     et.adapter = adapter
 }
 
-@BindingAdapter("app:horizontalStagAdapter", "app:gridCount", requireAll = false)
+@BindingAdapter(
+    "app:horizontalStagAdapter",
+    "app:gridCount",
+    "app:reverseLayout",
+    requireAll = false
+)
 fun <T, H : RecyclerView.ViewHolder> setHorizontalStagAdapter(
     et: RecyclerView,
-    adapter: ListAdapter<T, H>,
+    adapter: ListAdapter<T, H>?,
     span: Int?
 ) {
     et.layoutManager = StaggeredGridLayoutManager(span ?: 1, StaggeredGridLayoutManager.HORIZONTAL)
     et.adapter = adapter
 }
 
+@BindingAdapter("app:verticalGridAdapter", "app:gridCount", "app:reverseLayout", requireAll = false)
+fun <T, H : RecyclerView.ViewHolder> setVerticalGridAdapter(
+    et: RecyclerView,
+    adapter: ListAdapter<T, H>?,
+    span: Int?,
+    reverseLayout: Boolean?
+) {
+    et.adapter = adapter
+    et.layoutManager =
+        GridLayoutManager(et.context, span ?: 1, RecyclerView.VERTICAL, reverseLayout ?: false)
+}
+
+@BindingAdapter(
+    "app:horizontalGridAdapter",
+    "app:gridCount",
+    "app:reverseLayout",
+    requireAll = false
+)
+fun <T, H : RecyclerView.ViewHolder> setHorizontalGridAdapter(
+    et: RecyclerView,
+    adapter: ListAdapter<T, H>?,
+    span: Int?,
+    reverseLayout: Boolean?
+) {
+    et.adapter = adapter
+    et.layoutManager =
+        GridLayoutManager(et.context, span ?: 1, RecyclerView.HORIZONTAL, reverseLayout ?: false)
+}
 
 @BindingAdapter("app:onFocusChange")
 fun setEditTextFocusListener(
@@ -181,16 +218,6 @@ fun setEditTextFocusListener(
         listener.invoke(b)
     }
 }
-
-@BindingAdapter("app:verticalGridAdapter", "app:gridCount", requireAll = false)
-fun <T, H : RecyclerView.ViewHolder> setVerticalGridAdapter(
-    et: RecyclerView,
-    adapter: ListAdapter<T, H>,
-    span: Int?
-) {
-    et.setGridAdapter(et.context, adapter, span ?: 2)
-}
-
 
 @BindingAdapter("app:tint")
 fun ImageView.setImageTint(@ColorInt color: Int?) {
