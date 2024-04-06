@@ -27,15 +27,15 @@ abstract class BinderActivity<T : ViewDataBinding, VM : ActivityBinderModel>(val
     }
 
     private fun setInternalFunctions() {
-        vm.loadFragment.observe(binding.lifecycleOwner!!) {
+        vm.loadFragment.observe(this) {
             loadFragment(it.first, it.second)
         }
-        vm.popBackStackImmediate.observe(binding.lifecycleOwner!!) { immediate ->
+        vm.popBackStackImmediate.observe(this) { immediate ->
             if (immediate)
                 supportFragmentManager.popBackStackImmediate()
             else supportFragmentManager.popBackStack()
         }
-        vm.toast.observe(binding.lifecycleOwner!!) {
+        vm.toast.observe(this) {
             toast(it.first, it.second)
         }
         vm.activity = { this }

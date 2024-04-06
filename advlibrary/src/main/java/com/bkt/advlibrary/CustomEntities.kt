@@ -25,60 +25,60 @@ class LiveObject<T>(initial: T) : MutableLiveData<T>(initial), Serializable {
     fun setValueWithoutNotifying(value: T) {
         this.actualValue = value
     }
+}
 
-    fun observeAlongWith(
-        owner: LifecycleOwner,
-        vararg objects: LiveObject<T>,
-        observer: () -> Unit
-    ) {
-        this.observe(owner) {
+fun <T> LiveData<T>.observeAlongWith(
+    owner: LifecycleOwner,
+    vararg objects: LiveObject<T>,
+    observer: () -> Unit
+) {
+    this.observe(owner) {
+        observer.invoke()
+    }
+    objects.forEach {
+        it.observe(owner) {
             observer.invoke()
         }
-        objects.forEach {
-            it.observe(owner) {
-                observer.invoke()
-            }
-        }
     }
+}
 
-    fun scan(owner: LifecycleOwner, ignoreFirstTime: Boolean = true, observer: Observer<T>) {
-        var firstTime = true
-        super.observe(owner) {
-            if (firstTime && ignoreFirstTime) {
-                firstTime = false
-                return@observe
-            }
+fun <T> LiveData<T>.scan(owner: LifecycleOwner, ignoreFirstTime: Boolean = true, observer: Observer<T>) {
+    var firstTime = true
+    this.observe(owner) {
+        if (firstTime && ignoreFirstTime) {
+            firstTime = false
+            return@observe
+        }
+        observer.onChanged(it)
+    }
+}
+
+fun <T> LiveData<T>.scan(owner: LifecycleOwner, skipCount: Int = 0, observer: Observer<T>) {
+    var currentCount = skipCount
+    this.observe(owner) {
+        if (currentCount <= 0)
             observer.onChanged(it)
-        }
+        currentCount--
     }
+}
 
-    fun scan(owner: LifecycleOwner, skipCount: Int = 0, observer: Observer<T>) {
-        var currentCount = skipCount
-        super.observe(owner) {
-            if (currentCount <= 0)
-                observer.onChanged(it)
-            currentCount--
-        }
+fun <T> LiveData<T>.scanAlongWith(
+    owner: LifecycleOwner,
+    vararg objects: LiveObject<T>,
+    skipCount: Int = 0,
+    observer: () -> Unit
+) {
+    var currentCount = skipCount
+    this.observe(owner) {
+        if (currentCount <= 0)
+            observer.invoke()
+        currentCount--
     }
-
-    fun <T> scanAlongWith(
-        owner: LifecycleOwner,
-        vararg objects: LiveObject<T>,
-        skipCount: Int = 0,
-        observer: () -> Unit
-    ) {
-        var currentCount = skipCount
-        this.observe(owner) {
+    objects.forEach {
+        it.observe(owner) {
             if (currentCount <= 0)
                 observer.invoke()
             currentCount--
-        }
-        objects.forEach {
-            it.observe(owner) {
-                if (currentCount <= 0)
-                    observer.invoke()
-                currentCount--
-            }
         }
     }
 }
