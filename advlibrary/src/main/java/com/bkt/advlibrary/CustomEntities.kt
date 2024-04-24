@@ -2,11 +2,9 @@ package com.bkt.advlibrary
 
 import androidx.lifecycle.*
 import java.io.Serializable
-import java.math.BigDecimal
-import java.util.HashMap
 
 class LiveObject<T>(initial: T) : MutableLiveData<T>(initial), Serializable {
-    var actualValue: T = initial
+    private var actualValue: T = initial
 
     override fun getValue(): T {
         return actualValue
