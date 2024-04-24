@@ -1,5 +1,6 @@
 package com.bkt.advlibrary
 
+import android.os.Looper
 import androidx.lifecycle.*
 import java.io.Serializable
 
@@ -15,7 +16,10 @@ class LiveObject<T>(initial: T) : MutableLiveData<T>(initial), Serializable {
      */
     override fun setValue(value: T) {
         this.actualValue = value
-        mainLaunch { super.setValue(value) }
+        if (Looper.myLooper() == Looper.getMainLooper())
+            super.setValue(value)
+        else
+            mainLaunch { super.setValue(value) }
     }
 
     override fun postValue(value: T) {
