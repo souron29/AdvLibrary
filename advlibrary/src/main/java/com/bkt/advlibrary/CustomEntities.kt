@@ -12,9 +12,12 @@ class LiveObject<T>(initial: T) : MutableLiveData<T>(initial), Serializable {
         return actualValue
     }
 
+    /**
+     * Make it thread safe
+     */
     override fun setValue(value: T) {
         this.actualValue = value
-        super.setValue(value)
+        super.postValue(value)
     }
 
     override fun postValue(value: T) {
@@ -25,6 +28,8 @@ class LiveObject<T>(initial: T) : MutableLiveData<T>(initial), Serializable {
     fun setValueWithoutNotifying(value: T) {
         this.actualValue = value
     }
+
+
 }
 
 fun <T> LiveData<T>.observeAlongWith(
@@ -42,7 +47,11 @@ fun <T> LiveData<T>.observeAlongWith(
     }
 }
 
-fun <T> LiveData<T>.scan(owner: LifecycleOwner, ignoreFirstTime: Boolean = true, observer: Observer<T>) {
+fun <T> LiveData<T>.scan(
+    owner: LifecycleOwner,
+    ignoreFirstTime: Boolean = true,
+    observer: Observer<T>
+) {
     var firstTime = true
     this.observe(owner) {
         if (firstTime && ignoreFirstTime) {

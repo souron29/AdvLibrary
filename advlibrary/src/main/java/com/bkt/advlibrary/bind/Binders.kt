@@ -167,7 +167,6 @@ fun <T, H : RecyclerView.ViewHolder> setVerticalStagAdapter(
 @BindingAdapter(
     "app:horizontalStagAdapter",
     "app:gridCount",
-    "app:reverseLayout",
     requireAll = false
 )
 fun <T, H : RecyclerView.ViewHolder> setHorizontalStagAdapter(
