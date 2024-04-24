@@ -179,7 +179,7 @@ class SelectorVM<Item, Binding : ViewDataBinding> : FragBinderModel() {
     }
 
     private fun setupAdapter(activity: CommonActivity, binding: FragmentSelectorBinding) {
-        this.adapter.multipleSelectionEnabled = multipleSelectionEnabled.actualValue
+        this.adapter.multipleSelectionEnabled = multipleSelectionEnabled.value
         adapter.onClicked = { item, position ->
             onSelected?.apply {
                 invoke(item)
