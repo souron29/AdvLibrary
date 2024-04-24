@@ -26,8 +26,6 @@ class LiveObject<T>(initial: T) : MutableLiveData<T>(initial), Serializable {
     fun setValueWithoutNotifying(value: T) {
         this.actualValue = value
     }
-
-
 }
 
 fun <T> LiveData<T>.observeAlongWith(
