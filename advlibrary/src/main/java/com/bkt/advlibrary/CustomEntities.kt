@@ -15,7 +15,7 @@ class LiveObject<T>(initial: T) : MutableLiveData<T>(initial), Serializable {
      */
     override fun setValue(value: T) {
         this.actualValue = value
-        super.postValue(value)
+        mainLaunch { super.setValue(value) }
     }
 
     override fun postValue(value: T) {
