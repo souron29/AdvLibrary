@@ -1,5 +1,6 @@
 package com.bkt.advlibrary
 
+import android.app.Activity
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -14,7 +15,7 @@ import java.io.Serializable
 abstract class CommonFragment(open val fragmentName: String) : Fragment(), LifecycleOwner {
     val stackCount: Int
         get() = if (isAdded) childFragmentManager.backStackEntryCount else 0
-    val advActivity by lazy { activity as CommonActivity }
+    lateinit var advActivity: CommonActivity
 
     private var pagerDetails: PagerDetails? = null
     private var onClose = {}
@@ -27,6 +28,12 @@ abstract class CommonFragment(open val fragmentName: String) : Fragment(), Lifec
         this.pagerDetails = PagerDetails(pager, adapter, defaultItem)
     }
 
+    @Deprecated("Deprecated in Java")
+    override fun onAttach(activity: Activity) {
+        super.onAttach(activity)
+        this.advActivity = activity as CommonActivity
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         this.onClose.invoke()
@@ -34,6 +41,7 @@ abstract class CommonFragment(open val fragmentName: String) : Fragment(), Lifec
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        this.advActivity = activity as CommonActivity
         initializeViews()
     }
 
