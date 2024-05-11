@@ -1,6 +1,7 @@
 package com.bkt.advlibrary
 
 import android.annotation.SuppressLint
+import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.widget.EditText
@@ -9,9 +10,9 @@ import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
+import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
-
 
 fun View.hide(makeInvisible: Boolean = false) {
     visibility = if (makeInvisible) {
@@ -170,4 +171,67 @@ fun TextView.leftDrawable(
         null,
         null
     )
+}
+
+@BindingAdapter("app:onActionListener")
+fun onKeyboardAction(view: View, listener: ViewActionListener) {
+    view.setOnClickListener {
+        listener.onClick.invoke(it)
+    }
+    view.setOnLongClickListener {
+        listener.onLongClick.invoke(it)
+    }
+    if (view is EditText) {
+        view.setOnEditorActionListener { _, actionId, keyEvent ->
+            listener.onImeAction.invoke(actionId, keyEvent)
+        }
+        view.setTextChangeListener {
+            listener.onTextChanged.invoke(it)
+        }
+    }
+}
+
+class ViewActionListener {
+    var onClick: (View) -> Unit = {}
+    var onLongClick: (View) -> Boolean = { false }
+    var onImeAction: (Int, KeyEvent?) -> Boolean = { _, _ -> false }
+    var onTextChanged: (CharSequence) -> Unit = {}
+
+    fun setOnClick(function: (View) -> Unit): ViewActionListener {
+        this.onClick = function
+        return this
+    }
+
+    fun setOnLongClick(function: (View) -> Boolean): ViewActionListener {
+        this.onLongClick = function
+        return this
+    }
+
+    fun setOnImeAction(function: (Int, KeyEvent?) -> Boolean): ViewActionListener {
+        this.onImeAction = function
+        return this
+    }
+
+    fun setOnTextChanged(function: (CharSequence) -> Unit): ViewActionListener {
+        this.onTextChanged = function
+        return this
+    }
+
+    companion object {
+        fun setOnClick(function: (View) -> Unit): ViewActionListener {
+            return ViewActionListener().setOnClick(function)
+        }
+
+        fun setOnLongClick(function: (View) -> Boolean): ViewActionListener {
+            return ViewActionListener().setOnLongClick(function)
+        }
+
+        fun setOnImeAction(function: (Int, KeyEvent?) -> Boolean): ViewActionListener {
+            return ViewActionListener().setOnImeAction(function)
+        }
+
+        fun setOnTextChanged(function: (CharSequence) -> Unit): ViewActionListener {
+            return ViewActionListener().setOnTextChanged(function)
+        }
+    }
 }
