@@ -30,6 +30,12 @@ class LiveObject<T>(initial: T) : MutableLiveData<T>(initial), Serializable {
     fun setValueWithoutNotifying(value: T) {
         this.actualValue = value
     }
+
+    override fun toString(): String {
+        return "$value"
+    }
+
+
 }
 
 fun <T> LiveData<T>.observeAlongWith(
