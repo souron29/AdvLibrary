@@ -181,6 +181,9 @@ fun onKeyboardAction(view: View, listener: ViewActionListener) {
     view.setOnLongClickListener {
         listener.onLongClick.invoke(it)
     }
+    view.setOnFocusChangeListener { v, hasFocus ->
+        listener.onFocusChanged.invoke(v, hasFocus)
+    }
     if (view is EditText) {
         view.setOnEditorActionListener { _, actionId, keyEvent ->
             listener.onImeAction.invoke(actionId, keyEvent)
@@ -196,6 +199,7 @@ class ViewActionListener {
     var onLongClick: (View) -> Boolean = { false }
     var onImeAction: (Int, KeyEvent?) -> Boolean = { _, _ -> false }
     var onTextChanged: (CharSequence) -> Unit = {}
+    var onFocusChanged: (View, Boolean) -> Unit = { _, _ -> }
 
     fun setOnClick(function: (View) -> Unit): ViewActionListener {
         this.onClick = function
@@ -217,6 +221,11 @@ class ViewActionListener {
         return this
     }
 
+    fun setOnFocusChanged(function: (View, Boolean) -> Unit): ViewActionListener {
+        this.onFocusChanged = function
+        return this
+    }
+
     companion object {
         fun setOnClick(function: (View) -> Unit): ViewActionListener {
             return ViewActionListener().setOnClick(function)
@@ -232,6 +241,10 @@ class ViewActionListener {
 
         fun setOnTextChanged(function: (CharSequence) -> Unit): ViewActionListener {
             return ViewActionListener().setOnTextChanged(function)
+        }
+
+        fun setOnFocusChanged(function: (View, Boolean) -> Unit): ViewActionListener {
+            return ViewActionListener().setOnFocusChanged(function)
         }
     }
 }
