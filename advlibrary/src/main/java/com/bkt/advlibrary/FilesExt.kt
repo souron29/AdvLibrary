@@ -13,8 +13,14 @@ import java.io.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
-
-fun File.openInFileManager(context: Context) {
+/**
+ * [openDirectlyIfNotFound] In case the file manager is not found, then attempt to open the file directly
+ */
+fun File.openInFileManager(
+    context: Context,
+    authority: String,
+    openDirectlyIfNotFound: Boolean = true
+) {
     val intentForFileManager = Intent(Intent.ACTION_VIEW)
 
     val path = if (this.isDirectory) {
@@ -26,14 +32,10 @@ fun File.openInFileManager(context: Context) {
     intentForFileManager.setDataAndType(selectedUri, "resource/folder")
     if (intentForFileManager.resolveActivity(context.packageManager) != null) {
         context.startActivity(intentForFileManager)
-    } else {
+    } else if (openDirectlyIfNotFound) {
         context.toast("No File Manager found")
         val intentGeneric = Intent(Intent.ACTION_VIEW)
-        val filePath = FileProvider.getUriForFile(
-            context,
-            "com.bkt.bum.FileProviderDefault",
-            this
-        )
+        val filePath = FileProvider.getUriForFile(context, authority, this)
         val mime = filePath.getMime(context)
         intentGeneric.flags = FLAG_GRANT_READ_URI_PERMISSION
         intentGeneric.setDataAndType(filePath, mime)
