@@ -37,7 +37,7 @@ fun File.openInFileManager(
         val intentGeneric = Intent(Intent.ACTION_VIEW)
         val filePath = FileProvider.getUriForFile(context, authority, this)
         val mime = filePath.getMime(context)
-        intentGeneric.flags = FLAG_GRANT_READ_URI_PERMISSION
+        intentGeneric.flags = FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
         intentGeneric.setDataAndType(filePath, mime)
         context.startActivity(intentGeneric)
     }
