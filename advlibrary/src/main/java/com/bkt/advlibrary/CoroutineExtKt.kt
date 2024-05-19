@@ -15,6 +15,14 @@ private val monoScope by lazy {
     )
 }
 
+fun <T> bgBlock(block: suspend CoroutineScope.() -> T): T {
+    return runBlocking { withContext(Dispatchers.IO, block) }
+}
+
+/*fun <T> bgBlock(block: suspend CoroutineScope.() -> T): T {
+    return runBlocking { block.invoke(bgScope) }
+}*/
+
 fun bgLaunch(block: () -> Unit) {
     bgScope.launch {
         block.invoke()
@@ -66,10 +74,6 @@ fun after(milliSecs: Long, block: () -> Unit) {
         delay(milliSecs)
         mainLaunch(block)
     }
-}
-
-fun <T> bgBlock(block: suspend CoroutineScope.() -> T): T {
-    return runBlocking { block.invoke(bgScope) }
 }
 
 fun <T> mainBlock(block: suspend CoroutineScope.() -> T): T {

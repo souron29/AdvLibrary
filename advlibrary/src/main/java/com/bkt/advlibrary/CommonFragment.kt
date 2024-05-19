@@ -4,10 +4,7 @@ import android.app.Activity
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
-import androidx.fragment.app.commit
-import androidx.fragment.app.setFragmentResult
+import androidx.fragment.app.*
 import androidx.lifecycle.LifecycleOwner
 import androidx.viewpager2.widget.ViewPager2
 import java.io.Serializable
@@ -222,4 +219,68 @@ fun <V : Serializable> Fragment.sendResultData(
         result.putSerializable(resultKey, value)
     }
     this.setFragmentResult(requestKey, result)
+}
+
+/**
+ * [passResults], [getResults], [getResultsFromChild] methods are used to transfer data between fragments
+ * A [resultKey] is used to uniquely identify the data
+ * Choice of use of [getResults] or [getResultsFromChild] in the destination fragment is based on the type of
+ * Source Fragment
+ */
+fun Fragment.passResults(resultKey: String, vararg results: Serializable) {
+    val bundle = Bundle()
+
+    for ((index, result) in results.withIndex()) {
+        bundle.putSerializable("${FragmentResult.PARAM_RESULT_KEY}$index", result)
+    }
+    setFragmentResult(resultKey, bundle)
+}
+
+fun Fragment.getResults(resultKey: String, onResult: (FragmentResult) -> Unit) {
+    this.setFragmentResultListener(requestKey = resultKey) { key, result ->
+        if (key == resultKey)
+            onResult.invoke(FragmentResult(result))
+        result.remove(key)
+    }
+}
+
+fun Fragment.getResultsFromChild(resultKey: String, onResult: (FragmentResult) -> Unit) {
+    childFragmentManager.setFragmentResultListener(resultKey, this) { key, result ->
+        if (key == resultKey)
+            onResult.invoke(FragmentResult(result))
+        result.remove(key)
+    }
+}
+
+
+data class FragmentResult(private val result: Bundle) {
+    companion object {
+        const val PARAM_RESULT_KEY = "ParamResultKey"
+    }
+
+    fun <T : Serializable> getResult(argIndex: Int, clazz: Class<T>? = null): T? {
+        val resultKey = "$PARAM_RESULT_KEY$argIndex"
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && clazz != null) {
+            result.getSerializable(resultKey, clazz)
+        } else {
+            result.getSerializable(resultKey) as T?
+        }
+    }
+}
+
+/**
+ * [passArgument] & [getArgument] methods are used to transfer data from Parent fragment to child fragment
+ */
+fun Fragment.passArgument(key: String, arg: Serializable) {
+    val arguments = this.arguments ?: Bundle()
+    arguments.putSerializable(key, arg)
+    this.arguments = arguments
+}
+
+fun <T : Serializable> Fragment.getArgument(key: String, clazz: Class<T>? = null): T? {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && clazz != null) {
+        arguments?.getSerializable(key, clazz)
+    } else {
+        arguments?.getSerializable(key) as T?
+    }
 }

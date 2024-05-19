@@ -10,12 +10,13 @@ import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bkt.advlibrary.SwipeHelper
 
-abstract class BinderAdapter<Value, B : ViewDataBinding>(
+abstract class BinderAdapter<Value : Any, B : ViewDataBinding>(
     @LayoutRes private val layoutId: Int,
     private val areItemsTheSame: (Value, Value) -> Boolean = { v1, v2 -> v1 == v2 },
     private val areContentsTheSame: (Value, Value) -> Boolean = { _, _ -> false }
-) : ListAdapter<Value, BinderAdapter<Value, B>.BinderHolder>(object :
+) : ListAdapter<Value, BinderHolder<B>>(object :
     DiffUtil.ItemCallback<Value>() {
     override fun areItemsTheSame(oldItem: Value, newItem: Value): Boolean {
         return areItemsTheSame.invoke(oldItem, newItem)
@@ -26,20 +27,24 @@ abstract class BinderAdapter<Value, B : ViewDataBinding>(
     }
 }), Filterable {
     private var dataList = ArrayList<Value>()
-    var filterCondition = { _: Value, _: String? -> true }
+    private var visibleList = ArrayList<Value>()
+
+    private var filterCondition = { _: Value, _: String? -> true }
+    private var onViewCreated = { _: BinderHolder<B> -> }
+    private var swipeHelper: SwipeHelper? = null
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): BinderHolder {
+    ): BinderHolder<B> {
         val inflater = LayoutInflater.from(parent.context)
         val binding: B = DataBindingUtil.inflate(inflater, layoutId, parent, false)
         val holder = BinderHolder(binding)
-        onCreate(holder)
+        onViewCreated.invoke(holder)
         return holder
     }
 
-    override fun onBindViewHolder(holder: BinderHolder, position: Int) {
+    override fun onBindViewHolder(holder: BinderHolder<B>, position: Int) {
         val item = getItem(position)
         item?.apply {
             onBind(holder.binding, item, position)
@@ -48,8 +53,15 @@ abstract class BinderAdapter<Value, B : ViewDataBinding>(
 
     abstract fun onBind(b: B, item: Value, position: Int)
 
-    open fun onCreate(holder: BinderHolder) {
+    /**
+     * Here you should set all the listeners
+     */
+    final fun setOnViewCreated(onViewCreated: (BinderHolder<B>) -> Unit) {
+        this.onViewCreated = onViewCreated
+    }
 
+    final fun setFilterCondition(filterCondition: (Value, String?) -> Boolean) {
+        this.filterCondition = filterCondition
     }
 
     fun setList(list: List<Value>) {
@@ -57,9 +69,6 @@ abstract class BinderAdapter<Value, B : ViewDataBinding>(
         submitList(actualList)
         dataList = actualList
     }
-
-    inner class BinderHolder(val binding: B) :
-        RecyclerView.ViewHolder(binding.root)
 
     fun filter(constraint: String?) {
         filter.filter(constraint)
@@ -83,4 +92,41 @@ abstract class BinderAdapter<Value, B : ViewDataBinding>(
             }
         }
     }
+
+    /**
+     * Setting swipe helper
+     */
+
+    final fun setSwiper(onSwiped: (position: Int, leftSwipe: Boolean, rightSwipe: Boolean) -> Unit) {
+        val swipeHelper = object : SwipeHelper() {
+            override fun onSwipeLeft(holder: RecyclerView.ViewHolder?) {
+                super.onSwipeLeft(holder)
+                if (holder != null)
+                    onSwiped.invoke(holder.adapterPosition, true, false)
+            }
+
+            override fun onSwipeRight(holder: RecyclerView.ViewHolder?) {
+                super.onSwipeRight(holder)
+                if (holder != null)
+                    onSwiped.invoke(holder.adapterPosition, false, true)
+            }
+        }
+        /*if (mRecyclerView != null)
+            swipeHelper.attachToRecyclerView(mRecyclerView)
+        else this.swipeHelper = swipeHelper*/
+    }
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        /*this.mRecyclerView = recyclerView*/
+        swipeHelper?.attachToRecyclerView(recyclerView)
+    }
+
+    /*override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView)
+        this.mRecyclerView = null
+    }*/
+
 }
+
+class BinderHolder<B : ViewDataBinding>(val binding: B) : RecyclerView.ViewHolder(binding.root)

@@ -10,9 +10,9 @@ class HashList<K, V> : LinkedHashMap<K, ArrayList<V>>() {
         put(key, currentList)
     }
 
-    fun addValues(key: K, values: Collection<V>) {
+    fun addValues(key: K, vararg values: Collection<V>) {
         val list = this[key] ?: ArrayList()
-        list.addAll(values)
+        list.addAll(*values)
         this[key] = list
     }
 
@@ -110,4 +110,10 @@ fun <E, V> Collection<E>.toUniqueCollectionOfLists(method: (E) -> Collection<V>)
         newList.addAll(method.invoke(it))
     }
     return newList.toList()
+}
+
+fun <T> ArrayList<T>.addAll(vararg collections: Collection<T>): ArrayList<T> {
+    for (collection in collections)
+        this.addAll(collection)
+    return this
 }

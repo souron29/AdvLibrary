@@ -10,7 +10,7 @@ import com.bkt.advlibrary.bind.BinderFragment
 import com.bkt.advlibrary.bind.FragBinderModel
 import com.bkt.advlibrary.databinding.FragmentSelectorBinding
 
-class SelectorFragment<Item, Binding : ViewDataBinding>(
+class SelectorFragment<Item : Any, Binding : ViewDataBinding>(
     @LayoutRes private val layoutId: Int,
     private val onBind: (b: Binding, item: Item, position: Int, partOfSelection: Boolean) -> Unit
 ) :
@@ -106,7 +106,7 @@ class SelectorFragment<Item, Binding : ViewDataBinding>(
 
 }
 
-class SelectorAdapter<Item, Binding : ViewDataBinding>(
+class SelectorAdapter<Item : Any, Binding : ViewDataBinding>(
     layoutId: Int,
     private val onBind: (Binding, Item, Int, Boolean) -> Unit
 ) :
@@ -149,7 +149,7 @@ class SelectorAdapter<Item, Binding : ViewDataBinding>(
     }
 }
 
-class SelectorVM<Item, Binding : ViewDataBinding> : FragBinderModel() {
+class SelectorVM<Item : Any, Binding : ViewDataBinding> : FragBinderModel() {
     val property = SelectorProperties()
     lateinit var onReceive: (MutableList<Item>) -> Unit
     private lateinit var adapter: SelectorAdapter<Item, Binding>

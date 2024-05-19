@@ -320,3 +320,10 @@ fun Date.between(
     val isBeforeEndDate = if (inclusiveOf.second) thisDate <= endDate else thisDate < endDate
     return isAfterStartDate && isBeforeEndDate
 }
+
+/**
+ * Change a date in string from one format to other
+ */
+fun String.changeDateFormat(fromFormat: String, toFormat: String): String? {
+    return this.toDate(fromFormat)?.format(toFormat)
+}

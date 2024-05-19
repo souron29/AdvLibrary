@@ -4,15 +4,20 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
 import android.content.res.ColorStateList
+import android.content.res.Resources
 import android.graphics.Typeface
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.annotation.ColorInt
+import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.widget.ImageViewCompat
 import androidx.databinding.BindingAdapter
+import androidx.databinding.InverseBindingAdapter
+import androidx.databinding.InverseBindingListener
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.*
 import androidx.recyclerview.widget.ListAdapter
@@ -20,6 +25,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewpager2.widget.ViewPager2
 import com.bkt.advlibrary.*
 import com.bkt.advlibrary.ActivityExtKt.scanForActivity
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.tabs.TabLayout
 import java.math.BigDecimal
 import java.util.*
@@ -222,6 +228,26 @@ fun setEditTextFocusListener(
 fun ImageView.setImageTint(@ColorInt color: Int?) {
     if (color != null)
         ImageViewCompat.setImageTintList(this, ColorStateList.valueOf(color))
+}
+
+@BindingAdapter("app:drawableId")
+fun ImageView.setImage(@DrawableRes imageId: Int) {
+    try {
+        val drawable = AppCompatResources.getDrawable(this.context, imageId)
+        this.setImageDrawable(drawable)
+    } catch (e: Resources.NotFoundException) {
+        return
+    }
+}
+
+@BindingAdapter("app:iconId")
+fun MaterialButton.setImage(@DrawableRes iconId: Int) {
+    try {
+        val drawable = AppCompatResources.getDrawable(this.context, iconId)
+        this.icon = drawable
+    } catch (e: Resources.NotFoundException) {
+        return
+    }
 }
 
 @BindingAdapter("requestFocus")
@@ -486,5 +512,85 @@ fun onRefresh(swipeRefreshLayout: SwipeRefreshLayout, doThis: () -> Unit) {
     swipeRefreshLayout.setOnRefreshListener {
         doThis.invoke()
         swipeRefreshLayout.isRefreshing = false
+    }
+}
+
+/**
+ * Below binders is required for date setters
+ */
+
+@BindingAdapter("app:date", "app:dateFormat", requireAll = false)
+fun setDateValue(
+    tv: TextView,
+    date: Date?,
+    dateFormat: String?
+) {
+    val format = dateFormat ?: DateFormats.DATE
+    if (tv is EditText && tv.getTrimText().isNotEmpty()) {
+        //assuming date and format has been already been set
+        val currentDate = tv.getDate(tv.dateFormat)
+        if (date == currentDate) return
+    }
+    if (tv is EditText) {
+        tv.dateFormat = format
+        tv.setDatePicker(date ?: sysdate())
+    } else {
+        // only edittext
+        tv.text = (date ?: sysdate()).format(format)
+    }
+}
+
+@InverseBindingAdapter(attribute = "app:date", event = "app:dateAttrChanged")
+fun getDateValue(et: EditText): Date {
+    val text = et.getTrimText()
+    val format = et.dateFormat
+    return text.toDate(format)!!
+}
+
+@BindingAdapter("app:dateAttrChanged")
+fun setDateChanged(et: EditText, listener: InverseBindingListener) {
+    et.setTextChangeListener {
+        listener.onChange()
+    }
+}
+
+/**
+ * Date time picker
+ */
+
+@BindingAdapter("app:dateTime", "app:dateTimeFormat", requireAll = false)
+fun setDateTimeValue(
+    et: EditText,
+    date: Date?,
+    dateTimeFormat: String?
+) {
+    val format = dateTimeFormat ?: DateFormats.DD_MMM_YYYY_TIME
+    if (et.getTrimText().isNotEmpty()) {
+        //assuming date and format has been already been set
+        val currentDate = et.getDate(et.dateFormat)
+        if (date == currentDate) return
+    }
+    et.dateFormat = format
+    et.setDateAndTimePicker(date ?: sysdate())
+}
+
+@InverseBindingAdapter(attribute = "app:dateTime", event = "app:dateTimeAttrChanged")
+fun getDateTimeValue(et: EditText): Date {
+    val text = et.getTrimText()
+    val format = et.dateFormat
+    return text.toDate(format)!!
+}
+
+@BindingAdapter("app:dateTimeAttrChanged")
+fun setDateTimeChanged(et: EditText, listener: InverseBindingListener) {
+    et.setTextChangeListener {
+        listener.onChange()
+    }
+}
+
+@BindingAdapter("app:onImeOptionAction")
+fun TextView.onImeAction(onAction: () -> Boolean) {
+    this.setOnEditorActionListener { _, _, _ ->
+        onAction.invoke()
     }
 }
