@@ -11,11 +11,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bkt.advlibrary.bgBlock
 import com.bkt.advlibrary.mainLaunch
 
-class ComplexBindAdapter<Value, B : ViewDataBinding>(
+class ComplexBindAdapter<Value : Any, B : ViewDataBinding>(
     @LayoutRes private val layoutId: Int,
     itemEquals: (item1: Value, item2: Value) -> Equality = { _, _ -> Equality.ITEMS_ARE_DIFFERENT },
     private val onBind: (b: B, item: Value, position: Int) -> Unit
-) : ListAdapter<Value, ComplexBindAdapter<Value, B>.BinderHolder>(object :
+) : ListAdapter<Value, ComplexBinderHolder>(object :
     DiffUtil.ItemCallback<Value>() {
     override fun areItemsTheSame(oldItem: Value, newItem: Value): Boolean {
         return itemEquals.invoke(oldItem, newItem).value
@@ -31,7 +31,7 @@ class ComplexBindAdapter<Value, B : ViewDataBinding>(
     private val extraPositionList = ArrayList<Int>()
     private val extraPositionsLayoutMap = LinkedHashMap<Int, ExtraLayouts>()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BinderHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ComplexBinderHolder {
         val inflater = LayoutInflater.from(parent.context)
         val extraLayout = extraPositionsLayoutMap[viewType] // using viewType as position
         val binding: ViewDataBinding =
@@ -39,14 +39,14 @@ class ComplexBindAdapter<Value, B : ViewDataBinding>(
                 DataBindingUtil.inflate(inflater, extraLayout.layoutId, parent, false)
             else
                 DataBindingUtil.inflate(inflater, layoutId, parent, false)
-        return BinderHolder(binding)
+        return ComplexBinderHolder(binding)
     }
 
     override fun getItemViewType(position: Int): Int {
         return position // using position as viewType
     }
 
-    override fun onBindViewHolder(holder: BinderHolder, position: Int) {
+    override fun onBindViewHolder(holder: ComplexBinderHolder, position: Int) {
         val item = getItem(position)
         if (extraPositionsLayoutMap[position] != null) {
             extraPositionsLayoutMap[position]!!.onBind.invoke(holder.binding, position)
@@ -70,9 +70,6 @@ class ComplexBindAdapter<Value, B : ViewDataBinding>(
             submitList(submittedList)
         }
     }
-
-    inner class BinderHolder(val binding: ViewDataBinding) :
-        RecyclerView.ViewHolder(binding.root)
 
     fun filter(constraint: String?) {
         bgBlock {
@@ -109,3 +106,9 @@ class ComplexBindAdapter<Value, B : ViewDataBinding>(
         )
     }
 }
+
+/**
+ * Type is not used in this class as it can be used for multiple layouts and not just single layout
+ */
+class ComplexBinderHolder(val binding: ViewDataBinding) :
+    RecyclerView.ViewHolder(binding.root)
