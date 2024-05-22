@@ -218,6 +218,7 @@ fun <V : Serializable> Fragment.sendResultData(
     for ((resultKey, value) in keyValuePairs) {
         result.putSerializable(resultKey, value)
     }
+    result.putInt(FragmentResult.PARAM_RESULT_COUNT_KEY, keyValuePairs.size)
     this.setFragmentResult(requestKey, result)
 }
 
@@ -233,6 +234,7 @@ fun Fragment.passResults(resultKey: String, vararg results: Serializable) {
     for ((index, result) in results.withIndex()) {
         bundle.putSerializable("${FragmentResult.PARAM_RESULT_KEY}$index", result)
     }
+    bundle.putInt(FragmentResult.PARAM_RESULT_COUNT_KEY, results.size)
     setFragmentResult(resultKey, bundle)
 }
 
@@ -256,6 +258,7 @@ fun Fragment.getResultsFromChild(resultKey: String, onResult: (FragmentResult) -
 data class FragmentResult(private val result: Bundle) {
     companion object {
         const val PARAM_RESULT_KEY = "ParamResultKey"
+        const val PARAM_RESULT_COUNT_KEY = "ParamPassResultsCount"
     }
 
     fun <T : Serializable> getResult(argIndex: Int, clazz: Class<T>? = null): T? {
@@ -265,6 +268,27 @@ data class FragmentResult(private val result: Bundle) {
         } else {
             result.getSerializable(resultKey) as T?
         }
+    }
+
+    fun <T : Serializable> getResult(resultKey: String, clazz: Class<T>? = null): T? {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && clazz != null) {
+            result.getSerializable(resultKey, clazz)
+        } else {
+            result.getSerializable(resultKey) as T?
+        }
+    }
+
+    fun <T : Serializable> getResults(clazz: Class<T>? = null): List<T> {
+        val count = result.getInt(PARAM_RESULT_COUNT_KEY, 0)
+        if (count == 0)
+            return ArrayList()
+        val resultList = ArrayList<T>()
+        for (index in 0 until count) {
+            getResult(index, clazz)?.let { result ->
+                resultList.add(result)
+            }
+        }
+        return resultList
     }
 }
 
