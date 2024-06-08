@@ -558,11 +558,12 @@ fun setDateChanged(et: EditText, listener: InverseBindingListener) {
  * Date time picker
  */
 
-@BindingAdapter("app:dateTime", "app:dateTimeFormat", requireAll = false)
+@BindingAdapter("app:dateTime", "app:dateTimeFormat", "app:minDate", requireAll = false)
 fun setDateTimeValue(
     et: EditText,
     date: Date?,
-    dateTimeFormat: String?
+    dateTimeFormat: String?,
+    minDate: Date?
 ) {
     val format = dateTimeFormat ?: DateFormats.DD_MMM_YYYY_TIME
     if (et.getTrimText().isNotEmpty()) {
@@ -571,7 +572,7 @@ fun setDateTimeValue(
         if (date == currentDate) return
     }
     et.dateFormat = format
-    et.setDateAndTimePicker(date ?: sysdate())
+    et.setDateAndTimePicker(date ?: minDate ?: sysdate())
 }
 
 @InverseBindingAdapter(attribute = "app:dateTime", event = "app:dateTimeAttrChanged")
