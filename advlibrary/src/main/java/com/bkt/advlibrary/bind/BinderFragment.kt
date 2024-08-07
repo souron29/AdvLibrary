@@ -54,7 +54,7 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>(
      * as those are not yet created during onCreate
      */
     private fun setInternalFunctions() {
-        vm = setProperties(_bind!!)
+        vm = setProperties()
         vm.eventListener = this
         onVmSet.forEach { it.invoke() }
 
@@ -67,7 +67,7 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>(
         vm.activity = { advActivity }
     }
 
-    abstract fun setProperties(binder: T): VM
+    abstract fun setProperties(): VM
 
     inline fun <reified VM : BinderModel> getModel(): VM {
         val vm by viewModels<VM>()

@@ -20,6 +20,8 @@ class SelectorFragment<Item : Any, Binding : ViewDataBinding>(
     ) {
 
     override fun initializeViews() {
+        binding.vm = vm
+        binding.lifecycleOwner = viewLifecycleOwner
         vm.initiate(advActivity, layoutId, onBind, binding)
         binding.childContainer.setOnClickListener { }
     }
@@ -97,10 +99,8 @@ class SelectorFragment<Item : Any, Binding : ViewDataBinding>(
             loadChildFragment(fragment, R.id.child_container)
     }
 
-    override fun setProperties(binder: FragmentSelectorBinding): SelectorVM<Item, Binding> {
+    override fun setProperties(): SelectorVM<Item, Binding> {
         val model = getModel<SelectorVM<Item, Binding>>()
-        binder.vm = model
-        binder.lifecycleOwner = viewLifecycleOwner
         return model as SelectorVM<Item, Binding>
     }
 
