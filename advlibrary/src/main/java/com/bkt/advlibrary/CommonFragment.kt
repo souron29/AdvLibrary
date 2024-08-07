@@ -1,6 +1,7 @@
 package com.bkt.advlibrary
 
 import android.app.Activity
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -25,10 +26,10 @@ abstract class CommonFragment(open val fragmentName: String) : Fragment(), Lifec
         this.pagerDetails = PagerDetails(pager, adapter, defaultItem)
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onAttach(activity: Activity) {
-        super.onAttach(activity)
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
         this.advActivity = activity as CommonActivity
+
     }
 
     override fun onDestroy() {
