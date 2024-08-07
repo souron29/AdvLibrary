@@ -41,9 +41,6 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>(
     ): View? {
         _bind = DataBindingUtil.inflate(inflater, layoutId, container, false)
         _bind!!.lifecycleOwner = viewLifecycleOwner
-        vm = setProperties(_bind!!)
-        onVmSet.forEach { it.invoke() }
-        vm.eventListener = this
         return binding.root
     }
 
@@ -57,6 +54,10 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>(
      * as those are not yet created during onCreate
      */
     private fun setInternalFunctions() {
+        vm = setProperties(_bind!!)
+        vm.eventListener = this
+        onVmSet.forEach { it.invoke() }
+
         vm.popBackStackImmediate.observe(this) { immediate ->
             if (immediate)
                 popBackStackImmediate()
@@ -100,6 +101,9 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>(
         }
     }
 
+    /**
+     * Views should not be accessed inside this method
+     */
     protected fun afterSettingVM(block: () -> Unit) {
         if (this::vm.isInitialized)
             block.invoke()
