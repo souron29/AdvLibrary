@@ -37,13 +37,31 @@ abstract class CommonFragment(open val fragmentName: String) : Fragment(), Lifec
         this.onClose.invoke()
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         this.advActivity = activity as CommonActivity
         initializeViews()
     }
-
+    /**
+     * Invoked from onCreateView method of fragment lifecycle
+     * Called every time view is created.
+     * Views can be destroyed if you are moving to another fragment, and then recreated when you return
+     * to current fragment
+     */
     abstract fun initializeViews()
+
+    /**
+     * Invoked from onCreate method of fragment lifecycle
+     * Called once in whole lifecycle, so this can be used to initialize data listeners
+     *
+     */
+    open fun onSetupData() {
+
+    }
 
     internal fun loadFragment(
         fragment: CommonFragment,
