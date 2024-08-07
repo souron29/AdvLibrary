@@ -39,6 +39,7 @@ abstract class CommonFragment(open val fragmentName: String) : Fragment(), Lifec
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        onSetupData()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -46,6 +47,7 @@ abstract class CommonFragment(open val fragmentName: String) : Fragment(), Lifec
         this.advActivity = activity as CommonActivity
         initializeViews()
     }
+
     /**
      * Invoked from onCreateView method of fragment lifecycle
      * Called every time view is created.
