@@ -19,10 +19,20 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>(
     EventListener {
     private var _bind: T? = null
     private var onVmSet = ArrayList<() -> Unit>()
-    val binding get() = _bind!!
+    val binding: T
+        get() {
+            if (_bind == null)
+                throw NullPointerException("View has not been attached yet. Should be invoked after onCreateView")
+            return _bind!!
+        }
 
     lateinit var vm: VM
         private set
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setInternalFunctions()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,7 +44,6 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>(
         vm = setProperties(_bind!!)
         onVmSet.forEach { it.invoke() }
         vm.eventListener = this
-        setInternalFunctions()
         return binding.root
     }
 
@@ -43,8 +52,12 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>(
         _bind = null
     }
 
+    /**
+     * Must be called from onCreate. This should not include any view/binding related tasks
+     * as those are not yet created during onCreate
+     */
     private fun setInternalFunctions() {
-        vm.popBackStackImmediate.observe(viewLifecycleOwner) { immediate ->
+        vm.popBackStackImmediate.observe(this) { immediate ->
             if (immediate)
                 popBackStackImmediate()
             else popBackStack()
@@ -96,8 +109,11 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>(
 
     override fun onDestroy() {
         super.onDestroy()
-        if (this::vm.isInitialized)
+        if (this::vm.isInitialized) {
             vm.fragment = null
+            vm.activity = null
+            vm.popBackStackImmediate.removeObservers(this)
+        }
     }
 }
 

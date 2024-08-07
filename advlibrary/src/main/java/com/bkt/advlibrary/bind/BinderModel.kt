@@ -35,10 +35,7 @@ sealed class BinderModel : ViewModel() {
     }
 
     fun getDrawable(@DrawableRes id: Int): Drawable? {
-        getActivity()?.let {
-            return AppCompatResources.getDrawable(it, id)
-        }
-        return null
+        return getActivity()?.let { AppCompatResources.getDrawable(it, id) }
     }
 
     fun getColor(@ColorRes id: Int): Int? {

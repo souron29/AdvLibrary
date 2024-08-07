@@ -11,8 +11,10 @@ public class DateFormats {
     public static final String DD_MMM_YYYY = "dd MMM, yyyy";
     public static final String DD_MMM_YYYY_TIME = "dd MMM, yyyy h:mm aa";
     public static final String MMM_YYYY = "MMM, yyyy";
-    public static final String D_MMM_NEXTLINE = "d\nMMM";
+    public static final String D_MMM_NEXT_LINE = "d\nMMM";
     public static final String EEE = "EEE";
     public static final String EEEE = "EEEE";
     public static final String TIME = "h:mm aa";
+    public static final String EEEE_TIME = EEEE + " " + TIME;
+    public static final String EEE_TIME = EEE + " " + TIME;
 }

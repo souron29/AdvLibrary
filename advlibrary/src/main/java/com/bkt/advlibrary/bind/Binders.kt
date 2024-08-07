@@ -595,3 +595,35 @@ fun TextView.onImeAction(onAction: () -> Boolean) {
         onAction.invoke()
     }
 }
+
+@BindingAdapter("android:minHeight")
+fun setMinHeight(view: View, height: Float) {
+    view.minimumHeight = height.toInt()
+}
+
+@BindingAdapter(
+    "android:layout_marginStart",
+    "android:layout_marginTop",
+    "android:layout_marginEnd",
+    "android:layout_marginBottom",
+    requireAll = false
+)
+fun setMargin(
+    view: View,
+    marginStart: Float?,
+    marginTop: Float?,
+    marginEnd: Float?,
+    marginBottom: Float?
+) {
+    val params = view.layoutParams
+    if (params is ViewGroup.MarginLayoutParams) {
+        if (marginStart != null)
+            params.marginStart = marginStart.toInt()
+        if (marginEnd != null)
+            params.marginEnd = marginEnd.toInt()
+        if (marginTop != null)
+            params.topMargin = marginTop.toInt()
+        if (marginBottom != null)
+            params.bottomMargin = marginBottom.toInt()
+    }
+}

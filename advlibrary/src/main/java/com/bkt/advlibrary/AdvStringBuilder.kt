@@ -1,11 +1,14 @@
 package com.bkt.advlibrary
 
+import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Typeface
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.*
 import android.view.View
 import androidx.annotation.ColorInt
+import androidx.annotation.StyleRes
 
 class AdvStringBuilder(private val initialText: CharSequence = "", vararg spans: CharacterStyle) {
     private var sb: SpannableStringBuilder
@@ -116,4 +119,53 @@ class AdvStringBuilder(private val initialText: CharSequence = "", vararg spans:
 
 }
 
-data class AdvSpan(val isBold: Boolean = false, val color: Int = -1, val size: Float = 1.0f)
+data class AdvSpan(
+    val isBold: Boolean = false,
+    val color: Int = -1,
+    val size: Float = 1.0f,
+    val backgroundColor: Int = -1,
+    val underlined: Boolean = false,
+    val italics: Boolean = false,
+    val strikeThrough: Boolean = false,
+    val superScript: Boolean = false,
+    val subScript: Boolean = false
+) {
+    lateinit var textAppearanceSpan: TextAppearanceSpan
+
+    fun addTextAppearance(
+        context: Context,
+        @StyleRes styleId: Int
+    ) {
+        textAppearanceSpan = TextAppearanceSpan(context, styleId)
+    }
+
+    private fun getSpans(): List<CharacterStyle> {
+        val list = ArrayList<CharacterStyle>()
+
+        if (isBold && italics)
+            list.add(StyleSpan(Typeface.BOLD_ITALIC))
+        else if (isBold)
+            list.add(StyleSpan(Typeface.BOLD))
+        else if (italics)
+            list.add(StyleSpan(Typeface.BOLD))
+
+        if (color != -1)
+            list.add(ForegroundColorSpan(color))
+        if (backgroundColor != -1)
+            list.add(BackgroundColorSpan(backgroundColor))
+        if (size != 1.0f)
+            list.add(RelativeSizeSpan(size))
+        if (underlined)
+            list.add(UnderlineSpan())
+        if (strikeThrough)
+            list.add(StrikethroughSpan())
+        if (superScript)
+            list.add(SuperscriptSpan())
+        if (subScript)
+            list.add(SubscriptSpan())
+        if (::textAppearanceSpan.isInitialized)
+            list.add(textAppearanceSpan)
+        
+        return list
+    }
+}
