@@ -45,7 +45,7 @@ class PermissionManager private constructor(
     }
 
     private fun setResultProcessor() {
-        activity.onPermissionsResult = { requestCode, permissions, grantResults ->
+        activity.addPermissionResultListener { requestCode, permissions, grantResults ->
             var output = false
             if (requestCode == this.requestCode && grantResults.isNotEmpty()) {
                 val grantedPermissions = ArrayList<String>()

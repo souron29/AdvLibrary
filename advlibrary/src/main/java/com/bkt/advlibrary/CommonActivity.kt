@@ -1,22 +1,20 @@
 package com.bkt.advlibrary
 
+import android.content.Intent
 import android.os.Handler
 import android.os.Looper
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 
 open class CommonActivity : AppCompatActivity(), LifecycleOwner {
-    var onPermissionsResult: (
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) -> Boolean =
-        { _, _, _ ->
-            false
-        }
+    private var onPermissionsResultListeners =
+        ArrayList<(Int, Array<out String>, IntArray) -> Boolean>()
 
     fun replaceFragment(fragment: CommonFragment, container_id: Int) {
         Handler(Looper.getMainLooper()).post {
@@ -114,12 +112,26 @@ open class CommonActivity : AppCompatActivity(), LifecycleOwner {
         Toast.makeText(this, text, duration).show()
     }
 
+    fun addPermissionResultListener(listener: (Int, Array<out String>, IntArray) -> Boolean) {
+        onPermissionsResultListeners.add(listener)
+    }
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
-        if (!onPermissionsResult.invoke(requestCode, permissions, grantResults))
+        val handled =
+            onPermissionsResultListeners.any { it.invoke(requestCode, permissions, grantResults) }
+
+        if (!handled)
             super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
+    fun startActivityForResult(intent: Intent, callback: ActivityResultCallback<ActivityResult>) {
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult(),
+            callback
+        ).launch(intent)
     }
 }

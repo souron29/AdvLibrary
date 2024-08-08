@@ -162,6 +162,17 @@ fun Context.getFileUri(file: File, authority: String): Uri? {
     return FileProvider.getUriForFile(this, authority, file)
 }
 
+/**
+ * Creates a temporary file with random name inside the folder
+ */
+fun File.createTempFile(childFileName: String): File {
+    if (this.isFile)
+        throw IllegalAccessException("Cannot create a temp file inside another file")
+    val suffix = childFileName.substringAfterLast(".")
+    val prefix = childFileName.substringBeforeLast(".")
+    return File.createTempFile(prefix, suffix, this)
+}
+
 fun Context.shareFiles(onGenerate: (ShareDetails) -> Unit) {
     val shareDetails = ShareDetails()
     onGenerate.invoke(shareDetails)
