@@ -238,7 +238,8 @@ class ViewActionListener {
         }
 
         fun setOnAnyClick(function: (View) -> Unit): ViewActionListener {
-            return ViewActionListener().setOnClick(function).also { listener ->
+            return ViewActionListener().also { listener ->
+                listener.setOnClick(function)
                 listener.setOnLongClick {
                     function.invoke(it)
                     true
