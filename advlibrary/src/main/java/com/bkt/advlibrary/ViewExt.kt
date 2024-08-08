@@ -174,7 +174,9 @@ fun TextView.leftDrawable(
 }
 
 @BindingAdapter("app:onActionListener")
-fun onKeyboardAction(view: View, listener: ViewActionListener) {
+fun onKeyboardAction(view: View, listener: ViewActionListener?) {
+    if (listener == null)
+        return
     view.setOnClickListener {
         listener.onClick.invoke(it)
     }
@@ -233,6 +235,15 @@ class ViewActionListener {
 
         fun setOnLongClick(function: (View) -> Boolean): ViewActionListener {
             return ViewActionListener().setOnLongClick(function)
+        }
+
+        fun setOnAnyClick(function: (View) -> Unit): ViewActionListener {
+            return ViewActionListener().setOnClick(function).also { listener ->
+                listener.setOnLongClick {
+                    function.invoke(it)
+                    true
+                }
+            }
         }
 
         fun setOnImeAction(function: (Int, KeyEvent?) -> Boolean): ViewActionListener {
