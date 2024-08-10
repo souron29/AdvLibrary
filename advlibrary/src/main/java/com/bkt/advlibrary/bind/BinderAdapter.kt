@@ -32,6 +32,7 @@ abstract class BinderAdapter<Value : Any, B : ViewDataBinding>(
     private var filterCondition = { _: Value, _: String? -> true }
     private var onViewCreated = { _: BinderHolder<B> -> }
     private var swipeHelper: SwipeHelper? = null
+    private var onFilterReceived: (List<Value>) -> Unit = { submitList(it) }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -88,13 +89,13 @@ abstract class BinderAdapter<Value : Any, B : ViewDataBinding>(
             }
 
             override fun publishResults(p0: CharSequence?, filterResults: FilterResults?) {
-                onFilteredResultsReceived(filterResults?.values as List<Value>)
+                this@BinderAdapter.onFilterReceived.invoke(filterResults?.values as List<Value>)
             }
         }
     }
 
-    open fun onFilteredResultsReceived(list: List<Value>) {
-        submitList(list)
+    fun setOnFilteredResultsReceived(onFilterReceived: (List<Value>) -> Unit) {
+        this.onFilterReceived = onFilterReceived
     }
 
     /**
