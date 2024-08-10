@@ -65,9 +65,10 @@ abstract class BinderAdapter<Value : Any, B : ViewDataBinding>(
         this.filterCondition = filterCondition
     }
 
-    fun setList(list: List<Value>) {
+    fun setList(list: List<Value>, submit: Boolean = true) {
         val actualList = ArrayList(list)
-        submitList(actualList)
+        if (submit)
+            submitList(actualList)
         dataList = actualList
     }
 
