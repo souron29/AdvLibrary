@@ -30,8 +30,8 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>(
         private set
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         setInternalFunctions()
+        super.onCreate(savedInstanceState)
     }
 
     override fun onCreateView(

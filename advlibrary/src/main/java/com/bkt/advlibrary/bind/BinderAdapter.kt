@@ -88,9 +88,13 @@ abstract class BinderAdapter<Value : Any, B : ViewDataBinding>(
             }
 
             override fun publishResults(p0: CharSequence?, filterResults: FilterResults?) {
-                submitList(filterResults?.values as List<Value>)
+                onFilteredResultsReceived(filterResults?.values as List<Value>)
             }
         }
+    }
+
+    open fun onFilteredResultsReceived(list: List<Value>) {
+        submitList(list)
     }
 
     /**
