@@ -66,7 +66,9 @@ abstract class BinderAdapter<Value : Any, B : ViewDataBinding>(
     }
 
     fun setList(list: List<Value>, submit: Boolean = true) {
-        val actualList = ArrayList(list)
+        val actualList = ArrayList<Value>().also {
+            it.addAll(list)
+        }
         if (submit)
             submitList(actualList)
         dataList = actualList
