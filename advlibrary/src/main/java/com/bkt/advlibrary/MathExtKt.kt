@@ -70,15 +70,24 @@ fun BigDecimal.compareTo(value: Double): Int {
 }
 
 fun BigDecimal.getPercentageTo(target: BigDecimal, scale: Int = 2): BigDecimal {
+    val diff = target - this
+    return (diff * BigDecimal(100)).divide(this, scale, RoundingMode.HALF_EVEN)
+}
+
+fun BigDecimal.getPercentageToOrNull(target: BigDecimal, scale: Int = 2): BigDecimal? {
     if (this == BigDecimal.ZERO)
-        return BigDecimal.ZERO
+        return null
     val diff = target - this
     return (diff * BigDecimal(100)).divide(this, scale, RoundingMode.HALF_EVEN)
 }
 
 fun BigDecimal.getPercentageOf(target: BigDecimal, scale: Int = 2): BigDecimal {
+    return (this * BigDecimal(100)).divide(target, scale, RoundingMode.HALF_EVEN)
+}
+
+fun BigDecimal.getPercentageOfOrNull(target: BigDecimal, scale: Int = 2): BigDecimal? {
     if (target == BigDecimal.ZERO)
-        return BigDecimal.ZERO
+        return null
     return (this * BigDecimal(100)).divide(target, scale, RoundingMode.HALF_EVEN)
 }
 
