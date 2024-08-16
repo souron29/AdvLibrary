@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.annotation.ColorInt
+import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
@@ -224,16 +225,22 @@ fun setEditTextFocusListener(
     }
 }
 
-@BindingAdapter("app:tint")
+@BindingAdapter("app:drawableColor")
 fun ImageView.setImageTint(@ColorInt color: Int?) {
     if (color != null)
         ImageViewCompat.setImageTintList(this, ColorStateList.valueOf(color))
 }
 
-@BindingAdapter("app:drawableId")
-fun ImageView.setImage(@DrawableRes imageId: Int) {
+@BindingAdapter("app:drawableId", "app:drawableColorId", requireAll = false)
+fun ImageView.setImage(@DrawableRes imageId: Int?, @ColorRes colorId: Int?) {
+    if (imageId == null)
+        return
     try {
-        val drawable = AppCompatResources.getDrawable(this.context, imageId)
+        var drawable = AppCompatResources.getDrawable(this.context, imageId)
+        if (colorId != null) {
+            val color = context.getColor(colorId)
+            drawable = drawable?.setColorTint(color)
+        }
         this.setImageDrawable(drawable)
     } catch (e: Resources.NotFoundException) {
         return

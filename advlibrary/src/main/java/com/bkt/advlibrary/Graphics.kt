@@ -7,6 +7,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.LayerDrawable
 import android.net.Uri
+import android.os.Build
 import android.provider.MediaStore
 import android.util.TypedValue
 import androidx.annotation.ColorInt
@@ -17,6 +18,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import java.io.IOException
+
 
 fun getBitmap(context: Context, image_uri: Uri?): Bitmap? {
     return try {
@@ -72,25 +74,29 @@ fun getBitmapMarker(context: Context?, drawable: Int): Bitmap {
 }
 
 fun getDrawable(context: Context, drawable_id: Int, color_id: Int): Drawable? {
-    return setColorTint(
-        AppCompatResources.getDrawable(context, drawable_id),
+    return AppCompatResources.getDrawable(context, drawable_id)?.setColorTint(
         context.getColor(color_id)
     )
 }
 
-fun setColorTint(context: Context, drawable_id: Int, color_id: Int): Drawable? {
-    return setColorTint(
-        AppCompatResources.getDrawable(context, drawable_id),
-        context.getColor(color_id)
-    )
+fun Context.setColorTint(
+    context: Context,
+    @DrawableRes drawable_id: Int,
+    @ColorRes color_id: Int
+): Drawable? {
+    val d = AppCompatResources.getDrawable(context, drawable_id)
+    val c = context.getColor(color_id)
+    return d?.setColorTint(c)
 }
 
-fun setColorTint(drawable: Drawable?, color: Int): Drawable? {
-    if (drawable != null) {
-        drawable.mutate()
-        drawable.setColorFilter(color, PorterDuff.Mode.SRC_ATOP)
+fun Drawable.setColorTint(@ColorInt color: Int): Drawable {
+    this.mutate()
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        this.colorFilter = BlendModeColorFilter(color, BlendMode.SRC_ATOP)
+    } else {
+        this.setColorFilter(color, PorterDuff.Mode.SRC_ATOP)
     }
-    return drawable
+    return this
 }
 
 fun Context.getColorStateList(vararg colorStates: ColorState): ColorStateList {
