@@ -11,7 +11,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
-import com.bkt.supernotes.extras.IntentActions
 
 open class CommonActivity : AppCompatActivity(), LifecycleOwner {
     private var onPermissionsResultListeners =

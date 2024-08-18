@@ -1,10 +1,8 @@
-package com.bkt.supernotes.extras
+package com.bkt.advlibrary
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import com.bkt.advlibrary.CommonActivity
 
 object IntentActions {
     /**
