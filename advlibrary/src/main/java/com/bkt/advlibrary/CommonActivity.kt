@@ -1,20 +1,70 @@
 package com.bkt.advlibrary
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
-import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
+import com.bkt.supernotes.extras.IntentActions
 
 open class CommonActivity : AppCompatActivity(), LifecycleOwner {
     private var onPermissionsResultListeners =
         ArrayList<(Int, Array<out String>, IntArray) -> Boolean>()
+
+    /**
+     * Single usage listener to be used and destroyed
+     */
+    private var multipleContentListener: ((List<Uri>) -> Unit)? = null
+    private val multipleContentLauncher = registerForActivityResult(
+        ActivityResultContracts.GetMultipleContents()
+    ) { result ->
+        this.multipleContentListener?.invoke(result)
+        this.multipleContentListener = null
+    }
+
+    /**
+     * Single usage content listener. Thrown away after use
+     */
+    private var singleContentListener: ((Uri?) -> Unit)? = null
+    private val startActivityForContentLauncher = registerForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) {
+        this.singleContentListener?.invoke(it)
+        this.singleContentListener = null
+    }
+
+    /**
+     * We can crete custom contracts by inheriting class ActivityResultContract
+     */
+    private var activityResultListener: ((ActivityResult) -> Unit)? = null
+    private val startActivityForResultLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        this.activityResultListener?.invoke(it)
+        this.activityResultListener = null
+    }
+
+    private var singlePermissionListener: ((Boolean) -> Unit)? = null
+    private val startActivityForSinglePermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) {
+        this.singlePermissionListener?.invoke(it)
+        this.singlePermissionListener = null
+    }
+
+    private var multiplePermissionListener: ((Map<String, Boolean>) -> Unit)? = null
+    private val startActivityForMultiplePermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) {
+        this.multiplePermissionListener?.invoke(it)
+        this.multiplePermissionListener = null
+    }
 
     fun replaceFragment(fragment: CommonFragment, container_id: Int) {
         Handler(Looper.getMainLooper()).post {
@@ -116,6 +166,51 @@ open class CommonActivity : AppCompatActivity(), LifecycleOwner {
         onPermissionsResultListeners.add(listener)
     }
 
+    /**
+     * Since your process and activity can be destroyed between when you call launch() and
+     * when the onActivityResult() callback is triggered, any additional state needed to handle the
+     * result must be saved and restored separately from these APIs.
+     */
+    fun launchForMultipleContent(
+        mimeType: IntentActions.MimeType,
+        listener: ((List<Uri>) -> Unit)? = null
+    ) {
+        this.multipleContentListener = listener
+        this.multipleContentLauncher.launch(mimeType.mimeTypeText)
+    }
+
+    fun launchForSingleContent(mime: String, listener: (Uri?) -> Unit) {
+        this.singleContentListener = listener
+        this.startActivityForContentLauncher.launch(mime)
+    }
+
+    /**
+     * Pass in the mime type you want to let the user select
+     * as the input
+     */
+    fun launchForSingleContent(mimeType: IntentActions.MimeType, listener: (Uri?) -> Unit) {
+        this.singleContentListener = listener
+        this.startActivityForContentLauncher.launch(mimeType.mimeTypeText)
+    }
+
+    fun launchForResult(intent: Intent, listener: (ActivityResult) -> Unit) {
+        this.activityResultListener = listener
+        this.startActivityForResultLauncher.launch(intent)
+    }
+
+    fun launchForSinglePermission(permission: String, listener: ((Boolean) -> Unit)) {
+        this.singlePermissionListener = listener
+        this.startActivityForSinglePermissionLauncher.launch(permission)
+    }
+
+    fun launchForMultiplePermission(
+        permissions: Array<String>,
+        listener: ((Map<String, Boolean>) -> Unit)
+    ) {
+        this.multiplePermissionListener = listener
+        this.startActivityForMultiplePermissionLauncher.launch(permissions)
+    }
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -127,11 +222,11 @@ open class CommonActivity : AppCompatActivity(), LifecycleOwner {
         if (!handled)
             super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
+    // Sometimes activity might be destroyed due to low memory
 
-    fun startActivityForResult(intent: Intent, callback: ActivityResultCallback<ActivityResult>) {
-        registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult(),
-            callback
-        ).launch(intent)
-    }
+    /*override fun onDestroy() {
+        super.onDestroy()
+        this.singleContentListener = null
+        this.primaryActivityResultListener = null
+    }*/
 }
