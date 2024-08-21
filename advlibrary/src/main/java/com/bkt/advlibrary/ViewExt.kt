@@ -22,6 +22,12 @@ fun View.hide(makeInvisible: Boolean = false) {
     }
 }
 
+fun <T : View> Iterable<T>.hide(makeInvisible: Boolean = false) {
+    forEach {
+        it.hide(makeInvisible)
+    }
+}
+
 fun View.show(value: Any?) {
     this.visibility = View.VISIBLE
     if (this is EditText && value != null)
@@ -34,6 +40,12 @@ fun View.show() {
     this.visibility = View.VISIBLE
 }
 
+fun <T : View> Iterable<T>.show() {
+    forEach {
+        it.show()
+    }
+}
+
 fun View.isVisible(): Boolean {
     return this.visibility == View.VISIBLE
 }
@@ -44,6 +56,15 @@ fun View.visibleWhen(vararg visible: Boolean) {
     if (showView)
         show()
     else hide()
+}
+
+fun <T : View> Iterable<T>.visibleWhen(vararg visibilityPredicates: Boolean) {
+    val isVisible = visibilityPredicates.all { it }
+    forEach {
+        if (isVisible)
+            it.show()
+        else it.hide()
+    }
 }
 
 fun Array<View?>?.visibleWhen(vararg visible: Boolean) {
