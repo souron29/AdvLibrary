@@ -69,6 +69,12 @@ fun <T> bgAsync(block: () -> T): Deferred<T> {
     return bgScope.async { block.invoke() }
 }
 
+fun <T> runInBgAsync(block: suspend CoroutineScope.() -> T): Deferred<T> {
+    return bgScope.async {
+        block.invoke(this)
+    }
+}
+
 fun after(milliSecs: Long, block: () -> Unit) {
     runInBg {
         delay(milliSecs)
