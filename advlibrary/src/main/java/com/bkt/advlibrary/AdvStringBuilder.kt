@@ -102,6 +102,12 @@ class AdvStringBuilder(private val initialText: CharSequence = "", vararg spans:
         return this
     }
 
+    fun newLine(count: Int = 1): AdvStringBuilder {
+        repeat(count) {
+            append("\n")
+        }
+        return this
+    }
 
     fun clear(): AdvStringBuilder {
         sb = SpannableStringBuilder()
@@ -165,7 +171,7 @@ data class AdvSpan(
             list.add(SubscriptSpan())
         if (::textAppearanceSpan.isInitialized)
             list.add(textAppearanceSpan)
-        
+
         return list
     }
 }

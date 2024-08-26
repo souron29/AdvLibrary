@@ -8,11 +8,23 @@ object IntentActions {
     /**
      * Shows a list of messaging apps
      */
-    fun sendTextMessage(context: Context, number: String) {
+    fun sendTextMessageTo(context: Context, number: String) {
         val uri = Uri.parse("smsto:+91$number")
         val i = Intent(Intent.ACTION_SENDTO, uri)
         i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         context.startActivity(Intent.createChooser(i, "Send Message"))
+    }
+
+    /**
+     * Send text messages. Only use Strings and not Char sequences as some apps don't read char sequence
+     */
+    fun sendText(context: Context, body: String, subject: String = "") {
+        val i = Intent(Intent.ACTION_SEND)
+        i.type = MimeType.TEXT_PLAIN.mimeTypeText
+        i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        i.putExtra(Intent.EXTRA_SUBJECT, subject)
+        i.putExtra(Intent.EXTRA_TEXT, body)
+        context.startActivity(Intent.createChooser(i, "Send Text"))
     }
 
     /**
@@ -44,7 +56,7 @@ object IntentActions {
     }
 
     enum class MimeType(val mimeTypeText: String) {
-        ALL("*/*"), IMAGE("image/*"), TEXT_PLAN("text/plain"),
+        ALL("*/*"), IMAGE("image/*"), TEXT_PLAIN("text/plain"),
         DOCUMENT_ALL("application/*"), DOCUMENT_PDF("application/pdf")
 
         ;
