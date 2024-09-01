@@ -83,7 +83,7 @@ object IntentActions {
         val intent = Intent()
         intent.action = Intent.ACTION_VIEW
         intent.setDataAndType(uri, mimeType)
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or  Intent.FLAG_ACTIVITY_CLEAR_TASK)
         activity.startActivity(intent)
     }
 
@@ -123,6 +123,7 @@ object IntentActions {
                 mime = uri.getMimeType()
             b.addStream(uri)
         }
+        b.setType(mime)
         b.setChooserTitle(chooserTitle)
         return b
     }
