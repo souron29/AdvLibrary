@@ -8,7 +8,7 @@ abstract class SwipeHelper : ItemTouchHelper.Callback() {
         recyclerView: RecyclerView,
         viewHolder: RecyclerView.ViewHolder
     ): Int {
-        return ItemTouchHelper.Callback.makeMovementFlags(0, 12)
+        return makeMovementFlags(0, ItemTouchHelper.END or ItemTouchHelper.START)
     }
 
     override fun onMove(

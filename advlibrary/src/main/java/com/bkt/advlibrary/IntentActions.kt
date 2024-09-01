@@ -59,17 +59,26 @@ object IntentActions {
         }
     }
 
-    fun getMimeType(uri: Uri): String? {
+    fun Uri.getMimeType(): String? {
         val m = MimeTypeMap.getSingleton()
-        val extension = MimeTypeMap.getFileExtensionFromUrl(uri.toString())
+        val extension = MimeTypeMap.getFileExtensionFromUrl(this.toString())
         return m.getMimeTypeFromExtension(extension)
     }
+
+    fun Uri.getExtension(): String? {
+        return MimeTypeMap.getFileExtensionFromUrl(this.toString())
+    }
+
+    fun String.getExtensionFromMimeType(): String? {
+        return MimeTypeMap.getSingleton().getExtensionFromMimeType(this)
+    }
+
 
     /**
      * Simple method to open any file
      */
     fun openFile(activity: CommonActivity, uri: Uri) {
-        val mimeType = getMimeType(uri)
+        val mimeType = uri.getMimeType()
         val intent = Intent()
         intent.action = Intent.ACTION_VIEW
         intent.setDataAndType(uri, mimeType)
@@ -119,7 +128,7 @@ object IntentActions {
         var mime = mimeTypeText
         attachmentUris.forEach { uri ->
             if (mime == null)
-                mime = getMimeType(uri)
+                mime = uri.getMimeType()
             b.addStream(uri)
         }
         title?.let { b.setChooserTitle(it) }

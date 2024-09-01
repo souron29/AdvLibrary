@@ -65,6 +65,10 @@ abstract class BinderAdapter<Value : Any, B : ViewDataBinding>(
         this.filterCondition = filterCondition
     }
 
+    /**
+     * [submit] - can be false when we do not need to display the data to user immediately
+     * e.g. Show data to user on searching at least 3 characters
+     */
     fun setList(list: List<Value>, submit: Boolean = true) {
         val actualList = ArrayList<Value>().also {
             it.addAll(list)
@@ -103,6 +107,7 @@ abstract class BinderAdapter<Value : Any, B : ViewDataBinding>(
 
     /**
      * Setting swipe helper
+     * [onSwiped] - indicates the item at position has been swiped left or right
      */
 
     final fun setSwiper(onSwiped: (position: Int, leftSwipe: Boolean, rightSwipe: Boolean) -> Unit) {

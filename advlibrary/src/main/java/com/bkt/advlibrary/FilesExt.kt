@@ -9,6 +9,7 @@ import android.provider.OpenableColumns
 import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider
 import com.bkt.advlibrary.ActivityExtKt.toast
+import com.bkt.advlibrary.IntentActions.getMimeType
 import java.io.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
@@ -36,7 +37,7 @@ fun File.openInFileManager(
         context.toast("No File Manager found")
         val intentGeneric = Intent(Intent.ACTION_VIEW)
         val filePath = FileProvider.getUriForFile(context, authority, this)
-        val mime = filePath.getMime(context)
+        val mime = filePath.getMimeType()
         intentGeneric.flags = FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
         intentGeneric.setDataAndType(filePath, mime)
         context.startActivity(intentGeneric)
@@ -69,7 +70,7 @@ fun File.open(context: Context, authority: String) {
         authority,
         this
     )
-    val mime = uri.getMime(context)
+    val mime = uri.getMimeType()
     intent.setDataAndType(uri, mime)
     intent.flags = FLAG_GRANT_READ_URI_PERMISSION or FLAG_GRANT_WRITE_URI_PERMISSION
     context.startActivity(intent)
@@ -82,13 +83,13 @@ fun File.shareFile(context: Context, authority: String) {
         authority,
         this
     )
-    val mime = uri.getMime(context)
+    val mime = uri.getMimeType()
     share.setDataAndType(uri, mime)
     //share.setPackage("com.whatsapp")
     context.startActivity(share)
 }
 
-fun Uri?.getMime(context: Context): String {
+/*fun Uri?.getMime(context: Context): String {
     val cR = context.contentResolver
     //val mime = MimeTypeMap.getSingleton()
     return if (this != null)
@@ -101,16 +102,18 @@ fun Uri?.getExtension(context: Context): String {
     return if (fileName.contains("."))
         fileName.substring(fileName.lastIndexOf("."))
     else ""
-}
+}*/
 
 fun Uri?.getFileName(context: Context): String {
     this?.apply {
-        val returnCursor = context.contentResolver.query(this, null, null, null, null)!!
-        val nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-        returnCursor.moveToFirst()
-        val name = returnCursor.getString(nameIndex)
-        returnCursor.close()
-        return name
+        val returnCursor = context.contentResolver.query(this, null, null, null, null)
+        returnCursor?.let { cursor ->
+            val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            cursor.moveToFirst()
+            val name = cursor.getString(nameIndex)
+            cursor.close()
+            return name
+        }
     }
     return ""
 }

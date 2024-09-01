@@ -15,10 +15,10 @@ import androidx.recyclerview.widget.RecyclerView
 /**
  * Param: [layoutConfig] -> Input is Position. Output should be LayoutId
  */
-class ComplexBindAdapter<Value>(
+open class ComplexBindAdapter<Value>(
+    private val layoutConfig: (Int, Value) -> Int,
     private val areItemsTheSame: (Value, Value) -> Boolean = { v1, v2 -> v1 == v2 },
     private val areContentsTheSame: (Value, Value) -> Boolean = { v1, v2 -> v1 == v2 },
-    private val layoutConfig: (Int, Value) -> Int
 ) : ListAdapter<Value, ComplexBinderHolder<ViewDataBinding>>(object :
     DiffUtil.ItemCallback<Value>() {
 
@@ -35,7 +35,8 @@ class ComplexBindAdapter<Value>(
         HashMap<Int, (b: ViewDataBinding, item: Value, position: Int) -> Unit>()
 
     private var dataList = ArrayList<Value>()
-    var filterCondition = { _: Value, _: String -> true }
+    private var filterCondition = { _: Value, _: String -> true }
+    private var onViewCreated = { _: ComplexBinderHolder<ViewDataBinding> -> }
 
     override fun getItemViewType(position: Int): Int {
         return layoutConfig.invoke(position, getItem(position))
@@ -55,7 +56,10 @@ class ComplexBindAdapter<Value>(
         val inflater = LayoutInflater.from(parent.context)
         // viewType is the layoutId in our case
         val binding: ViewDataBinding = DataBindingUtil.inflate(inflater, viewType, parent, false)
-        return ComplexBinderHolder(binding)
+
+        return ComplexBinderHolder(binding).also { holder ->
+            this.onViewCreated.invoke(holder)
+        }
     }
 
     override fun onBindViewHolder(holder: ComplexBinderHolder<ViewDataBinding>, position: Int) {
@@ -64,10 +68,32 @@ class ComplexBindAdapter<Value>(
         layoutToBindMap[layoutId]?.invoke(holder.binding, item, position)
     }
 
-    fun setList(list: List<Value>) {
-        val actualList = ArrayList(list)
-        submitList(actualList)
+    /**
+     * [submit] - can be false when we do not need to display the data to user immediately
+     * e.g. Show data to user on searching at least 3 characters
+     */
+    fun setList(list: List<Value>, submit: Boolean = true) {
+        val actualList = ArrayList<Value>().also {
+            it.addAll(list)
+        }
+        if (submit)
+            submitList(actualList)
         dataList = actualList
+    }
+
+    /**
+     * Should be used to set all the listeners
+     */
+    final fun setOnViewCreated(onViewCreated: (ComplexBinderHolder<ViewDataBinding>) -> Unit) {
+        this.onViewCreated = onViewCreated
+    }
+
+    final fun setFilterCondition(filterCondition: (Value, String?) -> Boolean) {
+        this.filterCondition = filterCondition
+    }
+
+    fun filter(constraint: CharSequence) {
+        filter.filter(constraint)
     }
 
     override fun getFilter(): Filter {
