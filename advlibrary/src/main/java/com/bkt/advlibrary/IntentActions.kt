@@ -7,6 +7,7 @@ import android.webkit.MimeTypeMap
 import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider
 import java.io.File
+import java.net.URLEncoder
 
 object IntentActions {
     /**
@@ -93,49 +94,47 @@ object IntentActions {
         openFile(activity, FileProvider.getUriForFile(activity, authority, file))
     }
 
+    /**
+     * [authority] is required to get the URI of the file
+     */
     fun shareFiles(
         activity: CommonActivity,
         authority: String,
-        title: String? = null,
-        mimeTypeText: String? = null,
-        subject: String? = null,
-        body: String? = null,
-        htmlBody: String? = null,
+        chooserTitle: String,
         vararg attachments: File
     ): ShareCompat.IntentBuilder {
         return shareFileUris(
             activity,
-            title = title,
-            mimeTypeText = mimeTypeText,
-            subject = subject,
-            body = body,
-            htmlBody = htmlBody,
+            chooserTitle = chooserTitle,
             *attachments.map { FileProvider.getUriForFile(activity, authority, it) }.toTypedArray()
         )
     }
 
     fun shareFileUris(
         activity: CommonActivity,
-        title: String? = null,
-        mimeTypeText: String? = null,
-        subject: String? = null,
-        body: String? = null,
-        htmlBody: String? = null,
+        chooserTitle: String,
         vararg attachmentUris: Uri
     ): ShareCompat.IntentBuilder {
         val b = ShareCompat.IntentBuilder(activity)
         // get the mime of first file
-        var mime = mimeTypeText
+        var mime: String? = null
         attachmentUris.forEach { uri ->
             if (mime == null)
                 mime = uri.getMimeType()
             b.addStream(uri)
         }
-        title?.let { b.setChooserTitle(it) }
-        subject?.let { b.setSubject(it) }
-        body?.let { b.setText(it) }
-        htmlBody?.let { b.setHtmlText(it) }
+        b.setChooserTitle(chooserTitle)
         return b
+    }
+
+    fun sendWhatsappMessage(number: String, message: String) {
+        val url = "https://wa.me/+91$number?text=${encode(message)}"
+        val uri = Uri.parse(url)
+        Intent(Intent.ACTION_VIEW, uri)
+    }
+
+    private fun encode(text: String): String {
+        return URLEncoder.encode(text, Charsets.UTF_8.name())
     }
 
     enum class MimeType(val mimeTypeText: String) {
