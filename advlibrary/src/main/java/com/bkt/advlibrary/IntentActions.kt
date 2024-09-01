@@ -93,7 +93,7 @@ object IntentActions {
         openFile(activity, FileProvider.getUriForFile(activity, authority, file))
     }
 
-    fun share(
+    fun shareFiles(
         activity: CommonActivity,
         authority: String,
         title: String? = null,
@@ -103,7 +103,7 @@ object IntentActions {
         htmlBody: String? = null,
         vararg attachments: File
     ): ShareCompat.IntentBuilder {
-        return share(
+        return shareFileUris(
             activity,
             title = title,
             mimeTypeText = mimeTypeText,
@@ -114,7 +114,7 @@ object IntentActions {
         )
     }
 
-    fun share(
+    fun shareFileUris(
         activity: CommonActivity,
         title: String? = null,
         mimeTypeText: String? = null,
