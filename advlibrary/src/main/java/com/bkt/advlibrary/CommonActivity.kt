@@ -70,10 +70,10 @@ open class CommonActivity : AppCompatActivity(), LifecycleOwner {
             try {
                 if (!supportFragmentManager.isDestroyed && !isDestroyed)
                     supportFragmentManager.beginTransaction()
-                        .replace(container_id, fragment as Fragment, fragment.fragmentName)
+                        .replace(container_id, fragment as Fragment, fragment.properties.name)
                         .commitNowAllowingStateLoss()
             } catch (e: Exception) {
-                logger("Error ${e.message} for ${fragment.fragmentName}")
+                logger("Error ${e.message} for ${fragment.properties.name}")
             }
 
         }
@@ -90,11 +90,11 @@ open class CommonActivity : AppCompatActivity(), LifecycleOwner {
                     val txn = supportFragmentManager.beginTransaction()
                         .replace(container_id, fragment as Fragment)
                     if (addCurrentToBackStack)
-                        txn.addToBackStack(fragment.fragmentName)
+                        txn.addToBackStack(fragment.properties.name)
                     txn.commit()
                 }
             } catch (e: Exception) {
-                logger("Error ${e.message} for ${fragment.fragmentName}")
+                logger("Error ${e.message} for ${fragment.properties.name}")
             }
 
         }
