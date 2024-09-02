@@ -30,7 +30,7 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel> :
     lateinit var bindProperties: FragBindProperties<VM>
         private set
 
-    override fun getFragmentProperties(): FragProperties {
+    final override fun getFragmentProperties(): FragProperties {
         this.bindProperties = getFragBindProperties()
         return FragProperties(this.bindProperties.layoutId, this.bindProperties.name)
     }
