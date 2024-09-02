@@ -7,6 +7,7 @@ import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.RecyclerView
 import com.bkt.advlibrary.bind.BinderAdapter
 import com.bkt.advlibrary.bind.BinderFragment
+import com.bkt.advlibrary.bind.FragBindProperties
 import com.bkt.advlibrary.bind.FragBinderModel
 import com.bkt.advlibrary.databinding.FragmentSelectorBinding
 
@@ -14,10 +15,7 @@ class SelectorFragment<Item : Any, Binding : ViewDataBinding>(
     @LayoutRes private val layoutId: Int,
     private val onBind: (b: Binding, item: Item, position: Int, partOfSelection: Boolean) -> Unit
 ) :
-    BinderFragment<FragmentSelectorBinding, SelectorVM<Item, Binding>>(
-        R.layout.fragment_selector,
-        "SelectorFragment"
-    ) {
+    BinderFragment<FragmentSelectorBinding, SelectorVM<Item, Binding>>() {
 
     override fun initializeViews() {
         binding.vm = vm
@@ -99,11 +97,9 @@ class SelectorFragment<Item : Any, Binding : ViewDataBinding>(
             loadChildFragment(fragment, R.id.child_container)
     }
 
-    override fun setProperties(): SelectorVM<Item, Binding> {
-        val model = getModel<SelectorVM<Item, Binding>>()
-        return model as SelectorVM<Item, Binding>
+    override fun getFragBindProperties(): FragBindProperties<SelectorVM<Item, Binding>> {
+        return FragBindProperties(R.layout.fragment_selector, "Selector", getModel())
     }
-
 }
 
 class SelectorAdapter<Item : Any, Binding : ViewDataBinding>(

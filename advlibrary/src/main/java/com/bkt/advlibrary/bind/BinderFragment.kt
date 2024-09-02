@@ -4,18 +4,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.viewModels
 import com.bkt.advlibrary.CommonFragment
+import com.bkt.advlibrary.FragProperties
 import com.bkt.advlibrary.popBackStack
 import com.bkt.advlibrary.popBackStackImmediate
 
-abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>(
-    private val layoutId: Int,
-    name: String
-) :
-    CommonFragment(name),
+abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel> :
+    CommonFragment(),
     EventListener {
     private var _bind: T? = null
     private var onVmSet = ArrayList<() -> Unit>()
@@ -28,10 +27,16 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>(
 
     lateinit var vm: VM
         private set
+    lateinit var bindProperties: FragBindProperties<VM>
+        private set
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun getFragmentProperties(): FragProperties {
+        this.bindProperties = getFragBindProperties()
+        return FragProperties(this.bindProperties.layoutId, this.bindProperties.name)
+    }
+
+    override fun onSetupData() {
         setInternalFunctions()
-        super.onCreate(savedInstanceState)
     }
 
     override fun onCreateView(
@@ -39,7 +44,7 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>(
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _bind = DataBindingUtil.inflate(inflater, layoutId, container, false)
+        _bind = DataBindingUtil.inflate(inflater, this.bindProperties.layoutId, container, false)
         _bind!!.lifecycleOwner = viewLifecycleOwner
         return binding.root
     }
@@ -54,7 +59,6 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>(
      * as those are not yet created during onCreate
      */
     private fun setInternalFunctions() {
-        vm = setProperties()
         vm.eventListener = this
         onVmSet.forEach { it.invoke() }
 
@@ -67,7 +71,7 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>(
         vm.activity = { advActivity }
     }
 
-    abstract fun setProperties(): VM
+    abstract fun getFragBindProperties(): FragBindProperties<VM>
 
     inline fun <reified VM : BinderModel> getModel(): VM {
         val vm by viewModels<VM>()
@@ -121,3 +125,8 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>(
     }
 }
 
+data class FragBindProperties<VM : FragBinderModel>(
+    @LayoutRes val layoutId: Int,
+    val name: String = "",
+    val vm: VM
+)

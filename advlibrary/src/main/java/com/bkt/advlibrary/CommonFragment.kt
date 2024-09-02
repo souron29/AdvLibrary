@@ -1,22 +1,25 @@
 package com.bkt.advlibrary
 
-import android.app.Activity
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import androidx.annotation.IdRes
+import androidx.annotation.LayoutRes
 import androidx.fragment.app.*
 import androidx.lifecycle.LifecycleOwner
 import androidx.viewpager2.widget.ViewPager2
 import java.io.Serializable
 
-abstract class CommonFragment(open val fragmentName: String) : Fragment(), LifecycleOwner {
+abstract class CommonFragment : Fragment(), LifecycleOwner {
     val stackCount: Int
         get() = if (isAdded) childFragmentManager.backStackEntryCount else 0
     lateinit var advActivity: CommonActivity
 
     private var pagerDetails: PagerDetails? = null
     private var onClose = {}
+    lateinit var properties: FragProperties
+        private set
 
     fun onClosed(onClose: () -> Unit) {
         this.onClose = onClose
@@ -39,6 +42,7 @@ abstract class CommonFragment(open val fragmentName: String) : Fragment(), Lifec
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        this.properties = getFragmentProperties()
         onSetupData()
     }
 
@@ -56,6 +60,8 @@ abstract class CommonFragment(open val fragmentName: String) : Fragment(), Lifec
      */
     abstract fun initializeViews()
 
+    abstract fun getFragmentProperties(): FragProperties
+
     /**
      * Invoked from onCreate method of fragment lifecycle
      * Called once in whole lifecycle, so this can be used to initialize data listeners
@@ -67,7 +73,7 @@ abstract class CommonFragment(open val fragmentName: String) : Fragment(), Lifec
 
     internal fun loadFragment(
         fragment: CommonFragment,
-        layoutId: Int,
+        @IdRes layoutId: Int,
         onParent: Boolean,
         addCurrentToStack: Boolean = true,
         body: FragmentTransaction.() -> Unit = {}
@@ -81,13 +87,13 @@ abstract class CommonFragment(open val fragmentName: String) : Fragment(), Lifec
             body.invoke(this)
             replace(layoutId, fragment)
             if (addCurrentToStack)
-                addToBackStack(fragment.fragmentName)
+                addToBackStack(this@CommonFragment.properties.name)
         }
     }
 
     fun loadChildFragment(
         fragment: CommonFragment,
-        id: Int,
+        @IdRes id: Int,
         body: FragmentTransaction.() -> Unit = {}
     ) {
         loadFragment(fragment, id, onParent = false, addCurrentToStack = true, body)
@@ -95,20 +101,20 @@ abstract class CommonFragment(open val fragmentName: String) : Fragment(), Lifec
 
     fun replaceChildFragment(
         fragment: CommonFragment,
-        id: Int,
+        @IdRes id: Int,
         body: FragmentTransaction.() -> Unit = {}
     ) {
         loadFragment(fragment, id, onParent = false, addCurrentToStack = false, body)
     }
 
     fun loadFragment(
-        fragment: CommonFragment, id: Int, body: FragmentTransaction.() -> Unit = {}
+        fragment: CommonFragment, @IdRes id: Int, body: FragmentTransaction.() -> Unit = {}
     ) {
         loadFragment(fragment, id, onParent = true, addCurrentToStack = true, body)
     }
 
     fun replaceFragment(
-        fragment: CommonFragment, id: Int, body: FragmentTransaction.() -> Unit = {}
+        fragment: CommonFragment, @IdRes id: Int, body: FragmentTransaction.() -> Unit = {}
     ) {
         loadFragment(fragment, id, onParent = true, addCurrentToStack = false, body)
     }
@@ -329,3 +335,5 @@ fun <T : Serializable> Fragment.getArgument(key: String, clazz: Class<T>? = null
         arguments?.getSerializable(key) as T?
     }
 }
+
+data class FragProperties(@LayoutRes val layoutId: Int, val name: String = "")

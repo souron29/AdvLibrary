@@ -8,11 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 
-abstract class AdvFragment(
-    override val fragmentName: String,
-    @LayoutRes private val layoutId: Int
-) :
-    CommonFragment(fragmentName) {
+abstract class AdvFragment :
+    CommonFragment() {
     var fragmentView: View? = null
         private set
 
@@ -21,7 +18,7 @@ abstract class AdvFragment(
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val inflate = inflater.inflate(layoutId, container, false)
+        val inflate = inflater.inflate(super.properties.layoutId, container, false)
         fragmentView = inflate
         return inflate
     }
