@@ -118,11 +118,11 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>() :
      * Views should not be accessed inside this method
      */
     protected fun afterSettingVM(block: () -> Unit) {
-        /*if (this::vm.isInitialized)
-        block.invoke()
+        // vm cannot be accessed from detached fragment
+        if (this.isAdded)
+            block.invoke()
         else
-            onVmSet.add(block)*/
-        block.invoke()
+            onVmSet.add(block)
     }
 
     override fun onDestroy() {
