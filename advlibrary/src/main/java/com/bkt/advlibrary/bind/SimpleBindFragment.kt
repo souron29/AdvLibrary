@@ -14,7 +14,7 @@ abstract class SimpleBindFragment<Bind : ViewDataBinding>() :
     }
 
     override fun getFragBindProperties(): FragBindProperties<SimpleBindFragVM> {
-        return FragBindProperties(getLayoutId(), "SimpleFrag", getModel())
+        return FragBindProperties(getLayoutId(), "Simple Fragment", getModel())
     }
 
     abstract fun getLayoutId(): Int
