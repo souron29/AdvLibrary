@@ -12,10 +12,16 @@ import com.bkt.advlibrary.CommonFragment
 import com.bkt.advlibrary.FragProperties
 import com.bkt.advlibrary.popBackStack
 import com.bkt.advlibrary.popBackStackImmediate
+import java.io.Serializable
 
-abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel> :
+abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>() :
     CommonFragment(),
     EventListener {
+
+    constructor(vararg params: Serializable) : this() {
+        passArguments(params)
+    }
+
     private var _bind: T? = null
     private var onVmSet = ArrayList<() -> Unit>()
     val binding: T

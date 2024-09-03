@@ -11,7 +11,12 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.viewpager2.widget.ViewPager2
 import java.io.Serializable
 
-abstract class CommonFragment : Fragment(), LifecycleOwner {
+abstract class CommonFragment() : Fragment(), LifecycleOwner {
+
+    constructor(vararg params: Serializable) : this() {
+        passArguments(params)
+    }
+
     val stackCount: Int
         get() = if (isAdded) childFragmentManager.backStackEntryCount else 0
     lateinit var advActivity: CommonActivity
