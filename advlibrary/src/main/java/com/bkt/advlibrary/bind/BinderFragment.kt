@@ -31,13 +31,13 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>() :
             return _bind!!
         }
 
-    lateinit var vm: VM
-        private set
-    lateinit var bindProperties: FragBindProperties<VM>
-        private set
+    val vm by lazy { this.bindProperties.vm }
+
+    /*lateinit var vm: VM
+        private set*/
+    val bindProperties by lazy { getFragBindProperties() }
 
     final override fun getFragmentProperties(): FragProperties {
-        this.bindProperties = getFragBindProperties()
         return FragProperties(this.bindProperties.layoutId, this.bindProperties.name)
     }
 
@@ -104,30 +104,32 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>() :
 
     override fun onStop() {
         super.onStop()
-        if (this::vm.isInitialized) {
+        /*if (this::vm.isInitialized) {
             vm.fragLoad = null
             vm.toast = null
             vm.hide = null
-        }
+        }*/
+        vm.fragLoad = null
+        vm.toast = null
+        vm.hide = null
     }
 
     /**
      * Views should not be accessed inside this method
      */
     protected fun afterSettingVM(block: () -> Unit) {
-        if (this::vm.isInitialized)
-            block.invoke()
+        /*if (this::vm.isInitialized)
+        block.invoke()
         else
-            onVmSet.add(block)
+            onVmSet.add(block)*/
+        block.invoke()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        if (this::vm.isInitialized) {
-            vm.fragment = null
-            vm.activity = null
-            vm.popBackStackImmediate.removeObservers(this)
-        }
+        vm.fragment = null
+        vm.activity = null
+        vm.popBackStackImmediate.removeObservers(this)
     }
 }
 
