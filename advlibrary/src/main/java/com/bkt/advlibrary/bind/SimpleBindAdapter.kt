@@ -12,11 +12,3 @@ class SimpleBindAdapter<Value : Any, B : ViewDataBinding>(
         addLayoutBind(layoutId, onBind)
     }
 }
-
-/*
-{
-
-    override fun onBind(b: B, item: Value, position: Int) {
-        onBind.invoke(b, item, position)
-    }
-}*/

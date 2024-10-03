@@ -2,13 +2,10 @@ package com.bkt.advlibrary.bind
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.Filter
-import android.widget.Filterable
 import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 
 
@@ -19,7 +16,7 @@ open class ComplexBindAdapter<Value>(
     private val layoutConfig: (Int, Value) -> Int,
     private val areItemsTheSame: (Value, Value) -> Boolean = { v1, v2 -> v1 == v2 },
     private val areContentsTheSame: (Value, Value) -> Boolean = { v1, v2 -> v1 == v2 },
-) : ListAdapter<Value, ComplexBinderHolder<ViewDataBinding>>(object :
+) : CommonBindAdapter<Value, ComplexBinderHolder<ViewDataBinding>>(object :
     DiffUtil.ItemCallback<Value>() {
 
     override fun areItemsTheSame(oldItem: Value & Any, newItem: Value & Any): Boolean {
@@ -29,13 +26,11 @@ open class ComplexBindAdapter<Value>(
     override fun areContentsTheSame(oldItem: Value & Any, newItem: Value & Any): Boolean {
         return areContentsTheSame.invoke(oldItem, newItem)
     }
-}), Filterable {
+}) {
     // mapping between layout id and binding
     private val layoutToBindMap =
         HashMap<Int, (b: ViewDataBinding, item: Value, position: Int) -> Unit>()
 
-    private var dataList = ArrayList<Value>()
-    private var filterCondition = { _: Value, _: String -> true }
     private var onViewCreated = { _: ComplexBinderHolder<ViewDataBinding> -> }
 
     override fun getItemViewType(position: Int): Int {
@@ -69,50 +64,10 @@ open class ComplexBindAdapter<Value>(
     }
 
     /**
-     * [submit] - can be false when we do not need to display the data to user immediately
-     * e.g. Show data to user on searching at least 3 characters
-     */
-    fun setList(list: List<Value>, submit: Boolean = true) {
-        val actualList = ArrayList<Value>().also {
-            it.addAll(list)
-        }
-        if (submit)
-            submitList(actualList)
-        dataList = actualList
-    }
-
-    /**
      * Should be used to set all the listeners
      */
     final fun setOnViewCreated(onViewCreated: (ComplexBinderHolder<ViewDataBinding>) -> Unit) {
         this.onViewCreated = onViewCreated
-    }
-
-    final fun setFilterCondition(filterCondition: (Value, String?) -> Boolean) {
-        this.filterCondition = filterCondition
-    }
-
-    fun filter(constraint: CharSequence) {
-        filter.filter(constraint)
-    }
-
-    override fun getFilter(): Filter {
-        return object : Filter() {
-            override fun performFiltering(constraint: CharSequence?): FilterResults {
-                val filteredList = ArrayList<Value>()
-                filteredList.addAll(dataList.filter {
-                    constraint.isNullOrEmpty() ||
-                            filterCondition.invoke(it, constraint.toString())
-                })
-                val results = FilterResults()
-                results.values = filteredList
-                return results
-            }
-
-            override fun publishResults(p0: CharSequence?, filterResults: FilterResults?) {
-                submitList(filterResults?.values as List<Value>)
-            }
-        }
     }
 }
 
