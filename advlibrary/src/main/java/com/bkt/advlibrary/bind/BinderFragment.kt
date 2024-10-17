@@ -41,6 +41,9 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>() :
         return FragProperties(this.bindProperties.layoutId, this.bindProperties.name)
     }
 
+    /**
+     * When overriding this method, invoke super method first
+     */
     override fun onSetupData() {
         setInternalFunctions()
     }

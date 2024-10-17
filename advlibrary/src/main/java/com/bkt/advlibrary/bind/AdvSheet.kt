@@ -1,6 +1,7 @@
 package com.bkt.advlibrary.bind
 
 import android.app.Dialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,6 +20,9 @@ class AdvSheet<T : ViewDataBinding>(
     BottomSheetDialogFragment() {
     private var _bind: T? = null
     val binding get() = _bind!!
+
+    private var onCancelled: ((DialogInterface) -> Unit)? = null
+    private var onDismissed: ((DialogInterface) -> Unit)? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,5 +51,30 @@ class AdvSheet<T : ViewDataBinding>(
     override fun onDestroyView() {
         super.onDestroyView()
         _bind = null
+    }
+
+    final fun setOnCancel(onCancelListener: (DialogInterface) -> Unit) {
+        this.onCancelled = onCancelListener
+    }
+
+    /**
+     * This is invoked when
+     * 1) The user presses back
+     * 2) The user presses outside of the dialog
+     *
+     * This is not invoked on screen rotation and activity recreation
+     */
+    override fun onCancel(dialog: DialogInterface) {
+        super.onCancel(dialog)
+        this.onCancelled?.invoke(dialog)
+    }
+
+    final fun setOnDismissed(onDismissListener: (DialogInterface) -> Unit) {
+        this.onDismissed = onDismissListener
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        this.onDismissed?.invoke(dialog)
     }
 }
