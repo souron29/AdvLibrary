@@ -136,7 +136,7 @@ abstract class CommonFragment() : Fragment(), LifecycleOwner {
         pagerDetails?.let { (pager, adapter, default) ->
             if (pager.currentItem == default) {
                 val frag = adapter.getFragment(default)
-                if (frag.isAdded && frag.childFragmentManager.fragments.isNotEmpty()) {
+                if (frag!!.isAdded && frag.childFragmentManager.fragments.isNotEmpty()) {
                     val size = frag.childFragmentManager.fragments.size
                     val childFrag = frag.childFragmentManager.fragments[size - 1] as CommonFragment?
                     if (childFrag != null && childFrag.backPressHandled())
