@@ -23,8 +23,7 @@ abstract class CommonFragment() : Fragment(), LifecycleOwner {
 
     private var pagerDetails: PagerDetails? = null
     private var onClose = {}
-    lateinit var properties: FragProperties
-        private set
+    val properties by lazy { getFragmentProperties() }
 
     fun onClosed(onClose: () -> Unit) {
         this.onClose = onClose
@@ -47,7 +46,6 @@ abstract class CommonFragment() : Fragment(), LifecycleOwner {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        this.properties = getFragmentProperties()
         onSetupData()
     }
 
@@ -341,4 +339,4 @@ fun <T : Serializable> Fragment.getArgument(key: String, clazz: Class<T>? = null
     }
 }
 
-data class FragProperties(@LayoutRes val layoutId: Int, val name: String = "")
+data class FragProperties(@LayoutRes val layoutId: Int, val name: String = "") : Serializable
