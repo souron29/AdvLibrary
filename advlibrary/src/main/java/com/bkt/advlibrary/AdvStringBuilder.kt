@@ -9,6 +9,7 @@ import android.text.style.*
 import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.StyleRes
+import java.util.regex.Pattern
 
 class AdvStringBuilder(private val initialText: CharSequence = "", vararg spans: CharacterStyle) {
     private var sb: SpannableStringBuilder
@@ -109,6 +110,20 @@ class AdvStringBuilder(private val initialText: CharSequence = "", vararg spans:
         return this
     }
 
+    fun setSpan(span: Any, indexStart: Int, indexEnd: Int, flags: Int): AdvStringBuilder {
+        sb.setSpan(span, indexStart, indexEnd, flags)
+        return this
+    }
+
+    fun setClickable(indexStart: Int, indexEnd: Int, flags: Int, onCLick: () -> Unit): AdvStringBuilder {
+        sb.setSpan(object : ClickableSpan() {
+            override fun onClick(widget: View) {
+                onCLick.invoke()
+            }
+        }, indexStart, indexEnd, flags)
+        return this
+    }
+
     fun clear(): AdvStringBuilder {
         sb = SpannableStringBuilder()
         return this
@@ -173,5 +188,12 @@ data class AdvSpan(
             list.add(textAppearanceSpan)
 
         return list
+    }
+}
+
+fun Pattern.onMatch(input: CharSequence, matchFound: (Int, Int) -> Unit) {
+    val matcher = this.matcher(input)
+    while (matcher.find()) {
+        matchFound.invoke(matcher.start(), matcher.end())
     }
 }
