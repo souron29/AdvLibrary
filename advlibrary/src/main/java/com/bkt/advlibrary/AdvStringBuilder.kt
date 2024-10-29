@@ -1,11 +1,14 @@
 package com.bkt.advlibrary
 
 import android.content.Context
-import android.content.res.ColorStateList
+import android.content.Intent
 import android.graphics.Typeface
+import android.net.Uri
 import android.text.Spannable
 import android.text.SpannableStringBuilder
+import android.text.Spanned
 import android.text.style.*
+import android.util.Patterns
 import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.StyleRes
@@ -115,13 +118,52 @@ class AdvStringBuilder(private val initialText: CharSequence = "", vararg spans:
         return this
     }
 
-    fun setClickable(indexStart: Int, indexEnd: Int, flags: Int, onCLick: () -> Unit): AdvStringBuilder {
+    fun setClickable(
+        indexStart: Int,
+        indexEnd: Int,
+        flags: Int,
+        onCLick: () -> Unit
+    ): AdvStringBuilder {
         sb.setSpan(object : ClickableSpan() {
             override fun onClick(widget: View) {
                 onCLick.invoke()
             }
         }, indexStart, indexEnd, flags)
         return this
+    }
+
+    fun setClickableUrlSpan(activity: CommonActivity) {
+        val text = sb.toString()
+        Patterns.WEB_URL.onMatch(text) { indexStart, indexEnd ->
+            var url = text.substring(indexStart, indexEnd)
+            if (!url.contains("www"))
+                return@onMatch
+            if (!url.startsWith("http"))
+                url = "https://$url"
+            sb.setSpan(object : ClickableSpan() {
+                override fun onClick(p0: View) {
+                    val i = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                    if (i.resolveActivity(activity.packageManager) != null) {
+                        activity.startActivity(i)
+                    }
+                }
+            }, indexStart, indexEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        }
+    }
+
+    fun setClickableEmailSpan(activity: CommonActivity) {
+        val text = sb.toString()
+        Patterns.EMAIL_ADDRESS.onMatch(text) { indexStart, indexEnd ->
+            val email = text.substring(indexStart, indexEnd)
+            sb.setSpan(object : ClickableSpan() {
+                override fun onClick(p0: View) {
+                    val intent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:$email"))
+                    // only email apps should handle this
+                    val chooser = Intent.createChooser(intent, "Email")
+                    activity.startActivity(chooser)
+                }
+            }, indexStart, indexEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        }
     }
 
     fun clear(): AdvStringBuilder {
