@@ -72,7 +72,7 @@ fun File.open(context: Context, authority: String) {
     )
     val mime = uri.getMimeType()
     intent.setDataAndType(uri, mime)
-    intent.flags = FLAG_GRANT_READ_URI_PERMISSION or FLAG_GRANT_WRITE_URI_PERMISSION
+    intent.flags = FLAG_GRANT_READ_URI_PERMISSION or FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
     context.startActivity(intent)
 }
 

@@ -28,6 +28,12 @@ class AdvStringBuilder(private val initialText: CharSequence = "", vararg spans:
         return this
     }
 
+    fun appendIfEmpty(text: CharSequence?): AdvStringBuilder {
+        if (text != null && sb.isNotEmpty())
+            sb.append(text)
+        return this
+    }
+
     fun appendSpan(text: CharSequence, vararg spans: CharacterStyle): AdvStringBuilder {
         sb.append(text)
         val start = sb.length - text.length
@@ -210,7 +216,7 @@ data class AdvSpan(
         else if (isBold)
             list.add(StyleSpan(Typeface.BOLD))
         else if (italics)
-            list.add(StyleSpan(Typeface.BOLD))
+            list.add(StyleSpan(Typeface.ITALIC))
 
         if (color != -1)
             list.add(ForegroundColorSpan(color))
