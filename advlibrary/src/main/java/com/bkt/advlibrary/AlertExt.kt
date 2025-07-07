@@ -13,6 +13,7 @@ fun Context.showConfirmDialog(
     body: CharSequence = "",
     yesButtonText: CharSequence = "Yes",
     noButtonText: CharSequence = "No",
+    onDeclined: () -> Unit = {},
     onConfirmed: () -> Unit
 ) {
     val dialog =
@@ -20,8 +21,9 @@ fun Context.showConfirmDialog(
             .setMessage(body)
             .setPositiveButton(yesButtonText) { _, _ ->
                 onConfirmed.invoke()
-            }.setNegativeButton(noButtonText, null)
-            .setCancelable(false)
+            }.setNegativeButton(noButtonText) { _, _ ->
+                onDeclined.invoke()
+            }.setCancelable(false)
     dialog.show()
 }
 

@@ -3,7 +3,6 @@ package com.bkt.advlibrary
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Filter
 import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -16,11 +15,12 @@ abstract class AdvanceAdapter<Value>(
     private val areContentsTheSame: (Value, Value) -> Boolean = { _, _ -> false }
 ) : ListAdapter<Value, AdvanceAdapter.AdvanceHolder>(object :
     DiffUtil.ItemCallback<Value>() {
-    override fun areItemsTheSame(oldItem: Value, newItem: Value): Boolean {
+
+    override fun areItemsTheSame(oldItem: Value & Any, newItem: Value & Any): Boolean {
         return areItemsTheSame.invoke(oldItem, newItem)
     }
 
-    override fun areContentsTheSame(oldItem: Value, newItem: Value): Boolean {
+    override fun areContentsTheSame(oldItem: Value & Any, newItem: Value & Any): Boolean {
         return areContentsTheSame.invoke(oldItem, newItem)
     }
 }) {
@@ -107,7 +107,5 @@ abstract class AdvanceAdapter<Value>(
         this.mRecyclerView = null
     }
 
-    data class AdvanceHolder(val view: View) :
-        RecyclerView.ViewHolder(view)
-
+    data class AdvanceHolder(val view: View) : RecyclerView.ViewHolder(view)
 }

@@ -7,9 +7,21 @@ import android.net.Uri
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.Spanned
-import android.text.style.*
+import android.text.method.LinkMovementMethod
+import android.text.style.BackgroundColorSpan
+import android.text.style.CharacterStyle
+import android.text.style.ClickableSpan
+import android.text.style.ForegroundColorSpan
+import android.text.style.RelativeSizeSpan
+import android.text.style.StrikethroughSpan
+import android.text.style.StyleSpan
+import android.text.style.SubscriptSpan
+import android.text.style.SuperscriptSpan
+import android.text.style.TextAppearanceSpan
+import android.text.style.UnderlineSpan
 import android.util.Patterns
 import android.view.View
+import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.annotation.StyleRes
 import java.util.regex.Pattern
@@ -124,6 +136,22 @@ class AdvStringBuilder(private val initialText: CharSequence = "", vararg spans:
         return this
     }
 
+    /**
+     * We need to also invoke Textview.setMovementMethod(LinkMovementMethod.getInstance())
+     */
+    fun appendOnClick(text: CharSequence?, onClick: () -> Unit): (TextView) -> Unit {
+        text ?: return {}
+        val cs = object : ClickableSpan() {
+            override fun onClick(v: View) {
+                onClick.invoke()
+            }
+        }
+        appendSpan(text, cs)
+        return { textView: TextView ->
+            textView.movementMethod = LinkMovementMethod.getInstance()
+        }
+    }
+
     fun setClickable(
         indexStart: Int,
         indexEnd: Int,
@@ -172,6 +200,11 @@ class AdvStringBuilder(private val initialText: CharSequence = "", vararg spans:
         }
     }
 
+    fun appendIfNotEmpty(text: String, span: AdvSpan = AdvSpan()) {
+        if (this.get().isNotEmpty())
+            append(text, span)
+    }
+
     fun clear(): AdvStringBuilder {
         sb = SpannableStringBuilder()
         return this
@@ -184,8 +217,10 @@ class AdvStringBuilder(private val initialText: CharSequence = "", vararg spans:
     override fun toString(): String {
         return sb.toString()
     }
+}
 
-
+inline fun buildSpan(builderAction: AdvStringBuilder.() -> Unit): CharSequence {
+    return AdvStringBuilder().apply(builderAction).get()
 }
 
 data class AdvSpan(

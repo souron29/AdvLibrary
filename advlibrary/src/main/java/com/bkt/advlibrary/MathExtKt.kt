@@ -91,8 +91,28 @@ fun BigDecimal.getPercentageOfOrNull(target: BigDecimal, scale: Int = 2): BigDec
     return (this * BigDecimal(100)).divide(target, scale, RoundingMode.HALF_EVEN)
 }
 
-fun String?.toBigDecimalOr(value: Int): BigDecimal {
-    if (this == null || this.isEmpty())
-        return BigDecimal(value)
-    return BigDecimal(this)
+infix fun String?.toIntOr(value: Int): Int {
+    if (this.isNullOrBlank())
+        return value
+    return this.toIntOrNull() ?: value
 }
+
+infix fun String?.toBigDecimalOr(value: Int): BigDecimal {
+    if (this.isNullOrBlank())
+        return BigDecimal(value)
+    return this.toBigDecimalOrNull() ?: when (value) {
+        0 -> BigDecimal.ZERO
+        1 -> BigDecimal.ONE
+        10 -> BigDecimal.TEN
+        else -> BigDecimal(value)
+    }
+}
+
+infix fun String?.toBigDecimalOr(value: BigDecimal): BigDecimal {
+    if (this.isNullOrBlank())
+        return value
+    return this.toBigDecimalOrNull() ?: value
+}
+
+infix fun BigDecimal.roundToNearest(roundingWeight: Int) =
+    this.divide(BigDecimal(roundingWeight), 0, RoundingMode.UP) * BigDecimal(roundingWeight)

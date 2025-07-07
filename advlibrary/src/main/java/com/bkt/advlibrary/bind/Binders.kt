@@ -42,7 +42,7 @@ fun setAsDateField(
     isDateEnabled: Boolean = false
 ) {
     if (isDateEnabled)
-        et.setDatePicker()
+        et.setupDatePicker(null)
 
 }
 
@@ -540,7 +540,7 @@ fun setDateValue(
     }
     if (tv is EditText) {
         tv.dateFormat = format
-        tv.setDatePicker(date ?: sysdate())
+        tv.setupDatePicker(date)
     } else {
         // only edittext
         tv.text = (date ?: sysdate()).format(format)
