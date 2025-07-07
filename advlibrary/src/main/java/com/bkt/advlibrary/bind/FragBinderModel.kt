@@ -1,50 +1,67 @@
 package com.bkt.advlibrary.bind
 
 import androidx.annotation.IdRes
-import androidx.lifecycle.MutableLiveData
+import androidx.navigation.NavDirections
 import com.bkt.advlibrary.CommonFragment
+import kotlinx.coroutines.flow.MutableSharedFlow
 
 open class FragBinderModel : BinderModel() {
-    internal val popBackStackImmediate = MutableLiveData<Boolean>()
-    internal var fragLoad: ((fragment: CommonFragment, layoutId: Int, onParent: Boolean, addCurrentToStack: Boolean) -> Unit)? =
-        null
-    internal var toast: ((String, Boolean) -> Unit)? = null
-    internal var hide: (() -> Unit)? = null
-    internal  var fragment: (() -> CommonFragment)? = null
+    internal val navCommand = MutableSharedFlow<FragCommand>(0, 1)
 
-    fun popBackStackImmediate() {
-        popBackStackImmediate.postValue(true)
-    }
-
-    fun popBackStack() {
-        popBackStackImmediate.postValue(false)
-    }
-
-    fun getParentFragment(): CommonFragment? {
-        return fragment?.invoke()
+    fun popBackStackImmediate(): Boolean {
+        return navCommand.tryEmit(NavigateBackCommand)
     }
 
     fun loadChildFragment(childFragment: CommonFragment, @IdRes id: Int) {
-        fragLoad?.invoke(childFragment, id, false, true)
+        navCommand.tryEmit(
+            LoadChildCommand(
+                childFragment, id,
+                onParent = false,
+                addCurrentToStack = true
+            )
+        )
     }
 
     fun replaceChildFragment(childFragment: CommonFragment, @IdRes id: Int) {
-        fragLoad?.invoke(childFragment, id, false, false)
+        navCommand.tryEmit(
+            LoadChildCommand(
+                childFragment, id,
+                onParent = false,
+                addCurrentToStack = false
+            )
+        )
     }
 
     fun loadFragment(fragment: CommonFragment, @IdRes id: Int) {
-        fragLoad?.invoke(fragment, id, true, true)
+        navCommand.tryEmit(
+            LoadChildCommand(
+                fragment, id,
+                onParent = true,
+                addCurrentToStack = true
+            )
+        )
     }
 
     fun replaceFragment(fragment: CommonFragment, @IdRes id: Int) {
-        fragLoad?.invoke(fragment, id, true, false)
+        navCommand.tryEmit(
+            LoadChildCommand(
+                fragment, id,
+                onParent = true,
+                addCurrentToStack = false
+            )
+        )
     }
 
     fun toast(text: String, longDuration: Boolean = false) {
-        toast?.invoke(text, longDuration)
+        navCommand.tryEmit(ToastCommand(text, longDuration))
     }
 
     fun hideKeyboard() {
-        hide?.invoke()
+        navCommand.tryEmit(HideKeyboardCommand)
     }
+
+    fun navigate(dir: NavDirections) = navCommand.tryEmit(NavigateCommand(dir))
+
+    fun fragAction(onFragReceived: (CommonFragment) -> Unit) =
+        navCommand.tryEmit(CustomActionCommand(onFragReceived))
 }

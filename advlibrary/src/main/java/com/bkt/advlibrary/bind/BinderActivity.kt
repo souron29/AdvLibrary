@@ -5,9 +5,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import com.bkt.advlibrary.CommonActivity
 
-abstract class BinderActivity<T : ViewDataBinding>(val id: Int) :
-    CommonActivity(),
-    EventListener {
+abstract class BinderActivity<T : ViewDataBinding>(val id: Int) : CommonActivity() {
 
     private var _bind: T? = null
     val binding: T
@@ -41,21 +39,5 @@ abstract class BinderActivity<T : ViewDataBinding>(val id: Int) :
     }*/
 
     abstract fun initialize()
-    //abstract fun setProperties(binder: T): VM
-
-    /*inline fun <reified VM : BinderModel> getModel(): VM {
-        val vm by viewModels<VM>()
-        return vm
-    }*/
-
-    /*override fun onDestroy() {
-        super.onDestroy()
-        vm.activity = null
-
-    }*/
-
-    override fun onEvent(event: BinderEvent) {
-
-    }
 }
 

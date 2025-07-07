@@ -8,22 +8,21 @@ import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import com.bkt.advlibrary.CommonFragment
 import com.bkt.advlibrary.FragProperties
-import com.bkt.advlibrary.popBackStack
-import com.bkt.advlibrary.popBackStackImmediate
+import kotlinx.coroutines.flow.MutableSharedFlow
 import java.io.Serializable
 
-abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>() :
-    CommonFragment(),
-    EventListener {
+abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>() : CommonFragment() {
 
     constructor(vararg params: Serializable) : this() {
         passArguments(params)
     }
 
     private var _bind: T? = null
-    private var onVmSet = ArrayList<() -> Unit>()
+    private val fragCreatedAction = MutableSharedFlow<() -> Unit>(0, 100)
     val binding: T
         get() {
             if (_bind == null)
@@ -31,11 +30,8 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>() :
             return _bind!!
         }
 
+    private val bindProperties by lazy { getFragBindProperties() }
     val vm by lazy { this.bindProperties.vm }
-
-    /*lateinit var vm: VM
-        private set*/
-    val bindProperties by lazy { getFragBindProperties() }
 
     final override fun getFragmentProperties(): FragProperties {
         return FragProperties(this.bindProperties.layoutId, this.bindProperties.name)
@@ -63,20 +59,29 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>() :
         _bind = null
     }
 
+    override fun initializeViews() {
+        vm.activity = { advActivity }
+        launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                vm.navCommand.collect {
+                    it.onCommandReceived(this@BinderFragment)
+                }
+            }
+        }
+    }
+
     /**
      * Must be called from onCreate. This should not include any view/binding related tasks
      * as those are not yet created during onCreate
      */
     private fun setInternalFunctions() {
-        vm.eventListener = this
-        onVmSet.forEach { it.invoke() }
-
-        vm.popBackStackImmediate.observe(this) { immediate ->
-            if (immediate)
-                popBackStackImmediate()
-            else popBackStack()
+        launch {
+            repeatOnLifecycle(Lifecycle.State.CREATED) {
+                fragCreatedAction.collect {
+                    it.invoke()
+                }
+            }
         }
-        vm.fragment = { this }
         vm.activity = { advActivity }
     }
 
@@ -87,36 +92,6 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>() :
         return vm
     }
 
-    override fun onEvent(event: BinderEvent) {
-
-    }
-
-    override fun onStart() {
-        super.onStart()
-        vm.fragLoad =
-            { fragment: CommonFragment, layoutId: Int, onParent: Boolean, addCurrentToStack: Boolean ->
-                loadFragment(fragment, layoutId, onParent, addCurrentToStack)
-            }
-        vm.toast = { text: String, longDuration: Boolean ->
-            toast(text, longDuration)
-        }
-        vm.hide = {
-            hideKeyboard()
-        }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        /*if (this::vm.isInitialized) {
-            vm.fragLoad = null
-            vm.toast = null
-            vm.hide = null
-        }*/
-        vm.fragLoad = null
-        vm.toast = null
-        vm.hide = null
-    }
-
     /**
      * Views should not be accessed inside this method
      */
@@ -125,14 +100,12 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>() :
         if (this.isAdded)
             block.invoke()
         else
-            onVmSet.add(block)
+            fragCreatedAction.tryEmit(block)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        vm.fragment = null
         vm.activity = null
-        vm.popBackStackImmediate.removeObservers(this)
     }
 }
 
