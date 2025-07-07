@@ -1,11 +1,11 @@
-package com.bkt.advlibrary.bind
+package com.bkt.advlibrary2.bind
 
 import android.os.Bundle
 import android.os.PersistableBundle
 import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import com.bkt.advlibrary.CommonActivity
+import com.bkt.advlibrary2.CommonActivity
 
 abstract class BinderActivity<T : ViewDataBinding, VM : ActivityBinderModel>(val id: Int) :
     CommonActivity(),

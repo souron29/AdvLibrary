@@ -1,4 +1,4 @@
-package com.bkt.advlibrary.bind
+package com.bkt.advlibrary2.bind
 
 import android.app.Dialog
 import android.os.Bundle
@@ -9,7 +9,7 @@ import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.viewModels
-import com.bkt.advlibrary.R
+import com.bkt.advlibrary2.R
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class BindSheet<T : ViewDataBinding>(

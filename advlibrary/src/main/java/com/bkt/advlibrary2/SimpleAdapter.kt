@@ -1,4 +1,4 @@
-package com.bkt.advlibrary
+package com.bkt.advlibrary2
 
 import android.view.LayoutInflater
 import android.view.View
@@ -12,11 +12,11 @@ class SimpleAdapter<M>(
     val onBind: (itemView: View, item: M, position: Int) -> Unit,
     val contentEquals: (item1: M, item2: M) -> Boolean = { p0, p1 -> p0 == p1 }
 ) : ListAdapter<M, SimpleAdapter<M>.ViewHolder>(object : DiffUtil.ItemCallback<M>() {
-    override fun areItemsTheSame(p0: M, p1: M): Boolean {
+    override fun areItemsTheSame(p0: M & Any, p1: M & Any): Boolean {
         return p0 == p1
     }
 
-    override fun areContentsTheSame(p0: M, p1: M): Boolean {
+    override fun areContentsTheSame(p0: M & Any, p1: M & Any): Boolean {
         return contentEquals.invoke(p0, p1)
     }
 }) {

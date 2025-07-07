@@ -1,20 +1,28 @@
-package com.bkt.advlibrary;
+package com.bkt.advlibrary2
 
-public class DateFormats {
-    public static final String DATE = "dd/MM/yyyy";
-    public static final String DATE_TIME_API = "yyyy-MM-dd HH:mm";
-    public static final String DB_DATE_CODE = "yyyyMMdd";
-    public static final String DB_DATE_TIME = "yyyy-MM-dd HH:mm:ss";
-    public static final String DB_DATE_TIME_CODE = "yyyyMMddHHmmss";
-    public static final String DD_MMM = "dd MMM";
-    public static final String DD_MMM_TIME = "dd MMM, h:mm aa";
-    public static final String DD_MMM_YYYY = "dd MMM, yyyy";
-    public static final String DD_MMM_YYYY_TIME = "dd MMM, yyyy h:mm aa";
-    public static final String MMM_YYYY = "MMM, yyyy";
-    public static final String D_MMM_NEXT_LINE = "d\nMMM";
-    public static final String EEE = "EEE";
-    public static final String EEEE = "EEEE";
-    public static final String TIME = "h:mm aa";
-    public static final String EEEE_TIME = EEEE + " " + TIME;
-    public static final String EEE_TIME = EEE + " " + TIME;
+import java.util.Date
+import java.util.TimeZone
+
+enum class DateFormats(val format: String) {
+    DATE("dd/MM/yyyy"),
+    DATE_TIME_API("yyyy-MM-dd HH:mm"),
+    DB_DATE_CODE("yyyyMMdd"),
+    DB_DATE_TIME("yyyy-MM-dd HH:mm:ss"),
+    DB_DATE_TIME_CODE("yyyyMMddHHmmss"),
+    DD_MMM("dd MMM"),
+    DD_MMM_TIME("dd MMM, h:mm aa"),
+    DD_MMM_YYYY("dd MMM, yyyy"),
+    DD_MMM_YYYY_TIME("dd MMM, yyyy h:mm aa"),
+    MMM_YYYY("MMM, yyyy"),
+    D_MMM_NEXT_LINE("d\nMMM"),
+    EEE("EEE"),
+    EEEE("EEEE"),
+    TIME("h:mm aa"),
+    EEEE_TIME("EEEE TIME"),
+    EEE_TIME("EEE TIME"),
 }
+
+fun Date.format(
+    dateFormat: DateFormats, applyTrim: Boolean = false,
+    timeZone: TimeZone = timeZoneIST
+) = format(dateFormat.format, applyTrim, timeZone)

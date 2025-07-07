@@ -1,9 +1,9 @@
-package com.bkt.advlibrary.bind
+package com.bkt.advlibrary2.bind
 
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.MutableLiveData
-import com.bkt.advlibrary.CommonFragment
+import com.bkt.advlibrary2.CommonFragment
 
 open class ActivityBinderModel : BinderModel() {
     internal val popBackStackImmediate = MutableLiveData<Boolean>()

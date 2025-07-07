@@ -1,4 +1,4 @@
-package com.bkt.advlibrary.bind
+package com.bkt.advlibrary2.bind
 
 import android.graphics.drawable.Drawable
 import androidx.annotation.ColorRes
@@ -8,8 +8,14 @@ import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
-import com.bkt.advlibrary.CommonActivity
-import com.bkt.advlibrary.LiveObject
+import androidx.lifecycle.viewModelScope
+import com.bkt.advlibrary2.CommonActivity
+import com.bkt.advlibrary2.LiveObject
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 
 sealed class BinderModel : ViewModel() {
     var activity: (() -> CommonActivity)? = null
@@ -52,3 +58,9 @@ sealed class BinderModel : ViewModel() {
         return null
     }
 }
+
+fun ViewModel.launch(
+    context: CoroutineContext = EmptyCoroutineContext,
+    start: CoroutineStart = CoroutineStart.DEFAULT,
+    block: suspend CoroutineScope.() -> Unit
+) = viewModelScope.launch(context, start, block)

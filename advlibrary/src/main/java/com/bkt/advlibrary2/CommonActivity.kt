@@ -1,5 +1,6 @@
-package com.bkt.advlibrary
+package com.bkt.advlibrary2
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Handler
@@ -112,6 +113,8 @@ open class CommonActivity : AppCompatActivity(), LifecycleOwner {
         service.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
     }
 
+    @Deprecated("Deprecated in Java")
+    @SuppressLint("MissingSuperCall")
     override fun onBackPressed() {
         checkAndPopFrag()
     }

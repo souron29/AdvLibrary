@@ -1,4 +1,4 @@
-package com.bkt.advlibrary
+package com.bkt.advlibrary2
 
 import android.content.Context
 import android.content.pm.PackageManager

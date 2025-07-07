@@ -1,4 +1,4 @@
-package com.bkt.advlibrary
+package com.bkt.advlibrary2
 
 import android.content.Context
 import android.icu.text.NumberFormat
@@ -34,6 +34,7 @@ fun ifEmpty(text: String, value: String): String {
         value
     } else text
 }
+
 fun Double.toText(decimalPlaces: Int = this.precision()): String {
     return BigDecimal(this).setScale(decimalPlaces, RoundingMode.HALF_UP).toString()
 }
@@ -230,4 +231,19 @@ fun <T> applyToAll(vararg items: T, block: T.() -> Unit) {
 val internalLog = StringBuilder()
 fun logit(text: String) {
     internalLog.append(text).append("\n")
+}
+
+fun <T> T?.nvlF(todoIfNull: () -> Unit, todoIfNotNull: () -> Unit) {
+    if (this == null)
+        todoIfNull.invoke()
+    else todoIfNotNull.invoke()
+}
+
+inline fun <T> tryOrNull(block: () -> T): T? {
+    return try {
+        block()
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
+    }
 }

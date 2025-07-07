@@ -1,4 +1,4 @@
-package com.bkt.advlibrary
+package com.bkt.advlibrary2
 
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView

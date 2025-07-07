@@ -1,4 +1,4 @@
-package com.bkt.advlibrary.bind
+package com.bkt.advlibrary2.bind
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
@@ -24,8 +24,8 @@ import androidx.recyclerview.widget.*
 import androidx.recyclerview.widget.ListAdapter
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewpager2.widget.ViewPager2
-import com.bkt.advlibrary.*
-import com.bkt.advlibrary.ActivityExtKt.scanForActivity
+import com.bkt.advlibrary2.*
+import com.bkt.advlibrary2.ActivityExtKt.scanForActivity
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.tabs.TabLayout
 import java.math.BigDecimal
@@ -42,8 +42,7 @@ fun setAsDateField(
     isDateEnabled: Boolean = false
 ) {
     if (isDateEnabled)
-        et.setDatePicker()
-
+        et.setupDatePicker(null)
 }
 
 @BindingAdapter("app:dateTimeFieldEnabled")
@@ -56,17 +55,15 @@ fun setAsDateAndTimeField(
 }
 
 fun EditText.setDateAndTimePicker(
-    startDate: Date? = null,
-    format: String = DateFormats.DD_MMM_YYYY_TIME,
+    startDate: Date = Calendar.getInstance().time,
+    format: String = DateFormats.DD_MMM_YYYY_TIME.format,
     setAsMin: Boolean = false,
     onSelect: (Date) -> Unit = {}
 ) {
     val calendar = Calendar.getInstance()
-    if (startDate != null) {
-        calendar.time = startDate
-        this.setText(startDate.format(format))
-    }
+    calendar.time = startDate
     this.isFocusable = false
+    this.setText(startDate.format(format))
     this.setOnClickListener {
         val currentDate = this.getTrimText().toDate(format)!!
         calendar.time = currentDate
@@ -86,7 +83,7 @@ fun EditText.setDateAndTimePicker(
             calendar.get(Calendar.MONTH),
             calendar.get(Calendar.DAY_OF_MONTH)
         )
-        if (setAsMin && startDate != null) {
+        if (setAsMin) {
             val datePicker = datePickerDialog.datePicker
             datePicker.minDate = startDate.time
         }
@@ -534,16 +531,15 @@ fun setDateValue(
     date: Date?,
     dateFormat: String?
 ) {
-    date ?: return
-    val format = dateFormat ?: DateFormats.DATE
+    val format = dateFormat ?: DateFormats.DATE.format
+    tv.tag = format
     if (tv is EditText && tv.getTrimText().isNotEmpty()) {
         //assuming date and format has been already been set
-        val currentDate = tv.getDate(tv.dateFormat)
+        val currentDate = tv.getDate(format)
         if (date == currentDate) return
     }
     if (tv is EditText) {
-        tv.dateFormat = format
-        tv.setDatePicker(date ?: sysdate())
+        tv.setupDatePicker(date)
     } else {
         // only edittext
         tv.text = (date ?: sysdate()).format(format)
@@ -553,8 +549,7 @@ fun setDateValue(
 @InverseBindingAdapter(attribute = "app:date", event = "app:dateAttrChanged")
 fun getDateValue(et: EditText): Date {
     val text = et.getTrimText()
-    val format = et.dateFormat
-    return text.toDate(format)!!
+    return text.toDate(et.tag as String)!!
 }
 
 @BindingAdapter("app:dateAttrChanged")
@@ -575,23 +570,20 @@ fun setDateTimeValue(
     dateTimeFormat: String?,
     minDate: Date?
 ) {
-    val format = dateTimeFormat ?: DateFormats.DD_MMM_YYYY_TIME
+    val format = dateTimeFormat ?: DateFormats.DD_MMM_YYYY_TIME.format
     if (et.getTrimText().isNotEmpty()) {
         //assuming date and format has been already been set
-        val currentDate = et.getDate(et.dateFormat)
+        val currentDate = et.getDate(format)
         if (date == currentDate) return
     }
-    et.dateFormat = format
-    val dateToSet = date ?: minDate
-    dateToSet?.let {
-        et.setDateAndTimePicker(it)
-    }
+    et.tag = format
+    et.setDateAndTimePicker(date ?: minDate ?: sysdate())
 }
 
 @InverseBindingAdapter(attribute = "app:dateTime", event = "app:dateTimeAttrChanged")
 fun getDateTimeValue(et: EditText): Date {
     val text = et.getTrimText()
-    val format = et.dateFormat
+    val format = et.tag as String
     return text.toDate(format)!!
 }
 

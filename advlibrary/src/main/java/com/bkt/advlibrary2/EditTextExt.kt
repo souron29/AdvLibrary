@@ -1,6 +1,7 @@
-package com.bkt.advlibrary
+package com.bkt.advlibrary2
 
 import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.graphics.Color
 import android.text.Editable
 import android.text.InputType
@@ -12,28 +13,29 @@ import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.core.view.setPadding
 import androidx.core.widget.addTextChangedListener
-import com.bkt.advlibrary.ActivityExtKt.scanForActivity
+import com.bkt.advlibrary2.ActivityExtKt.scanForActivity
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
-val dateFormats = mutableMapOf<Int, String>()
+/*val dateFormats = mutableMapOf<Int, String>()
 
 var EditText.dateFormat: String
-    get() = dateFormats[this.id] ?: DateFormats.DATE
+    get() = dateFormats[this.id] ?: DateFormats.DATE.format
     set(value) {
         dateFormats[this.id] = value
-    }
+    }*/
 
-fun EditText.setDate(date: Date, format: String = this.dateFormat) {
+fun EditText.setDate(date: Date, format: String = DateFormats.DATE.format) {
     val df = SimpleDateFormat(format, Locale.US)
     df.timeZone = timeZoneIST
     setText(df.format(date))
-    this.dateFormat = format
 }
 
-fun EditText.getDate(format: String = this.dateFormat): Date? {
+fun EditText.getDate(format: String = DateFormats.DATE.format): Date? {
     val text = getTrimText()
     if (text.isNotEmpty()) {
         return try {
@@ -47,38 +49,72 @@ fun EditText.getDate(format: String = this.dateFormat): Date? {
     return null
 }
 
-fun EditText.setDatePicker(
-    startDate: Date = Calendar.getInstance().time,
-    setAsMin: Boolean = false,
+fun EditText.setupDatePicker(
+    startDate: Date?,
+    showTimePicker: Boolean = false,
+    minDate: Date? = null,
+    clickable: Boolean = true,
+    format: String = DateFormats.DD_MMM_YYYY.format,
     onSelect: (Date) -> Unit = {}
 ) {
-    val calendar = Calendar.getInstance()
-    calendar.time = startDate
+    this.setText(startDate?.format(format) ?: "")
     this.isFocusable = false
-    this.setText(startDate.format(dateFormat))
-    this.setOnClickListener {
-        val date = this.getDate()
-        if (date != null) {
-            calendar.time = date
+
+    if (!clickable)
+        return
+
+    val calendar = Calendar.getInstance()
+    startDate?.let { calendar.time = it }
+
+    val showPicker = {
+        this.getDate(format)?.let {
+            calendar.time = it
         }
+
         val datePickerDialog = DatePickerDialog(
-            it.context,
+            context,
             { _, year, month, dayOfMonth ->
                 calendar[Calendar.YEAR] = year
                 calendar[Calendar.MONTH] = month
                 calendar[Calendar.DAY_OF_MONTH] = dayOfMonth
-                onSelect.invoke(calendar.time)
-                this.setText(calendar.time.format(dateFormat))
+
+                // Show time picker if required
+                if (showTimePicker) {
+                    val timePicker = TimePickerDialog(
+                        this.context,
+                        { _, h, m ->
+                            calendar[Calendar.HOUR_OF_DAY] = h
+                            calendar[Calendar.MINUTE] = m
+                            onSelect.invoke(calendar.time)
+                            this.setText(calendar.time.format(format))
+                        },
+                        calendar[Calendar.HOUR_OF_DAY],
+                        calendar[Calendar.MINUTE],
+                        false
+                    )
+                    timePicker.show()
+                } else {
+                    onSelect.invoke(calendar.time)
+                    this.setText(calendar.time.format(format))
+                }
             },
             calendar.get(Calendar.YEAR),
             calendar.get(Calendar.MONTH),
             calendar.get(Calendar.DAY_OF_MONTH)
         )
-        if (setAsMin) {
+        minDate?.time?.let {
             val datePicker = datePickerDialog.datePicker
-            datePicker.minDate = startDate.time
+            datePicker.minDate = minDate.time
         }
         datePickerDialog.show()
+    }
+
+    setOnClickListener {
+        showPicker.invoke()
+    }
+    setOnFocusChangeListener { _, hasFocus ->
+        if (hasFocus)
+            showPicker.invoke()
     }
 }
 
@@ -138,7 +174,7 @@ fun EditText?.setTextWatcher(block: (CharSequence?) -> Unit) {
 }
 
 fun ViewGroup.addEditText(et: EditTextProperty): EditText {
-    val style = R.style.Widget_MaterialComponents_TextInputLayout_OutlinedBox
+    val style = com.google.android.material.R.style.Widget_MaterialComponents_TextInputLayout_OutlinedBox
     val textInputLayout = TextInputLayout(context.scanForActivity()!!, null, style)
 
     val layoutParams = LinearLayout.LayoutParams(
@@ -166,7 +202,8 @@ data class EditTextProperty(
     var hint: String = "",
     var isDateField: Boolean = false,
     var isMoneyField: Boolean = false,
-    @ColorInt var color: Int = Color.BLACK
+    @ColorInt var color: Int = Color.BLACK,
+    val onFieldCreated: (EditText) -> Unit = {}
 ) {
     val text = LiveObject("")
 
@@ -174,7 +211,7 @@ data class EditTextProperty(
         editText.setTextColor(color)
         editText.background = null
         if (isDateField) {
-            editText.setDatePicker()
+            editText.setupDatePicker(null)
             editText.inputType =
                 InputType.TYPE_CLASS_DATETIME or InputType.TYPE_DATETIME_VARIATION_DATE
         }
@@ -185,5 +222,6 @@ data class EditTextProperty(
 
         if (text.value.isNotEmpty())
             editText.setText(text.value)
+        onFieldCreated.invoke(editText)
     }
 }

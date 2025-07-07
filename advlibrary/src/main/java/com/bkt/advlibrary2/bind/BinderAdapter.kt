@@ -1,4 +1,4 @@
-package com.bkt.advlibrary.bind
+package com.bkt.advlibrary2.bind
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

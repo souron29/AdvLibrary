@@ -1,13 +1,13 @@
-package com.bkt.advlibrary.bind
+package com.bkt.advlibrary2.bind
 
 import android.widget.Filter
 import android.widget.Filterable
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bkt.advlibrary.SwipeHelper
-import com.bkt.advlibrary.bgBlock
-import com.bkt.advlibrary.mainLaunch
+import com.bkt.advlibrary2.SwipeHelper
+import com.bkt.advlibrary2.bgBlock
+import com.bkt.advlibrary2.mainLaunch
 
 abstract class CommonBindAdapter<Value, VH : RecyclerView.ViewHolder>(diffCallback: DiffUtil.ItemCallback<Value>) :
     ListAdapter<Value, VH>(diffCallback), Filterable {

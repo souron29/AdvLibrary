@@ -1,4 +1,4 @@
-package com.bkt.advlibrary
+package com.bkt.advlibrary2
 
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -50,7 +50,7 @@ fun Date.trim(): Date {
     return df.format(date)
 }*/
 fun Date?.format(
-    format: String = DateFormats.DATE,
+    format: String = DateFormats.DATE.format,
     applyTrim: Boolean = false,
     timeZone: TimeZone = timeZoneIST
 ): String {
@@ -211,17 +211,45 @@ fun Date.monthsTo(date: Date): Long {
     )
 }
 
-fun String.toDate(format: String = DateFormats.DATE): Date? {
+fun String.toDate(format: String = DateFormats.DATE.format): Date? {
     val df = SimpleDateFormat(format, Locale.US)
     df.timeZone = timeZoneIST
     return df.parse(this)
 }
 
 fun String.toDateOrNull(
-    format: String = DateFormats.DATE,
+    format: String = DateFormats.DATE.format,
     preserveCurrentTime: Boolean = true
 ): Date? {
     val df = SimpleDateFormat(format, Locale.US)
+    df.timeZone = timeZoneIST
+    return try {
+        val date = df.parse(this)!!
+        val dateCal = Calendar.getInstance()
+        dateCal.time = date
+
+        val returnCal = Calendar.getInstance()
+        returnCal[Calendar.DAY_OF_YEAR] = dateCal[Calendar.DAY_OF_YEAR]
+        returnCal[Calendar.YEAR] = dateCal[Calendar.YEAR]
+        if (preserveCurrentTime)
+            returnCal.time
+        else dateCal.time
+    } catch (e: Exception) {
+        null
+    }
+}
+
+fun String.toDate(format: DateFormats = DateFormats.DATE): Date? {
+    val df = SimpleDateFormat(format.format, Locale.US)
+    df.timeZone = timeZoneIST
+    return df.parse(this)
+}
+
+fun String.toDateOrNull(
+    format: DateFormats = DateFormats.DATE,
+    preserveCurrentTime: Boolean = true
+): Date? {
+    val df = SimpleDateFormat(format.format, Locale.US)
     df.timeZone = timeZoneIST
     return try {
         val date = df.parse(this)!!

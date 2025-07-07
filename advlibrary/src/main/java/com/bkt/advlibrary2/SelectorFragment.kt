@@ -1,15 +1,15 @@
-package com.bkt.advlibrary
+package com.bkt.advlibrary2
 
 import androidx.annotation.ColorRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.RecyclerView
-import com.bkt.advlibrary.bind.BinderAdapter
-import com.bkt.advlibrary.bind.BinderFragment
-import com.bkt.advlibrary.bind.FragBindProperties
-import com.bkt.advlibrary.bind.FragBinderModel
-import com.bkt.advlibrary.databinding.FragmentSelectorBinding
+import com.bkt.advlibrary2.bind.BinderAdapter
+import com.bkt.advlibrary2.bind.BinderFragment
+import com.bkt.advlibrary2.bind.FragBindProperties
+import com.bkt.advlibrary2.bind.FragBinderModel
+import com.bkt.advlibrary2.databinding.FragmentSelectorBinding
 
 class SelectorFragment<Item : Any, Binding : ViewDataBinding>(
     @LayoutRes private val layoutId: Int,

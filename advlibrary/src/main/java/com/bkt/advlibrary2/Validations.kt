@@ -1,8 +1,8 @@
-package com.bkt.advlibrary
+package com.bkt.advlibrary2
 
 import android.content.Context
 import android.widget.EditText
-import com.bkt.advlibrary.ActivityExtKt.toast
+import com.bkt.advlibrary2.ActivityExtKt.toast
 
 fun shouldNotBeEmpty(
     context: Context,

@@ -1,11 +1,11 @@
-package com.bkt.advlibrary
+package com.bkt.advlibrary2
 
 import android.content.Context
 import android.view.LayoutInflater
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
-import com.bkt.advlibrary.databinding.DialogEdittextBinding
+import com.bkt.advlibrary2.databinding.DialogEdittextBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 fun Context.showConfirmDialog(
@@ -13,6 +13,7 @@ fun Context.showConfirmDialog(
     body: CharSequence = "",
     yesButtonText: CharSequence = "Yes",
     noButtonText: CharSequence = "No",
+    onDeclined: () -> Unit = {},
     onConfirmed: () -> Unit
 ) {
     val dialog =
@@ -20,8 +21,9 @@ fun Context.showConfirmDialog(
             .setMessage(body)
             .setPositiveButton(yesButtonText) { _, _ ->
                 onConfirmed.invoke()
-            }.setNegativeButton(noButtonText, null)
-            .setCancelable(false)
+            }.setNegativeButton(noButtonText) { _, _ ->
+                onDeclined.invoke()
+            }.setCancelable(false)
     dialog.show()
 }
 

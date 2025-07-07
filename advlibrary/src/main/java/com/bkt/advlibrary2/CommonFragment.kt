@@ -1,15 +1,27 @@
-package com.bkt.advlibrary
+package com.bkt.advlibrary2
 
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
-import androidx.fragment.app.*
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.commit
+import androidx.fragment.app.setFragmentResult
+import androidx.fragment.app.setFragmentResultListener
+import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.launch
 import java.io.Serializable
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 
 abstract class CommonFragment() : Fragment(), LifecycleOwner {
 
@@ -23,7 +35,6 @@ abstract class CommonFragment() : Fragment(), LifecycleOwner {
 
     private var pagerDetails: PagerDetails? = null
     private var onClose = {}
-    // not to be used before loading fragment
     val properties by lazy { getFragmentProperties() }
 
     fun onClosed(onClose: () -> Unit) {
@@ -172,6 +183,7 @@ abstract class CommonFragment() : Fragment(), LifecycleOwner {
                     child.popBackStackImmediate()
                 true
             }
+
             else -> {
                 val popped = child.popBackStackImmediate()
                 if (popped)
@@ -189,6 +201,9 @@ abstract class CommonFragment() : Fragment(), LifecycleOwner {
             (activity as CommonActivity).toast(text, longToast)
     }
 
+    /**
+     * Argument management
+     */
     fun passArguments(vararg args: Serializable?) {
         val arguments = this.arguments ?: Bundle()
         for ((count, arg) in args.withIndex()) {
@@ -207,6 +222,38 @@ abstract class CommonFragment() : Fragment(), LifecycleOwner {
             arguments?.getSerializable(param) as T?
         }
     }
+
+    inline fun <reified T : Serializable> argument(
+        argIndex: Int,
+        clazz: Class<T>? = null,
+        default: T? = null
+    ): Lazy<T?> {
+        val param = "ParamArg$argIndex"
+        return argument(param, clazz, default)
+    }
+
+    inline fun <reified T : Serializable> argument(
+        param: String,
+        clazz: Class<T>? = null,
+        default: T? = null
+    ): Lazy<T?> {
+        return lazy {
+            (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && clazz != null) {
+                arguments?.getSerializable(param, clazz)
+            } else {
+                arguments?.getSerializable(param) as T?
+            }) ?: default
+        }
+    }
+
+    /**
+     * Should be invoked when View is present i.e. After onCreateView() and Before onDestroyView()
+     */
+    fun launch(
+        context: CoroutineContext = EmptyCoroutineContext,
+        start: CoroutineStart = CoroutineStart.DEFAULT,
+        block: suspend CoroutineScope.() -> Unit
+    ) = viewLifecycleOwner.lifecycleScope.launch(context, start, block)
 }
 
 internal data class PagerDetails(
@@ -338,6 +385,28 @@ fun <T : Serializable> Fragment.getArgument(key: String, clazz: Class<T>? = null
     } else {
         arguments?.getSerializable(key) as T?
     }
+}
+
+fun Fragment.setOnBackPressListener(onBackPress: () -> Unit): OnBackPressedCallback {
+    val backPressedCallback = object : OnBackPressedCallback(enabled = true) {
+        override fun handleOnBackPressed() {
+            onBackPress.invoke()
+        }
+    }
+
+    this.lifecycle.addObserver(object : DefaultLifecycleObserver {
+        override fun onCreate(owner: LifecycleOwner) {
+            activity?.onBackPressedDispatcher?.addCallback(
+                this@setOnBackPressListener,
+                backPressedCallback
+            )
+        }
+
+        override fun onDestroy(owner: LifecycleOwner) {
+            backPressedCallback.remove()
+        }
+    })
+    return backPressedCallback
 }
 
 data class FragProperties(@LayoutRes val layoutId: Int, val name: String = "") : Serializable

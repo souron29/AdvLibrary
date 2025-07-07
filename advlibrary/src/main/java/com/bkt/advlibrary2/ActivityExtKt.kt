@@ -1,4 +1,4 @@
-package com.bkt.advlibrary
+package com.bkt.advlibrary2
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -24,7 +24,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.FragmentActivity
-import com.bkt.advlibrary.ActivityExtKt.vibrateOnce
+import com.bkt.advlibrary2.ActivityExtKt.vibrateOnce
 
 object ActivityExtKt {
 

@@ -1,4 +1,4 @@
-package com.bkt.advlibrary
+package com.bkt.advlibrary2
 
 import java.math.BigDecimal
 
@@ -117,3 +117,39 @@ fun <T> ArrayList<T>.addAll(vararg collections: Collection<T>): ArrayList<T> {
         this.addAll(collection)
     return this
 }
+
+infix fun <T> List<T>.moveUp(item: T): MutableList<T> {
+    val mutableList = this.toMutableList()
+    val currentPosition = mutableList.indexOf(item)
+    val newPosition = currentPosition - 1
+    if (newPosition < 0 || newPosition > mutableList.lastIndex) {
+        return mutableList
+    }
+    val movedItem = mutableList.removeAt(currentPosition)
+    mutableList.add(newPosition, movedItem)
+    return mutableList
+}
+
+infix fun <T> List<T>.moveDown(item: T): MutableList<T> {
+    val mutableList = this.toMutableList()
+    val currentPosition = mutableList.indexOf(item)
+    val newPosition = currentPosition + 1
+    if (newPosition < 0 || newPosition > mutableList.lastIndex) {
+        return mutableList
+    }
+    val movedItem = mutableList.removeAt(currentPosition)
+    mutableList.add(newPosition, movedItem)
+    return mutableList
+}
+
+/**
+ * Returns true if Element was Added, else False
+ */
+fun <E> MutableCollection<E>.addOrRemove(element: E): Boolean {
+    val fileRemoved = remove(element)
+    if (!fileRemoved)
+        add(element)
+    return !fileRemoved
+}
+
+fun <E> List<E>.toNewList():MutableList<E> = ArrayList<E>().also { it.addAll(this) }

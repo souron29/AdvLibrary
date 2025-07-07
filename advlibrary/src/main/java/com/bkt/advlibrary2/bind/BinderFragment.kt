@@ -1,4 +1,4 @@
-package com.bkt.advlibrary.bind
+package com.bkt.advlibrary2.bind
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,10 +8,10 @@ import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.viewModels
-import com.bkt.advlibrary.CommonFragment
-import com.bkt.advlibrary.FragProperties
-import com.bkt.advlibrary.popBackStack
-import com.bkt.advlibrary.popBackStackImmediate
+import com.bkt.advlibrary2.CommonFragment
+import com.bkt.advlibrary2.FragProperties
+import com.bkt.advlibrary2.popBackStack
+import com.bkt.advlibrary2.popBackStackImmediate
 import java.io.Serializable
 
 abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>() :
@@ -30,6 +30,16 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>() :
                 throw NullPointerException("View has not been attached yet. Should be invoked after onCreateView")
             return _bind!!
         }
+
+    val vm by lazy { this.bindProperties.vm }
+
+    /*lateinit var vm: VM
+        private set*/
+    val bindProperties by lazy { getFragBindProperties() }
+
+    final override fun getFragmentProperties(): FragProperties {
+        return FragProperties(this.bindProperties.layoutId, this.bindProperties.name)
+    }
 
     /**
      * When overriding this method, invoke super method first
@@ -125,3 +135,9 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>() :
         vm.popBackStackImmediate.removeObservers(this)
     }
 }
+
+data class FragBindProperties<VM : FragBinderModel>(
+    @LayoutRes val layoutId: Int,
+    val name: String = "",
+    val vm: VM
+)

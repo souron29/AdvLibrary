@@ -1,4 +1,4 @@
-package com.bkt.advlibrary
+package com.bkt.advlibrary2
 
 import android.content.Context
 import android.content.Intent
@@ -8,8 +8,8 @@ import android.net.Uri
 import android.provider.OpenableColumns
 import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider
-import com.bkt.advlibrary.ActivityExtKt.toast
-import com.bkt.advlibrary.IntentActions.getMimeType
+import com.bkt.advlibrary2.ActivityExtKt.toast
+import com.bkt.advlibrary2.IntentActions.getMimeType
 import java.io.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
