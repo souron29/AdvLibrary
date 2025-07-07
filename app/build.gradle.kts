@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.bkt.advlibrary2"
+    namespace = "com.bkt.advlibrary"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.bkt.advlibrary2"
+        applicationId = "com.bkt.advlibrary"
         minSdk = 30
         targetSdk = 34
         versionCode = 1
