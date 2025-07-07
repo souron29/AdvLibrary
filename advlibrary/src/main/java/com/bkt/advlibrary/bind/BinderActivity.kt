@@ -1,31 +1,31 @@
 package com.bkt.advlibrary.bind
 
 import android.os.Bundle
-import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import com.bkt.advlibrary.CommonActivity
 
-abstract class BinderActivity<T : ViewDataBinding, VM : ActivityBinderModel>(val id: Int) :
+abstract class BinderActivity<T : ViewDataBinding>(val id: Int) :
     CommonActivity(),
     EventListener {
 
     private var _bind: T? = null
-    val binding get() = _bind!!
-
-    lateinit var vm: VM
-        private set
+    val binding: T
+        get() {
+            return _bind
+                ?: throw NullPointerException("View has not been attached yet. Should be invoked after onCreateView")
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _bind = DataBindingUtil.setContentView(this, id)
-        vm = setProperties(_bind!!)
-        vm.eventListener = this
-        setInternalFunctions()
+        // vm = setProperties(_bind!!)
+        //vm.eventListener = this
+        //setInternalFunctions()
         initialize()
     }
 
-    private fun setInternalFunctions() {
+    /*private fun setInternalFunctions() {
         vm.loadFragment.observe(this) {
             loadFragment(it.first, it.second)
         }
@@ -38,21 +38,21 @@ abstract class BinderActivity<T : ViewDataBinding, VM : ActivityBinderModel>(val
             toast(it.first, it.second)
         }
         vm.activity = { this }
-    }
+    }*/
 
     abstract fun initialize()
-    abstract fun setProperties(binder: T): VM
+    //abstract fun setProperties(binder: T): VM
 
-    inline fun <reified VM : BinderModel> getModel(): VM {
+    /*inline fun <reified VM : BinderModel> getModel(): VM {
         val vm by viewModels<VM>()
         return vm
-    }
+    }*/
 
-    override fun onDestroy() {
+    /*override fun onDestroy() {
         super.onDestroy()
         vm.activity = null
 
-    }
+    }*/
 
     override fun onEvent(event: BinderEvent) {
 

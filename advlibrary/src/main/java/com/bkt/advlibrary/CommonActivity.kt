@@ -12,6 +12,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 
 open class CommonActivity : AppCompatActivity(), LifecycleOwner {
     private var onPermissionsResultListeners =
@@ -225,10 +231,10 @@ open class CommonActivity : AppCompatActivity(), LifecycleOwner {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
     // Sometimes activity might be destroyed due to low memory
-
-    /*override fun onDestroy() {
-        super.onDestroy()
-        this.singleContentListener = null
-        this.primaryActivityResultListener = null
-    }*/
 }
+
+fun LifecycleOwner.launch(
+    context: CoroutineContext = EmptyCoroutineContext,
+    start: CoroutineStart = CoroutineStart.DEFAULT,
+    block: suspend CoroutineScope.() -> Unit
+) = this.lifecycleScope.launch(context, start, block)
