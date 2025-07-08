@@ -101,25 +101,7 @@ class AdvStringBuilder(private val initialText: CharSequence = "", vararg spans:
 
     fun append(text: CharSequence?, span: AdvSpan): AdvStringBuilder {
         if (text != null) {
-            sb.append(text)
-            val start = sb.length - text.length
-            val end = sb.length
-            if (span.isBold)
-                sb.setSpan(StyleSpan(Typeface.BOLD), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-            if (span.color != -1)
-                sb.setSpan(
-                    ForegroundColorSpan(span.color),
-                    start,
-                    end,
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                )
-            if (span.size != 1.0f)
-                sb.setSpan(
-                    RelativeSizeSpan(span.size),
-                    start,
-                    end,
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                )
+            appendSpan(text, *span.getSpans().toTypedArray())
         }
         return this
     }
@@ -243,7 +225,7 @@ data class AdvSpan(
         textAppearanceSpan = TextAppearanceSpan(context, styleId)
     }
 
-    private fun getSpans(): List<CharacterStyle> {
+    fun getSpans(): List<CharacterStyle> {
         val list = ArrayList<CharacterStyle>()
 
         if (isBold && italics)
