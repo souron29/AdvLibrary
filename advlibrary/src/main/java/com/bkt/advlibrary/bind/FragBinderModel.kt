@@ -4,11 +4,14 @@ import androidx.annotation.IdRes
 import androidx.navigation.NavDirections
 import com.bkt.advlibrary.CommonFragment
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 
 open class FragBinderModel : BinderModel() {
     internal val navCommand = MutableSharedFlow<FragCommand>(0, 1)
+    internal val onFragReceivedMutable = MutableSharedFlow<CommonFragment>(0, 1)
+    val withFragment = onFragReceivedMutable.asSharedFlow()
 
-    fun popBackStackImmediate(): Boolean {
+    fun navigateBack(): Boolean {
         return navCommand.tryEmit(NavigateBackCommand)
     }
 
@@ -62,6 +65,6 @@ open class FragBinderModel : BinderModel() {
 
     fun navigate(dir: NavDirections) = navCommand.tryEmit(NavigateCommand(dir))
 
-    fun fragAction(onFragReceived: (CommonFragment) -> Unit) =
+    fun withFragment(onFragReceived: CommonFragment.() -> Unit) =
         navCommand.tryEmit(CustomActionCommand(onFragReceived))
 }

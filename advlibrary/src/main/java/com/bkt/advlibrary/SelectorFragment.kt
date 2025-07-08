@@ -161,7 +161,7 @@ class SelectorVM<Item : Any, Binding : ViewDataBinding> : FragBinderModel() {
 
     fun sendSelectedFiles() {
         onReceive.invoke(ArrayList(adapter.selectedItems.values))
-        popBackStackImmediate()
+        navigateBack()
     }
 
     fun initiate(
@@ -179,7 +179,7 @@ class SelectorVM<Item : Any, Binding : ViewDataBinding> : FragBinderModel() {
         adapter.onClicked = { item, position ->
             onSelected?.apply {
                 invoke(item)
-                popBackStackImmediate()
+                navigateBack()
             }
             onClicked?.apply {
                 invoke(item, position)
@@ -189,7 +189,7 @@ class SelectorVM<Item : Any, Binding : ViewDataBinding> : FragBinderModel() {
             var ret = false
             onSelected?.apply {
                 invoke(item)
-                popBackStackImmediate()
+                navigateBack()
                 ret = true
             }
             onLongClick?.apply {

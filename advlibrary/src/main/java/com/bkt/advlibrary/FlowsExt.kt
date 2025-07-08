@@ -35,3 +35,4 @@ fun <T> Flow<T>.mutableStateIn(scope: CoroutineScope, initialValue: T): MutableS
 
 fun Flow<CharSequence>.textStateIn(scope: CoroutineScope) = this.mutableStateIn(scope, "")
 fun Flow<CharSequence>.textStateIn(model: ViewModel) = this.mutableStateIn(model.viewModelScope, "")
+fun <T> Flow<List<T>>.listStateIn(scope: CoroutineScope) = this.mutableStateIn(scope, ArrayList())
