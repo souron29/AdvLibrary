@@ -17,7 +17,7 @@ class SelectorFragment<Item : Any, Binding : ViewDataBinding>(
 ) :
     BinderFragment<FragmentSelectorBinding, SelectorVM<Item, Binding>>() {
 
-    override fun initializeViews() {
+    override fun initialize() {
         binding.vm = vm
         binding.lifecycleOwner = viewLifecycleOwner
         vm.initiate(advActivity, layoutId, onBind, binding)
