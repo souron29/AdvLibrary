@@ -9,10 +9,12 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.bkt.advlibrary.CommonFragment
 import com.bkt.advlibrary.FragProperties
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.launch
 import java.io.Serializable
 
 abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>() : CommonFragment() {
@@ -80,7 +82,7 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>() : Com
      * as those are not yet created during onCreate
      */
     private fun setInternalFunctions() {
-        launch {
+        lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
                 fragCreatedAction.collect {
                     it.invoke()
