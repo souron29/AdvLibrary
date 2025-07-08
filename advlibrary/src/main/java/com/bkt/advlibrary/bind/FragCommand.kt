@@ -7,17 +7,17 @@ import com.bkt.advlibrary.CommonFragment
 import com.bkt.advlibrary.popBackStackImmediate
 
 sealed class FragCommand {
-    abstract fun onCommandReceived(parent: CommonFragment)
+    abstract suspend fun onCommandReceived(parent: CommonFragment)
 }
 
 internal class NavigateCommand(private val dir: NavDirections) : FragCommand() {
-    override fun onCommandReceived(parent: CommonFragment) {
+    override suspend fun onCommandReceived(parent: CommonFragment) {
         parent.findNavController().navigate(dir)
     }
 }
 
 internal data object NavigateBackCommand : FragCommand() {
-    override fun onCommandReceived(parent: CommonFragment) {
+    override suspend fun onCommandReceived(parent: CommonFragment) {
         if (!parent.popBackStackImmediate())
             parent.findNavController().navigateUp()
     }
@@ -25,7 +25,7 @@ internal data object NavigateBackCommand : FragCommand() {
 
 internal class ToastCommand(private val message: String, private val longToast: Boolean = true) :
     FragCommand() {
-    override fun onCommandReceived(parent: CommonFragment) {
+    override suspend fun onCommandReceived(parent: CommonFragment) {
         parent.toast(message, longToast)
     }
 }
@@ -36,19 +36,19 @@ internal class LoadChildCommand(
     private val onParent: Boolean,
     private val addCurrentToStack: Boolean
 ) : FragCommand() {
-    override fun onCommandReceived(parent: CommonFragment) {
+    override suspend fun onCommandReceived(parent: CommonFragment) {
         parent.loadFragment(frag, id, onParent, addCurrentToStack)
     }
 }
 
 class CustomActionCommand(private val onFragReceived: (CommonFragment) -> Unit) : FragCommand() {
-    override fun onCommandReceived(parent: CommonFragment) {
+    override suspend fun onCommandReceived(parent: CommonFragment) {
         onFragReceived.invoke(parent)
     }
 }
 
 internal data object HideKeyboardCommand : FragCommand() {
-    override fun onCommandReceived(parent: CommonFragment) {
+    override suspend fun onCommandReceived(parent: CommonFragment) {
         parent.hideKeyboard()
     }
 }

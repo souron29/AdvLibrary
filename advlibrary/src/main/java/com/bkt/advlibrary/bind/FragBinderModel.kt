@@ -8,7 +8,13 @@ import kotlinx.coroutines.flow.asSharedFlow
 
 open class FragBinderModel : BinderModel() {
     internal val navCommand = MutableSharedFlow<FragCommand>(0, 1)
-    internal val onFragReceivedMutable = MutableSharedFlow<CommonFragment>(0, 1)
+
+    /**
+     * [onFragReceivedMutable] - Invoked from [BinderFragment] during [BinderFragment.initializeViews]
+     * replay = 1 so that doesn't matter when someone listens, they will always receive a copy
+     * We don't need buffer
+     */
+    internal val onFragReceivedMutable = MutableSharedFlow<CommonFragment>(1)
     val withFragment = onFragReceivedMutable.asSharedFlow()
 
     fun navigateBack(): Boolean {
