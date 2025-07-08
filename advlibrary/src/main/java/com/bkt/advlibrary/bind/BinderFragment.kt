@@ -61,7 +61,7 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>() : Com
         _bind = null
     }
 
-    override fun initializeViews() {
+    final override fun initializeViews() {
         vm.activity = { advActivity }
         launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -75,7 +75,10 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>() : Com
                 vm.onFragReceivedMutable.tryEmit(this@BinderFragment)
             }
         }
+        initialize()
     }
+
+    abstract fun initialize()
 
     /**
      * Must be called from onCreate. This should not include any view/binding related tasks
