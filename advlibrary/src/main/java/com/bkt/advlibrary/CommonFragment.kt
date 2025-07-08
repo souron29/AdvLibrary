@@ -36,6 +36,8 @@ abstract class CommonFragment() : Fragment(), LifecycleOwner {
     private var pagerDetails: PagerDetails? = null
     private var onClose = {}
     val properties by lazy { getFragmentProperties() }
+    val simpleName: String
+        get() = javaClass.simpleName
 
     fun onClosed(onClose: () -> Unit) {
         this.onClose = onClose

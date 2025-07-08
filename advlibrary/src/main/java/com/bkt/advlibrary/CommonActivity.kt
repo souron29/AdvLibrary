@@ -119,11 +119,11 @@ open class CommonActivity : AppCompatActivity(), LifecycleOwner {
         service.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
     }
 
-    @Deprecated("Deprecated in Java")
+    /*@Deprecated("Deprecated in Java")
     @SuppressLint("MissingSuperCall")
     override fun onBackPressed() {
         checkAndPopFrag()
-    }
+    }*/
 
     private fun checkAndPopFrag(
         indexOfFragToPop: Int = supportFragmentManager.fragments.lastIndex
