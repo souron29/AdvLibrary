@@ -18,6 +18,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import java.io.Serializable
 import kotlin.coroutines.CoroutineContext
@@ -28,6 +29,15 @@ abstract class CommonFragment() : Fragment(), LifecycleOwner {
     constructor(vararg params: Serializable) : this() {
         passArguments(params)
     }
+
+    /**
+     * [_isAlreadyAddedOnce] & [_isAlreadyAddedOnce] used to track if view was already created once before.
+     * This can be used when navigate from another Fragment, then no need to set adapter data again. Just
+     * link the adapter to the recyclerview
+     */
+    private val _isAlreadyAddedOnce = MutableStateFlow(false)
+    val isAlreadyAddedOnce
+        get() = _isAlreadyAddedOnce.value
 
     val stackCount: Int
         get() = if (isAdded) childFragmentManager.backStackEntryCount else 0
@@ -67,6 +77,7 @@ abstract class CommonFragment() : Fragment(), LifecycleOwner {
         super.onViewCreated(view, savedInstanceState)
         this.advActivity = activity as CommonActivity
         initializeViews()
+        _isAlreadyAddedOnce.value = true
     }
 
     /**
