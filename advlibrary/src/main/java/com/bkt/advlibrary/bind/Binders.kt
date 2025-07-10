@@ -1,7 +1,5 @@
 package com.bkt.advlibrary.bind
 
-import android.app.DatePickerDialog
-import android.app.TimePickerDialog
 import android.content.Context
 import android.content.res.ColorStateList
 import android.content.res.Resources
@@ -9,7 +7,16 @@ import android.graphics.Typeface
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.*
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
+import android.widget.CheckBox
+import android.widget.EditText
+import android.widget.Filter
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.Spinner
+import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
@@ -20,112 +27,37 @@ import androidx.databinding.BindingAdapter
 import androidx.databinding.InverseBindingAdapter
 import androidx.databinding.InverseBindingListener
 import androidx.fragment.app.FragmentActivity
-import androidx.recyclerview.widget.*
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewpager2.widget.ViewPager2
-import com.bkt.advlibrary.*
 import com.bkt.advlibrary.ActivityExtKt.scanForActivity
+import com.bkt.advlibrary.CommonActivity
+import com.bkt.advlibrary.DateFormats
+import com.bkt.advlibrary.LiveObject
+import com.bkt.advlibrary.PagerAdapter
+import com.bkt.advlibrary.bgLaunch
+import com.bkt.advlibrary.disableTouchInterceptOnView
+import com.bkt.advlibrary.format
+import com.bkt.advlibrary.getDate
+import com.bkt.advlibrary.getTrimText
+import com.bkt.advlibrary.setColorTint
+import com.bkt.advlibrary.setTextChangeListener
+import com.bkt.advlibrary.setupDatePicker
+import com.bkt.advlibrary.sysdate
+import com.bkt.advlibrary.toCurrency
+import com.bkt.advlibrary.toDate
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.tabs.TabLayout
 import java.math.BigDecimal
-import java.util.*
+import java.util.Date
 
 @BindingAdapter("android:visibility")
 fun setVisibility(view: View, visible: Boolean) {
     view.visibility = if (visible) View.VISIBLE else View.GONE
-}
-
-@BindingAdapter("dateFieldEnabled")
-fun setAsDateField(
-    et: EditText,
-    isDateEnabled: Boolean = false
-) {
-    if (isDateEnabled)
-        et.setupDatePicker(null)
-}
-
-@BindingAdapter("app:dateTimeFieldEnabled")
-fun setAsDateAndTimeField(
-    et: EditText,
-    isDateEnabled: Boolean = false
-) {
-    if (isDateEnabled)
-        et.setDateAndTimePicker()
-}
-
-fun EditText.setDateAndTimePicker(
-    startDate: Date = Calendar.getInstance().time,
-    format: String = DateFormats.DD_MMM_YYYY_TIME.format,
-    setAsMin: Boolean = false,
-    onSelect: (Date) -> Unit = {}
-) {
-    val calendar = Calendar.getInstance()
-    calendar.time = startDate
-    this.isFocusable = false
-    this.setText(startDate.format(format))
-    this.setOnClickListener {
-        val currentDate = this.getTrimText().toDate(format)!!
-        calendar.time = currentDate
-        val datePickerDialog = DatePickerDialog(
-            it.context,
-            { _, year, month, dayOfMonth ->
-                calendar[Calendar.YEAR] = year
-                calendar[Calendar.MONTH] = month
-                calendar[Calendar.DAY_OF_MONTH] = dayOfMonth
-
-                this.startTimePicker(calendar) { date ->
-                    this.setText(date.format(format))
-                    onSelect.invoke(date)
-                }
-            },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
-        )
-        if (setAsMin) {
-            val datePicker = datePickerDialog.datePicker
-            datePicker.minDate = startDate.time
-        }
-        datePickerDialog.show()
-    }
-}
-
-fun EditText.startTimePicker(calendar: Calendar, onSelect: (Date) -> Unit) {
-    val timePicker = TimePickerDialog(
-        this.context,
-        { _, h, m ->
-            calendar[Calendar.HOUR_OF_DAY] = h
-            calendar[Calendar.MINUTE] = m
-            onSelect.invoke(calendar.time)
-        },
-        calendar[Calendar.HOUR_OF_DAY],
-        calendar[Calendar.MINUTE],
-        false
-    )
-    timePicker.show()
-}
-
-@BindingAdapter("app:timeFieldEnabled")
-fun setAsTimeField(
-    et: EditText,
-    isTimePicker: Boolean = false
-) {
-    if (isTimePicker) {
-        val calendar = Calendar.getInstance()
-        et.isFocusable = false
-        if (et.getTrimText().isEmpty())
-            et.setText(calendar.time.format(DateFormats.TIME))
-        else
-            calendar.time = et.getTrimText().toDate(DateFormats.TIME)!!
-        et.setOnClickListener {
-            val currentDate = et.getTrimText().toDate(DateFormats.TIME)!!
-            calendar.time = currentDate
-            et.startTimePicker(calendar) {
-                et.setText(calendar.time.format(DateFormats.TIME))
-            }
-        }
-    }
 }
 
 fun Context.showKeyboard(editText: EditText) {
@@ -525,11 +457,12 @@ fun onRefresh(swipeRefreshLayout: SwipeRefreshLayout, doThis: () -> Unit) {
  * Below binders is required for date setters
  */
 
-@BindingAdapter("app:date", "app:dateFormat", requireAll = false)
+@BindingAdapter("app:date", "app:dateFormat", "app:dateEnabled", requireAll = false)
 fun setDateValue(
     tv: TextView,
     date: Date?,
-    dateFormat: String?
+    dateFormat: String?,
+    enabled: Boolean?
 ) {
     val format = dateFormat ?: DateFormats.DATE.format
     tv.tag = format
@@ -538,8 +471,9 @@ fun setDateValue(
         val currentDate = tv.getDate(format)
         if (date == currentDate) return
     }
+    val clickable = enabled ?: true
     if (tv is EditText) {
-        tv.setupDatePicker(date)
+        tv.setupDatePicker(date, showTimePicker = false, clickable = clickable, format = format)
     } else {
         // only edittext
         tv.text = (date ?: sysdate()).format(format)
@@ -563,12 +497,12 @@ fun setDateChanged(et: EditText, listener: InverseBindingListener) {
  * Date time picker
  */
 
-@BindingAdapter("app:dateTime", "app:dateTimeFormat", "app:minDate", requireAll = false)
+@BindingAdapter("app:dateTime", "app:dateTimeFormat", "app:dateEnabled", requireAll = false)
 fun setDateTimeValue(
     et: EditText,
     date: Date?,
     dateTimeFormat: String?,
-    minDate: Date?
+    enabled: Boolean?
 ) {
     val format = dateTimeFormat ?: DateFormats.DD_MMM_YYYY_TIME.format
     if (et.getTrimText().isNotEmpty()) {
@@ -577,7 +511,8 @@ fun setDateTimeValue(
         if (date == currentDate) return
     }
     et.tag = format
-    et.setDateAndTimePicker(date ?: minDate ?: sysdate())
+    val clickable = enabled ?: true
+    et.setupDatePicker(date, showTimePicker = true, clickable = clickable, format = format)
 }
 
 @InverseBindingAdapter(attribute = "app:dateTime", event = "app:dateTimeAttrChanged")

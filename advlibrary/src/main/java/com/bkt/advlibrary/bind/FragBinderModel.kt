@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 
 open class FragBinderModel : BinderModel() {
     internal val navCommand = MutableSharedFlow<FragCommand>(0, 1)
+    internal val navCommandOnCreate = MutableSharedFlow<FragCommand>(0, 1)
 
     /**
      * [onFragReceivedMutable] - Invoked from [BinderFragment] during [BinderFragment.initializeViews]
@@ -71,6 +72,9 @@ open class FragBinderModel : BinderModel() {
 
     fun navigate(dir: NavDirections) = navCommand.tryEmit(NavigateCommand(dir))
 
+    /**
+     * Fragment can be received on create. So use [navCommandOnCreate]
+     */
     fun withFragment(onFragReceived: CommonFragment.() -> Unit) =
-        navCommand.tryEmit(CustomActionCommand(onFragReceived))
+        navCommandOnCreate.tryEmit(CustomActionCommand(onFragReceived))
 }
