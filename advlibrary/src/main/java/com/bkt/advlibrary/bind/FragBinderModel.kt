@@ -70,7 +70,7 @@ open class FragBinderModel : BinderModel() {
         navCommand.tryEmit(HideKeyboardCommand)
     }
 
-    fun navigate(dir: NavDirections) = navCommand.tryEmit(NavigateCommand(dir))
+    fun navigate(dir: NavDirections) = navCommandOnCreate.tryEmit(NavigateCommand(dir))
 
     /**
      * Fragment can be received on create. So use [navCommandOnCreate]
