@@ -118,6 +118,50 @@ fun EditText.setupDatePicker(
     }
 }
 
+fun EditText.setupTimePicker(
+    startDateTime: Date?,
+    clickable: Boolean = true,
+    format: String = DateFormats.TIME.format,
+    onSelect: (Date) -> Unit = {}
+) {
+    this.setText(startDateTime?.format(format) ?: "")
+    this.isFocusable = false
+
+    if (!clickable)
+        return
+
+    val calendar = Calendar.getInstance()
+    startDateTime?.let { calendar.time = it }
+
+    val showPicker = {
+        this.getDate(format)?.let {
+            calendar.time = it
+        }
+
+        val timePicker = TimePickerDialog(
+            this.context,
+            { _, h, m ->
+                calendar[Calendar.HOUR_OF_DAY] = h
+                calendar[Calendar.MINUTE] = m
+                onSelect.invoke(calendar.time)
+                this.setText(calendar.time.format(format))
+            },
+            calendar[Calendar.HOUR_OF_DAY],
+            calendar[Calendar.MINUTE],
+            false
+        )
+        timePicker.show()
+    }
+
+    setOnClickListener {
+        showPicker.invoke()
+    }
+    setOnFocusChangeListener { _, hasFocus ->
+        if (hasFocus)
+            showPicker.invoke()
+    }
+}
+
 
 fun EditText.getTrimText(): String {
     return text?.trim().toString()

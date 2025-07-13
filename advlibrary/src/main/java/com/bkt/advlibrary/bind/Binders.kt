@@ -47,6 +47,7 @@ import com.bkt.advlibrary.getTrimText
 import com.bkt.advlibrary.setColorTint
 import com.bkt.advlibrary.setTextChangeListener
 import com.bkt.advlibrary.setupDatePicker
+import com.bkt.advlibrary.setupTimePicker
 import com.bkt.advlibrary.sysdate
 import com.bkt.advlibrary.toCurrency
 import com.bkt.advlibrary.toDate
@@ -528,6 +529,40 @@ fun setDateTimeChanged(et: EditText, listener: InverseBindingListener) {
         listener.onChange()
     }
 }
+
+@BindingAdapter("app:time", "app:timeFormat", "app:timeEnabled", requireAll = false)
+fun setTimeValue(
+    et: EditText,
+    time: Date?,
+    timeFormat: String?,
+    enabled: Boolean?
+) {
+    val format = timeFormat ?: DateFormats.TIME.format
+    if (et.getTrimText().isNotEmpty()) {
+        //assuming date and format has been already been set
+        val currentDate = et.getDate(format)
+        if (time == currentDate) return
+    }
+    et.tag = format
+    val clickable = enabled ?: true
+    et.setupTimePicker(time, clickable = clickable, format = format)
+}
+
+@InverseBindingAdapter(attribute = "app:time", event = "app:timeAttrChanged")
+fun getTimeValue(et: EditText): Date {
+    val text = et.getTrimText()
+    val format = et.tag as String
+    return text.toDate(format)!!
+}
+
+@BindingAdapter("app:timeAttrChanged")
+fun setTimeChanged(et: EditText, listener: InverseBindingListener) {
+    et.setTextChangeListener {
+        listener.onChange()
+    }
+}
+
+
 
 @BindingAdapter("app:onImeOptionAction")
 fun TextView.onImeAction(onAction: () -> Boolean) {
