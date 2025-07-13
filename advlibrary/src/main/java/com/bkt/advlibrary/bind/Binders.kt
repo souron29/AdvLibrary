@@ -51,6 +51,7 @@ import com.bkt.advlibrary.setupTimePicker
 import com.bkt.advlibrary.sysdate
 import com.bkt.advlibrary.toCurrency
 import com.bkt.advlibrary.toDate
+import com.bkt.advlibrary.toDateOrNull
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.tabs.TabLayout
 import java.math.BigDecimal
@@ -482,9 +483,10 @@ fun setDateValue(
 }
 
 @InverseBindingAdapter(attribute = "app:date", event = "app:dateAttrChanged")
-fun getDateValue(et: EditText): Date {
+fun getDateValue(et: EditText): Date? {
     val text = et.getTrimText()
-    return text.toDate(et.tag as String)!!
+    val format = et.tag as String
+    return text.toDateOrNull(format)
 }
 
 @BindingAdapter("app:dateAttrChanged")
@@ -517,10 +519,10 @@ fun setDateTimeValue(
 }
 
 @InverseBindingAdapter(attribute = "app:dateTime", event = "app:dateTimeAttrChanged")
-fun getDateTimeValue(et: EditText): Date {
+fun getDateTimeValue(et: EditText): Date? {
     val text = et.getTrimText()
     val format = et.tag as String
-    return text.toDate(format)!!
+    return text.toDateOrNull(format)
 }
 
 @BindingAdapter("app:dateTimeAttrChanged")
@@ -549,10 +551,10 @@ fun setTimeValue(
 }
 
 @InverseBindingAdapter(attribute = "app:time", event = "app:timeAttrChanged")
-fun getTimeValue(et: EditText): Date {
+fun getTimeValue(et: EditText): Date? {
     val text = et.getTrimText()
     val format = et.tag as String
-    return text.toDate(format)!!
+    return text.toDateOrNull(format)
 }
 
 @BindingAdapter("app:timeAttrChanged")
