@@ -217,23 +217,11 @@ fun String.toDate(format: String = DateFormats.DATE.format): Date? {
     return df.parse(this)
 }
 
-fun String.toDateOrNull(
-    format: String = DateFormats.DATE.format,
-    preserveCurrentTime: Boolean = true
-): Date? {
+fun String.toDateOrNull(format: String = DateFormats.DATE.format): Date? {
     val df = SimpleDateFormat(format, Locale.US)
     df.timeZone = timeZoneIST
     return try {
-        val date = df.parse(this)!!
-        val dateCal = Calendar.getInstance()
-        dateCal.time = date
-
-        val returnCal = Calendar.getInstance()
-        returnCal[Calendar.DAY_OF_YEAR] = dateCal[Calendar.DAY_OF_YEAR]
-        returnCal[Calendar.YEAR] = dateCal[Calendar.YEAR]
-        if (preserveCurrentTime)
-            returnCal.time
-        else dateCal.time
+        df.parse(this)
     } catch (e: Exception) {
         null
     }
@@ -245,24 +233,12 @@ fun String.toDate(format: DateFormats = DateFormats.DATE): Date? {
     return df.parse(this)
 }
 
-fun String.toDateOrNull(
-    format: DateFormats = DateFormats.DATE,
-    preserveCurrentTime: Boolean = true
-): Date? {
+fun String.toDateOrNull(format: DateFormats = DateFormats.DATE): Date? {
     val df = SimpleDateFormat(format.format, Locale.US)
     df.timeZone = timeZoneIST
     return try {
-        val date = df.parse(this)!!
-        val dateCal = Calendar.getInstance()
-        dateCal.time = date
-
-        val returnCal = Calendar.getInstance()
-        returnCal[Calendar.DAY_OF_YEAR] = dateCal[Calendar.DAY_OF_YEAR]
-        returnCal[Calendar.YEAR] = dateCal[Calendar.YEAR]
-        if (preserveCurrentTime)
-            returnCal.time
-        else dateCal.time
-    } catch (e: Exception) {
+        df.parse(this)
+    } catch (_: Exception) {
         null
     }
 }
