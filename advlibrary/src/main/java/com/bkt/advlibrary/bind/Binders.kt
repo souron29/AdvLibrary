@@ -542,8 +542,9 @@ fun setTimeValue(
     val format = timeFormat ?: DateFormats.TIME.format
     if (et.getTrimText().isNotEmpty()) {
         //assuming date and format has been already been set
-        val currentDate = et.getDate(format)
-        if (time == currentDate) return
+        val currentDateText = et.text?.toString()
+        val incomingDateText = time?.format(format)
+        if (currentDateText == incomingDateText) return
     }
     et.tag = format
     val clickable = enabled ?: true
