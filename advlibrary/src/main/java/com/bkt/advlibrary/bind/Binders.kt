@@ -565,8 +565,6 @@ fun setTimeChanged(et: EditText, listener: InverseBindingListener) {
     }
 }
 
-
-
 @BindingAdapter("app:onImeOptionAction")
 fun TextView.onImeAction(onAction: () -> Boolean) {
     this.setOnEditorActionListener { _, _, _ ->
