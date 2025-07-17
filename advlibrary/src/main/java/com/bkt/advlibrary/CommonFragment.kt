@@ -267,6 +267,18 @@ abstract class CommonFragment() : Fragment(), LifecycleOwner {
         start: CoroutineStart = CoroutineStart.DEFAULT,
         block: suspend CoroutineScope.() -> Unit
     ) = viewLifecycleOwner.lifecycleScope.launch(context, start, block)
+
+    fun launchOnFragment(
+        context: CoroutineContext = EmptyCoroutineContext,
+        start: CoroutineStart = CoroutineStart.DEFAULT,
+        block: suspend CoroutineScope.() -> Unit
+    ) = advActivity.lifecycleScope.launch(context, start, block)
+
+    fun launchOnActivity(
+        context: CoroutineContext = EmptyCoroutineContext,
+        start: CoroutineStart = CoroutineStart.DEFAULT,
+        block: suspend CoroutineScope.() -> Unit
+    ) = advActivity.lifecycleScope.launch(context, start, block)
 }
 
 internal data class PagerDetails(
