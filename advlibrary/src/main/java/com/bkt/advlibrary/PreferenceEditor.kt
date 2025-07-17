@@ -17,9 +17,13 @@ class AdvPreference<T>(
         return findPreference(key, defaultValue)
     }
 
+    fun get() = findPreference(key, defaultValue)
+
     override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
         putPreference(key, value)
     }
+
+    fun set(value: T) = putPreference(key, value)
 
     fun remove() = prefs.edit {
         remove(key)
