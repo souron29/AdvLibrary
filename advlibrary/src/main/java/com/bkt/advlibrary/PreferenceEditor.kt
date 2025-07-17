@@ -1,6 +1,7 @@
 package com.bkt.advlibrary
 
 import android.content.Context
+import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -18,6 +19,10 @@ class AdvPreference<T>(
 
     override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
         putPreference(key, value)
+    }
+
+    fun remove() = prefs.edit {
+        remove(key)
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -64,44 +69,42 @@ fun writeStringToPreferences(
     ifEmpty: Boolean = false
 ) {
     if (!ifEmpty) {
-        val edit = PreferenceManager.getDefaultSharedPreferences(context).edit()
-        edit.putString(key, value)
-        edit.apply()
+        PreferenceManager.getDefaultSharedPreferences(context).edit {
+            putString(key, value)
+        }
     } else if (context.getStringPreferences(key).isEmpty()) {
-        val edit2 = PreferenceManager.getDefaultSharedPreferences(context).edit()
-        edit2.putString(key, value)
-        edit2.apply()
+        PreferenceManager.getDefaultSharedPreferences(context).edit {
+            putString(key, value)
+        }
     }
 }
 
 fun writeBoolToPreferences(context: Context, key: String, value: Boolean, ifEmpty: Boolean) {
     if (!ifEmpty) {
-        val edit = PreferenceManager.getDefaultSharedPreferences(context).edit()
-        edit.putBoolean(key, value)
-        edit.apply()
+        PreferenceManager.getDefaultSharedPreferences(context).edit {
+            putBoolean(key, value)
+        }
     } else if (context.getStringPreferences(key).isEmpty()) {
-        val edit2 = PreferenceManager.getDefaultSharedPreferences(context).edit()
-        edit2.putBoolean(key, value)
-        edit2.apply()
+        PreferenceManager.getDefaultSharedPreferences(context).edit {
+            putBoolean(key, value)
+        }
     }
 }
 
 fun writeIntToPreferences(context: Context, key: String, value: Int): Int {
-    val edit = PreferenceManager.getDefaultSharedPreferences(context).edit()
-    edit.putInt(key, value)
-    edit.apply()
+    PreferenceManager.getDefaultSharedPreferences(context).edit {
+        putInt(key, value)
+    }
     return value
 }
 
 fun writeBoolToPreferences(context: Context, key: String, value: Boolean): Boolean {
-    val edit = PreferenceManager.getDefaultSharedPreferences(context).edit()
-    edit.putBoolean(key, value)
-    edit.apply()
+    PreferenceManager.getDefaultSharedPreferences(context).edit {
+        putBoolean(key, value)
+    }
     return value
 }
 
-fun wipeAllPref(context: Context): Runnable {
-    return Runnable {
-        PreferenceManager.getDefaultSharedPreferences(context).edit().clear().apply()
-    }
+fun wipeAllPref(context: Context) {
+    return PreferenceManager.getDefaultSharedPreferences(context).edit { clear() }
 }
