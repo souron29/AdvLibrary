@@ -23,6 +23,17 @@ internal data object NavigateBackCommand : FragCommand() {
     }
 }
 
+internal data class PopBackStackCommand(
+    val destinationId: Int,
+    val inclusive: Boolean,
+    val saveState: Boolean = false
+) : FragCommand() {
+
+    override suspend fun onCommandReceived(parent: CommonFragment) {
+        parent.findNavController().popBackStack(destinationId, inclusive, saveState)
+    }
+}
+
 internal class ToastCommand(private val message: String, private val longToast: Boolean = true) :
     FragCommand() {
     override suspend fun onCommandReceived(parent: CommonFragment) {

@@ -22,8 +22,20 @@ open class FragBinderModel : BinderModel() {
         return navCommand.tryEmit(NavigateBackCommand)
     }
 
+    /**
+     * [destinationId] - The topmost destination to retain
+     * [inclusive] - Whether the given destination should also be popped.
+     * [saveState] - Whether the back stack and the state of all destinations between the current destination
+     * and the destinationId should be saved for later restoration via NavOptions.Builder.setRestoreState
+     * or the restoreState attribute using the same destinationId
+     * (note: this matching ID is true whether inclusive is true or false).
+     */
+    fun popBackStack(@IdRes destinationId: Int, inclusive: Boolean, saveState: Boolean) {
+        navCommandOnCreate.tryEmit(PopBackStackCommand(destinationId, inclusive, saveState))
+    }
+
     fun loadChildFragment(childFragment: CommonFragment, @IdRes id: Int) {
-        navCommand.tryEmit(
+        navCommandOnCreate.tryEmit(
             LoadChildCommand(
                 childFragment, id,
                 onParent = false,
@@ -33,7 +45,7 @@ open class FragBinderModel : BinderModel() {
     }
 
     fun replaceChildFragment(childFragment: CommonFragment, @IdRes id: Int) {
-        navCommand.tryEmit(
+        navCommandOnCreate.tryEmit(
             LoadChildCommand(
                 childFragment, id,
                 onParent = false,
@@ -43,7 +55,7 @@ open class FragBinderModel : BinderModel() {
     }
 
     fun loadFragment(fragment: CommonFragment, @IdRes id: Int) {
-        navCommand.tryEmit(
+        navCommandOnCreate.tryEmit(
             LoadChildCommand(
                 fragment, id,
                 onParent = true,
@@ -53,7 +65,7 @@ open class FragBinderModel : BinderModel() {
     }
 
     fun replaceFragment(fragment: CommonFragment, @IdRes id: Int) {
-        navCommand.tryEmit(
+        navCommandOnCreate.tryEmit(
             LoadChildCommand(
                 fragment, id,
                 onParent = true,
