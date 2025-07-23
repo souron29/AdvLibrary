@@ -71,11 +71,6 @@ fun Flow<CharSequence>.textStateIn(
     started: SharingStarted = SharingStarted.WhileSubscribed(5000)
 ) = this.stateIn(scope, started, "")
 
-fun Flow<CharSequence>.textStateIn(
-    model: ViewModel,
-    started: SharingStarted = SharingStarted.WhileSubscribed(5000)
-) = this.stateIn(model.viewModelScope, started, "")
-
 fun <T> Flow<List<T>>.listStateIn(
     scope: CoroutineScope,
     started: SharingStarted = SharingStarted.WhileSubscribed(5000)
