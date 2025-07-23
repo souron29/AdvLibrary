@@ -11,6 +11,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 fun <T> Flow<T>.collectOn(
@@ -63,6 +65,18 @@ fun <T> Fragment.collectFromView(
     viewLifecycleOwner.collectFrom(flow, state, collector)
 }
 
-fun Flow<CharSequence>.textStateIn(scope: CoroutineScope) = this.mutableStateIn(scope, "")
-fun Flow<CharSequence>.textStateIn(model: ViewModel) = this.mutableStateIn(model.viewModelScope, "")
-fun <T> Flow<List<T>>.listStateIn(scope: CoroutineScope) = this.mutableStateIn(scope, ArrayList())
+
+fun Flow<CharSequence>.textStateIn(
+    scope: CoroutineScope,
+    started: SharingStarted = SharingStarted.WhileSubscribed(5000)
+) = this.stateIn(scope, started, "")
+
+fun Flow<CharSequence>.textStateIn(
+    model: ViewModel,
+    started: SharingStarted = SharingStarted.WhileSubscribed(5000)
+) = this.stateIn(model.viewModelScope, started, "")
+
+fun <T> Flow<List<T>>.listStateIn(
+    scope: CoroutineScope,
+    started: SharingStarted = SharingStarted.WhileSubscribed(5000)
+) = this.stateIn(scope, started, ArrayList())
