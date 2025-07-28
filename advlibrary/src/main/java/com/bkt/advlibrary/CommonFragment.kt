@@ -272,7 +272,7 @@ abstract class CommonFragment() : Fragment(), LifecycleOwner {
         context: CoroutineContext = EmptyCoroutineContext,
         start: CoroutineStart = CoroutineStart.DEFAULT,
         block: suspend CoroutineScope.() -> Unit
-    ) = advActivity.lifecycleScope.launch(context, start, block)
+    ) = this.lifecycleScope.launch(context, start, block)
 
     fun launchOnActivity(
         context: CoroutineContext = EmptyCoroutineContext,

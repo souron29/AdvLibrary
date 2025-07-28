@@ -77,12 +77,6 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>() : Com
                 }
             }
         }
-
-        launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                vm.onFragReceivedMutable.tryEmit(this@BinderFragment)
-            }
-        }
         initialize()
     }
 
@@ -100,6 +94,7 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>() : Com
                 }
             }
         }
+        vm.onFragReceivedMutable.tryEmit(this)
         vm.activity = { advActivity }
     }
 
