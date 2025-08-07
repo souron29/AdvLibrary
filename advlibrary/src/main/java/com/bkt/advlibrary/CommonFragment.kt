@@ -227,35 +227,12 @@ abstract class CommonFragment() : Fragment(), LifecycleOwner {
         this.arguments = arguments
     }
 
-    fun <T : Serializable> getArgument(argIndex: Int, clazz: Class<T>? = null): T? {
+    inline fun <reified T : Serializable> getArgument(argIndex: Int): T? {
         val param = "ParamArg$argIndex"
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && clazz != null) {
-            arguments?.getSerializable(param, clazz)
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            arguments?.getSerializable(param, T::class.java)
         } else {
             arguments?.getSerializable(param) as T?
-        }
-    }
-
-    inline fun <reified T : Serializable> arg(
-        argIndex: Int,
-        clazz: Class<T>? = null,
-        default: T? = null
-    ): Lazy<T?> {
-        val param = "ParamArg$argIndex"
-        return arg(param, clazz, default)
-    }
-
-    inline fun <reified T : Serializable> arg(
-        param: String,
-        clazz: Class<T>? = null,
-        default: T? = null
-    ): Lazy<T?> {
-        return lazy {
-            (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && clazz != null) {
-                arguments?.getSerializable(param, clazz)
-            } else {
-                arguments?.getSerializable(param) as T?
-            }) ?: default
         }
     }
 
@@ -358,36 +335,36 @@ fun Fragment.getResultsFromChild(resultKey: String, onResult: (FragmentResult) -
 }
 
 
-data class FragmentResult(private val result: Bundle) {
+data class FragmentResult(val result: Bundle) {
     companion object {
         const val PARAM_RESULT_KEY = "ParamResultKey"
         const val PARAM_RESULT_COUNT_KEY = "ParamPassResultsCount"
     }
 
-    fun <T : Serializable> getResult(argIndex: Int, clazz: Class<T>? = null): T? {
+    inline fun <reified T : Serializable> getResult(argIndex: Int): T? {
         val resultKey = "$PARAM_RESULT_KEY$argIndex"
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && clazz != null) {
-            result.getSerializable(resultKey, clazz)
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            result.getSerializable(resultKey, T::class.java)
         } else {
             result.getSerializable(resultKey) as T?
         }
     }
 
-    fun <T : Serializable> getResult(resultKey: String, clazz: Class<T>? = null): T? {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && clazz != null) {
-            result.getSerializable(resultKey, clazz)
+    inline fun <reified T : Serializable> getResult(resultKey: String): T? {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            result.getSerializable(resultKey, T::class.java)
         } else {
             result.getSerializable(resultKey) as T?
         }
     }
 
-    fun <T : Serializable> getResults(clazz: Class<T>? = null): List<T> {
+    inline fun <reified T : Serializable> getResults(): List<T> {
         val count = result.getInt(PARAM_RESULT_COUNT_KEY, 0)
         if (count == 0)
             return ArrayList()
         val resultList = ArrayList<T>()
         for (index in 0 until count) {
-            getResult(index, clazz)?.let { result ->
+            getResult<T>(index)?.let { result ->
                 resultList.add(result)
             }
         }
@@ -404,9 +381,9 @@ fun Fragment.passArgument(key: String, arg: Serializable) {
     this.arguments = arguments
 }
 
-fun <T : Serializable> Fragment.getArgument(key: String, clazz: Class<T>? = null): T? {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && clazz != null) {
-        arguments?.getSerializable(key, clazz)
+inline fun <reified T : Serializable> Fragment.getArgument(key: String): T? {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        arguments?.getSerializable(key, T::class.java)
     } else {
         arguments?.getSerializable(key) as T?
     }
