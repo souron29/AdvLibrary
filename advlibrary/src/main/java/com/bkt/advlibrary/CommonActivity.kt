@@ -231,23 +231,22 @@ open class CommonActivity : AppCompatActivity(), LifecycleOwner {
         if (!handled)
             super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
+}
 
-    // Sometimes activity might be destroyed due to low memory
-    fun launch(
-        context: CoroutineContext = EmptyCoroutineContext,
-        start: CoroutineStart = CoroutineStart.DEFAULT,
-        block: suspend CoroutineScope.() -> Unit
-    ) = lifecycleScope.launch(context, start, block)
+fun LifecycleOwner.launch(
+    context: CoroutineContext = EmptyCoroutineContext,
+    start: CoroutineStart = CoroutineStart.DEFAULT,
+    block: suspend CoroutineScope.() -> Unit
+) = lifecycleScope.launch(context, start, block)
 
-    fun launchAndRepeat(
-        context: CoroutineContext = EmptyCoroutineContext,
-        state: Lifecycle.State = Lifecycle.State.STARTED,
-        block: suspend CoroutineScope.() -> Unit
-    ) = launch(context) {
-        /**
-         * The collection below will run when the fragment's view has reached [state]
-         * and will be cancelled when the view goes out of [state], and relaunched when [state] reached again.
-         */
-        repeatOnLifecycle(state, block)
-    }
+fun LifecycleOwner.launchAndRepeat(
+    context: CoroutineContext = EmptyCoroutineContext,
+    state: Lifecycle.State = Lifecycle.State.STARTED,
+    block: suspend CoroutineScope.() -> Unit
+) = launch(context) {
+    /**
+     * The collection below will run when the fragment's view has reached [state]
+     * and will be cancelled when the view goes out of [state], and relaunched when [state] reached again.
+     */
+    repeatOnLifecycle(state, block)
 }
