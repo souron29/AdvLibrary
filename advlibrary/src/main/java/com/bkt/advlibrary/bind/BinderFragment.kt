@@ -13,7 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.bkt.advlibrary.CommonFragment
 import com.bkt.advlibrary.FragProperties
-import com.bkt.advlibrary.launch
+import com.bkt.advlibrary.launchAndRepeat
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import java.io.Serializable
@@ -64,18 +64,14 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>() : Com
 
     final override fun initializeViews() {
         vm.activity = { advActivity }
-        launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                vm.navCommand.collect {
-                    it.onCommandReceived(this@BinderFragment)
-                }
+        viewLifecycleOwner.launchAndRepeat {
+            vm.navCommand.collect {
+                it.onCommandReceived(this@BinderFragment)
             }
         }
-        launch {
-            repeatOnLifecycle(Lifecycle.State.CREATED) {
-                vm.navCommandOnCreate.collect {
-                    it.onCommandReceived(this@BinderFragment)
-                }
+        viewLifecycleOwner.launchAndRepeat(state = Lifecycle.State.CREATED){
+            vm.navCommandOnCreate.collect {
+                it.onCommandReceived(this@BinderFragment)
             }
         }
         initialize()
