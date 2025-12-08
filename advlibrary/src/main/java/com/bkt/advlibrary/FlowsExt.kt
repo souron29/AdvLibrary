@@ -43,29 +43,6 @@ fun <T> Flow<T>.mutableStateIn(scope: CoroutineScope, initialValue: T): MutableS
     return f
 }
 
-fun <T> LifecycleOwner.collectFrom(
-    flow: Flow<T>,
-    state: Lifecycle.State = Lifecycle.State.STARTED,
-    collector: FlowCollector<T> = FlowCollector { }
-) {
-    launch {
-        repeatOnLifecycle(state) {
-            // The collection below will run when the fragment's view is STARTED (visible)
-            // and will be cancelled when the view goes STOPPED, and relaunched when STARTED again.
-            flow.collect(collector)
-        }
-    }
-}
-
-fun <T> Fragment.collectFromView(
-    flow: Flow<T>,
-    state: Lifecycle.State = Lifecycle.State.STARTED,
-    collector: FlowCollector<T> = FlowCollector { }
-) {
-    viewLifecycleOwner.collectFrom(flow, state, collector)
-}
-
-
 fun Flow<CharSequence>.textStateIn(
     scope: CoroutineScope,
     started: SharingStarted = SharingStarted.WhileSubscribed(5000)

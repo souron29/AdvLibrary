@@ -13,8 +13,10 @@ import androidx.fragment.app.commit
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewpager2.widget.ViewPager2
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
@@ -245,17 +247,35 @@ abstract class CommonFragment() : Fragment(), LifecycleOwner {
         block: suspend CoroutineScope.() -> Unit
     ) = viewLifecycleOwner.lifecycleScope.launch(context, start, block)
 
+    fun launchAndRepeat(
+        context: CoroutineContext = EmptyCoroutineContext,
+        state: Lifecycle.State = Lifecycle.State.STARTED,
+        block: suspend CoroutineScope.() -> Unit
+    ) = viewLifecycleOwner.lifecycleScope.launch(context, CoroutineStart.DEFAULT) {
+        /**
+         * The collection below will run when the fragment's view has reached [state]
+         * and will be cancelled when the view goes out of [state], and relaunched when [state] reached again.
+         */
+        viewLifecycleOwner.repeatOnLifecycle(state, block)
+    }
+
     fun launchOnFragment(
         context: CoroutineContext = EmptyCoroutineContext,
         start: CoroutineStart = CoroutineStart.DEFAULT,
         block: suspend CoroutineScope.() -> Unit
-    ) = this.lifecycleScope.launch(context, start, block)
+    ) = lifecycleScope.launch(context, start, block)
 
-    fun launchOnActivity(
+    fun launchOnFragmentAndRepeat(
         context: CoroutineContext = EmptyCoroutineContext,
-        start: CoroutineStart = CoroutineStart.DEFAULT,
+        state: Lifecycle.State = Lifecycle.State.STARTED,
         block: suspend CoroutineScope.() -> Unit
-    ) = advActivity.lifecycleScope.launch(context, start, block)
+    ) = lifecycleScope.launch(context, CoroutineStart.DEFAULT) {
+        /**
+         * The collection below will run when the fragment's view has reached [state]
+         * and will be cancelled when the view goes out of [state], and relaunched when [state] reached again.
+         */
+        repeatOnLifecycle(state, block)
+    }
 }
 
 internal data class PagerDetails(
