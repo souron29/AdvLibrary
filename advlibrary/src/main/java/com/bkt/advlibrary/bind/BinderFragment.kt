@@ -69,7 +69,7 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>() : Com
                 it.onCommandReceived(this@BinderFragment)
             }
         }
-        viewLifecycleOwner.launchAndRepeat(state = Lifecycle.State.CREATED){
+        launchAndRepeat(state = Lifecycle.State.CREATED) {
             vm.navCommandOnCreate.collect {
                 it.onCommandReceived(this@BinderFragment)
             }

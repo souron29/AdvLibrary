@@ -8,6 +8,13 @@ import kotlinx.coroutines.flow.asSharedFlow
 
 open class FragBinderModel : BinderModel() {
     internal val navCommand = MutableSharedFlow<FragCommand>(0, 1)
+
+    /**
+     * Actions Performed
+     * 1) Load Fragments
+     * 2) Get references to fragment
+     * 3) Navigate
+     */
     internal val navCommandOnCreate = MutableSharedFlow<FragCommand>(0, 1)
 
     /**
