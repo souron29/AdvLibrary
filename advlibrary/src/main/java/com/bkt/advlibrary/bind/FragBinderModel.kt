@@ -13,9 +13,13 @@ open class FragBinderModel : BinderModel() {
      * Actions Performed
      * 1) Load Fragments
      * 2) Get references to fragment
-     * 3) Navigate
      */
     internal val navCommandOnCreate = MutableSharedFlow<FragCommand>(0, 1)
+
+    /**
+     * 1) Navigation - Doesn't work when using fragment's created state
+     */
+    internal val navCommandOnViewCreate = MutableSharedFlow<FragCommand>(0, 1)
 
     /**
      * [onFragReceivedMutable] - Invoked from [BinderFragment] during [BinderFragment.initializeViews]
@@ -89,7 +93,7 @@ open class FragBinderModel : BinderModel() {
         navCommand.tryEmit(HideKeyboardCommand)
     }
 
-    fun navigate(dir: NavDirections) = navCommandOnCreate.tryEmit(NavigateCommand(dir))
+    fun navigate(dir: NavDirections) = navCommandOnViewCreate.tryEmit(NavigateCommand(dir))
 
     /**
      * Fragment can be received on create. So use [navCommandOnCreate]
