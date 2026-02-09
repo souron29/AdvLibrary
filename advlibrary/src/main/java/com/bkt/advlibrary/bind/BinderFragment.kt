@@ -45,6 +45,11 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>() : Com
      */
     override fun onSetupData() {
         setInternalFunctions()
+        launchAndRepeat(state = Lifecycle.State.CREATED) {
+            vm.navCommandOnCreate.collect {
+                it.onCommandReceived(this@BinderFragment)
+            }
+        }
     }
 
     override fun onCreateView(
@@ -64,21 +69,17 @@ abstract class BinderFragment<T : ViewDataBinding, VM : FragBinderModel>() : Com
 
     final override fun initializeViews() {
         vm.activity = { advActivity }
-        viewLifecycleOwner.launchAndRepeat {
+        launchOnViewAndRepeat(state = Lifecycle.State.STARTED) {
             vm.navCommand.collect {
                 it.onCommandReceived(this@BinderFragment)
             }
         }
-        viewLifecycleOwner.launchAndRepeat(state = Lifecycle.State.CREATED) {
+        launchOnViewAndRepeat(state = Lifecycle.State.CREATED) {
             vm.navCommandOnViewCreate.collect {
                 it.onCommandReceived(this@BinderFragment)
             }
         }
-        launchAndRepeat(state = Lifecycle.State.CREATED) {
-            vm.navCommandOnCreate.collect {
-                it.onCommandReceived(this@BinderFragment)
-            }
-        }
+
         initialize()
     }
 

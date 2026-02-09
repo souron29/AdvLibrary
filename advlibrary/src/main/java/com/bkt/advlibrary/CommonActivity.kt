@@ -126,7 +126,7 @@ open class CommonActivity : AppCompatActivity(), LifecycleOwner {
         checkAndPopFrag()
     }*/
 
-    private fun checkAndPopFrag(
+    /*private fun checkAndPopFrag(
         indexOfFragToPop: Int = supportFragmentManager.fragments.lastIndex
     ) {
         val fragList = supportFragmentManager.fragments
@@ -150,7 +150,7 @@ open class CommonActivity : AppCompatActivity(), LifecycleOwner {
                 }
             }
         }
-    }
+    }*/
 
     private fun getLastFrag(id: Int): Fragment? {
         return supportFragmentManager.findFragmentById(id)

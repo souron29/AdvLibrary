@@ -42,7 +42,6 @@ abstract class CommonFragment() : Fragment(), LifecycleOwner {
         get() = if (isAdded) childFragmentManager.backStackEntryCount else 0
     lateinit var advActivity: CommonActivity
 
-    private var pagerDetails: PagerDetails? = null
     private var onClose = {}
     val properties by lazy { getFragmentProperties() }
     val simpleName: String
@@ -50,10 +49,6 @@ abstract class CommonFragment() : Fragment(), LifecycleOwner {
 
     fun onClosed(onClose: () -> Unit) {
         this.onClose = onClose
-    }
-
-    fun setAsPagerFragment(pager: ViewPager2, adapter: PagerAdapter, defaultItem: Int = 0) {
-        this.pagerDetails = PagerDetails(pager, adapter, defaultItem)
     }
 
     override fun onAttach(context: Context) {
@@ -155,36 +150,10 @@ abstract class CommonFragment() : Fragment(), LifecycleOwner {
     }
 
     open fun backPressHandled(): Boolean {
-        pagerDetails?.let { (pager, adapter, default) ->
-            if (pager.currentItem == default) {
-                val frag = adapter.getFragment(default)
-                if (frag!!.isAdded && frag.childFragmentManager.fragments.isNotEmpty()) {
-                    val size = frag.childFragmentManager.fragments.size
-                    val childFrag = frag.childFragmentManager.fragments[size - 1] as CommonFragment?
-                    if (childFrag != null && childFrag.backPressHandled())
-                        return true
-                    else if (childFrag != null) {
-                        childFrag.popBackStack()
-                        return true
-                    }
-                    frag.childFragmentManager.popBackStack()
-                    return true
-                } else if (!frag.isAdded) {
-                    return false
-                }
-            } else {
-                pager.setCurrentItem(default, true)
-                return true
-            }
-        }
-
-        if (pagerDetails == null) {
-            return handleChildPop()
-        }
         return false
     }
 
-    private fun handleChildPop(indexOfFrag: Int = childFragmentManager.fragments.lastIndex): Boolean {
+    /*private fun handleChildPop(indexOfFrag: Int = childFragmentManager.fragments.lastIndex): Boolean {
         if (indexOfFrag < 0)
             return popBackStackImmediate()
         return when (val child = childFragmentManager.fragments.getOrNull(indexOfFrag)) {
@@ -206,7 +175,7 @@ abstract class CommonFragment() : Fragment(), LifecycleOwner {
                 }
             }
         }
-    }
+    }*/
 
     fun toast(text: String, longToast: Boolean = true) {
         if (isAdded)
