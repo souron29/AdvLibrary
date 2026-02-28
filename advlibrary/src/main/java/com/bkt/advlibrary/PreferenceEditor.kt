@@ -52,6 +52,12 @@ class AdvPreference<T>(
             else -> throw IllegalArgumentException("This type cannot be saved into Preferences")
         }.apply()
     }
+
+    companion object{
+        fun clearAllPreferences(context: Context) {
+            return PreferenceManager.getDefaultSharedPreferences(context).edit { clear() }
+        }
+    }
 }
 
 fun Context.getStringPreferences(key: String, default: String = ""): String {
@@ -107,8 +113,4 @@ fun writeBoolToPreferences(context: Context, key: String, value: Boolean): Boole
         putBoolean(key, value)
     }
     return value
-}
-
-fun wipeAllPref(context: Context) {
-    return PreferenceManager.getDefaultSharedPreferences(context).edit { clear() }
 }
