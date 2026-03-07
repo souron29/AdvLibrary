@@ -120,7 +120,7 @@ class AdvPreference<T>(context: Context, private val key: String, private val de
             context: Context,
             key: String,
             value: Boolean,
-            ifEmpty: Boolean
+            ifEmpty: Boolean = false
         ) {
             if (!ifEmpty) {
                 context.getPreferences().edit { putBoolean(key, value) }
@@ -133,7 +133,7 @@ class AdvPreference<T>(context: Context, private val key: String, private val de
             context: Context,
             key: String,
             value: Int,
-            ifEmpty: Boolean
+            ifEmpty: Boolean = false
         ) {
             if (!ifEmpty) {
                 context.getPreferences().edit { putInt(key, value) }
