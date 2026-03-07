@@ -15,7 +15,7 @@ class AdvPreference<T>(context: Context, private val key: String, private val de
     ReadWriteProperty<Any?, T>, ObservableField<T>() {
     private val prefs by lazy { PreferenceManager.getDefaultSharedPreferences(context) }
 
-    var value: T
+    private var value: T
         get() = findPreference(key, defaultValue)
         set(value) {
             putPreference(key, value)
