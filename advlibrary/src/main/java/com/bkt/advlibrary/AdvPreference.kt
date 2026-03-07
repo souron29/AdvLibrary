@@ -15,19 +15,25 @@ class AdvPreference<T>(context: Context, private val key: String, private val de
     ReadWriteProperty<Any?, T>, ObservableField<T>() {
     private val prefs by lazy { PreferenceManager.getDefaultSharedPreferences(context) }
 
+    var value: T
+        get() = findPreference(key, defaultValue)
+        set(value) {
+            putPreference(key, value)
+        }
+
     val flow: Flow<T> by lazy {
         callbackFlow {
             val listener =
                 SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, changedKey ->
                     if (key == changedKey) {
-                        trySend(getValue())
+                        trySend(value)
                     }
                 }
 
             prefs.registerOnSharedPreferenceChangeListener(listener)
 
             // Ensure the flow starts with the current value immediately
-            trySend(getValue())
+            trySend(value)
 
             // Unregister the listener when the flow is closed/cancelled
             awaitClose {
@@ -36,23 +42,22 @@ class AdvPreference<T>(context: Context, private val key: String, private val de
         }
     }
 
-    fun getValue() = findPreference(key, defaultValue)
-
     override fun getValue(thisRef: Any?, property: KProperty<*>): T {
-        return getValue()
+        return value
     }
 
     override fun get(): T? {
-        return getValue()
+        return value
     }
 
     override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
+        this.value = value ?: defaultValue
         set(value)
     }
 
     override fun set(value: T?) {
-        super.set(value)
-        putPreference(key, value)
+        this.value = value ?: defaultValue
+        super.set(this.value)
     }
 
     fun remove() = prefs.edit { remove(key) }
