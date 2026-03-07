@@ -3,6 +3,7 @@ package com.bkt.advlibrary
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import androidx.databinding.ObservableField
 import androidx.preference.PreferenceManager
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -10,11 +11,8 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
-class AdvPreference<T>(
-    context: Context,
-    private val key: String,
-    private val defaultValue: T
-) : ReadWriteProperty<Any?, T> {
+class AdvPreference<T>(context: Context, private val key: String, private val defaultValue: T) :
+    ReadWriteProperty<Any?, T>, ObservableField<T>() {
     private val prefs by lazy { PreferenceManager.getDefaultSharedPreferences(context) }
 
     val flow: Flow<T> by lazy {
@@ -22,14 +20,14 @@ class AdvPreference<T>(
             val listener =
                 SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, changedKey ->
                     if (key == changedKey) {
-                        trySend(get())
+                        trySend(getValue())
                     }
                 }
 
             prefs.registerOnSharedPreferenceChangeListener(listener)
 
             // Ensure the flow starts with the current value immediately
-            trySend(get())
+            trySend(getValue())
 
             // Unregister the listener when the flow is closed/cancelled
             awaitClose {
@@ -38,17 +36,24 @@ class AdvPreference<T>(
         }
     }
 
+    fun getValue() = findPreference(key, defaultValue)
+
     override fun getValue(thisRef: Any?, property: KProperty<*>): T {
-        return get()
+        return getValue()
     }
 
-    fun get() = findPreference(key, defaultValue)
+    override fun get(): T? {
+        return getValue()
+    }
 
     override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
         set(value)
     }
 
-    fun set(value: T) = putPreference(key, value)
+    override fun set(value: T?) {
+        super.set(value)
+        putPreference(key, value)
+    }
 
     fun remove() = prefs.edit { remove(key) }
 
@@ -65,7 +70,7 @@ class AdvPreference<T>(
         res as T
     }
 
-    private fun putPreference(name: String, value: T) = with(prefs.edit()) {
+    private fun putPreference(name: String, value: T?) = with(prefs.edit()) {
         when (value) {
             is Long -> putLong(name, value)
             is String -> putString(name, value)
