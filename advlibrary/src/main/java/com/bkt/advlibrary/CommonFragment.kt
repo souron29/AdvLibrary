@@ -72,6 +72,17 @@ abstract class CommonFragment() : Fragment(), LifecycleOwner {
         this.advActivity = activity as CommonActivity
         initializeViews()
         _isAlreadyAddedOnce.value = true
+        setupBackPress()
+    }
+
+    private fun setupBackPress() {
+        setOnBackPressListener {
+            if (childFragmentManager.backStackEntryCount > 0) {
+                childFragmentManager.popBackStack()
+            } else if (!backPressHandled()) {
+                popBackStackImmediate()
+            }
+        }
     }
 
     /**
